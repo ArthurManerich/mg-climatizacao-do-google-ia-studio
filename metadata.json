@@ -1,0 +1,6 @@
+{
+  "name": "MG Climatização",
+  "description": "Website para MG Climatização, especializada em instalação, higienização, manutenção e carga de gás para ar-condicionado em Blumenau e região.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

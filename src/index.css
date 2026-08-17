@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+
+  /* MG Climatização Official Palette Tokens */
+  --color-primary: #002E5C;
+  --color-primary-dark: #001D3D;
+  --color-primary-light: #003E7A;
+
+  --color-secondary: #0096D6;
+  --color-secondary-hover: #0082BA;
+  --color-secondary-light: #E6F5FC;
+
+  --color-accent: #00B2FF;
+  --color-accent-light: #F0F9FF;
+
+  --color-brand-bg: #FFFFFF;
+  --color-warm: #F5A524;
+  --color-warm-hover: #E09216;
+  --color-warm-light: #FFFBEB;
+
+  --color-text-primary: #002E5C;
+  --color-text-secondary: #475569;
+  --color-border: #E2E8F0;
+}
+
+:root {
+  --color-primary: #002E5C;
+  --color-secondary: #0096D6;
+  --color-accent: #00B2FF;
+  --color-background: #FFFFFF;
+  --color-warm: #F5A524;
+  --color-text-primary: #002E5C;
+  --color-text-secondary: #475569;
+  --color-border: #E2E8F0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+  background-color: #ffffff;
+  color: #002E5C;
+}
+
+/* Custom glassmorphism and overlay patterns */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E2E8F0;
+}
+
+.glass-panel-dark {
+  background: rgba(0, 46, 92, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 178, 255, 0.15);
+}
+
+/* Glow effects for MG Climatização */
+.glow-accent {
+  box-shadow: 0 0 30px -5px rgba(0, 178, 255, 0.25);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 25px 0px rgba(0, 150, 214, 0.3);
+}
+
+.glow-warm {
+  box-shadow: 0 0 25px 0px rgba(245, 165, 36, 0.25);
+}
+
+/* Smooth transitions */
+.transition-all-300 {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 767.98px) {
+  .admin-mobile-theme {
+    background: #121212;
+    color: #F5F5F5;
+  }
+
+  .admin-mobile-theme main [class*="bg-white"] {
+    background-color: #1A1A1A !important;
+  }
+
+  .admin-mobile-theme main [class*="bg-slate-50"],
+  .admin-mobile-theme main [class*="bg-slate-100"],
+  .admin-mobile-theme main [class*="bg-slate-200"],
+  .admin-mobile-theme main [class*="bg-[#E6F5FC]"] {
+    background-color: #242424 !important;
+  }
+
+  .admin-mobile-theme main [class*="bg-emerald-50"] {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+  }
+
+  .admin-mobile-theme main [class*="bg-amber-50"] {
+    background-color: rgba(245, 165, 36, 0.12) !important;
+  }
+
+  .admin-mobile-theme main [class*="bg-rose-50"] {
+    background-color: rgba(244, 63, 94, 0.12) !important;
+  }
+
+  .admin-mobile-theme main [class*="border-slate-"],
+  .admin-mobile-theme main [class*="border-white"],
+  .admin-mobile-theme main [class*="border-[#0096D6]"] {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .admin-mobile-theme main button:focus-visible,
+  .admin-mobile-theme main a:focus-visible,
+  .admin-mobile-theme main input:focus,
+  .admin-mobile-theme main textarea:focus,
+  .admin-mobile-theme main select:focus {
+    border-color: #0096D6 !important;
+    outline: 2px solid #0096D6;
+    outline-offset: 2px;
+  }
+
+  .admin-mobile-theme main [class*="text-slate-950"],
+  .admin-mobile-theme main [class*="text-slate-900"],
+  .admin-mobile-theme main [class*="text-slate-800"],
+  .admin-mobile-theme main [class*="text-[#002E5C]"] {
+    color: #F5F5F5 !important;
+  }
+
+  .admin-mobile-theme main [class*="text-slate-700"],
+  .admin-mobile-theme main [class*="text-slate-600"] {
+    color: #E0E0E0 !important;
+  }
+
+  .admin-mobile-theme main [class*="text-slate-500"],
+  .admin-mobile-theme main [class*="text-slate-400"] {
+    color: #A8A8A8 !important;
+  }
+
+  .admin-mobile-theme main [class*="text-emerald-"] {
+    color: #6EE7B7 !important;
+  }
+
+  .admin-mobile-theme main [class*="text-rose-"] {
+    color: #FDA4AF !important;
+  }
+
+  .admin-mobile-theme main [class*="text-amber-"] {
+    color: #FCD34D !important;
+  }
+
+  .admin-mobile-theme main [class*="text-[9px]"],
+  .admin-mobile-theme main [class*="text-[10px]"],
+  .admin-mobile-theme main [class*="text-[11px]"] {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+
+  .admin-mobile-theme main input,
+  .admin-mobile-theme main textarea,
+  .admin-mobile-theme main select {
+    min-height: 44px;
+    max-width: 100%;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: #222222 !important;
+    color: #F5F5F5 !important;
+    font-size: 0.875rem !important;
+  }
+
+  .admin-mobile-theme main .p-6,
+  .admin-mobile-theme main .p-12 {
+    padding: 1.25rem !important;
+  }
+
+  .admin-mobile-theme main input::placeholder,
+  .admin-mobile-theme main textarea::placeholder {
+    color: #A8A8A8;
+    opacity: 1;
+  }
+
+  .admin-mobile-theme .admin-manager {
+    color: #E0E0E0;
+  }
+
+  .admin-mobile-theme .admin-manager h2,
+  .admin-mobile-theme .admin-manager h3,
+  .admin-mobile-theme .admin-manager h4 {
+    color: #F5F5F5 !important;
+  }
+
+  .admin-mobile-theme .admin-manager p {
+    color: #E0E0E0;
+  }
+
+  .admin-mobile-theme .admin-manager label {
+    color: #C8C8C8 !important;
+    opacity: 1 !important;
+  }
+
+  .admin-mobile-theme .admin-manager input,
+  .admin-mobile-theme .admin-manager textarea,
+  .admin-mobile-theme .admin-manager select {
+    border-color: rgba(255, 255, 255, 0.36) !important;
+    background: #242424 !important;
+    color: #F5F5F5 !important;
+    -webkit-text-fill-color: #F5F5F5;
+    caret-color: #00B2FF;
+  }
+
+  .admin-mobile-theme .admin-manager input:disabled,
+  .admin-mobile-theme .admin-manager textarea:disabled,
+  .admin-mobile-theme .admin-manager select:disabled,
+  .admin-mobile-theme .admin-manager button:disabled {
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    background-color: #1A1A1A !important;
+    color: #A8A8A8 !important;
+    opacity: 0.72;
+  }
+
+  .admin-mobile-theme .admin-manager input:-webkit-autofill,
+  .admin-mobile-theme .admin-manager input:-webkit-autofill:hover,
+  .admin-mobile-theme .admin-manager input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #242424 inset !important;
+    -webkit-text-fill-color: #F5F5F5 !important;
+    caret-color: #00B2FF;
+  }
+
+  .admin-mobile-theme .admin-empty-state {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #222222;
+    color: #E0E0E0 !important;
+  }
+
+  .admin-mobile-theme .admin-empty-state .admin-empty-title {
+    color: #F5F5F5 !important;
+  }
+
+  .admin-mobile-theme main button,
+  .admin-mobile-theme main a,
+  .admin-mobile-theme main [class*="cursor-pointer"] {
+    min-height: 44px;
+  }
+
+  .admin-mobile-theme main button,
+  .admin-mobile-theme main a {
+    min-width: 44px;
+  }
+
+  .admin-mobile-theme main img,
+  .admin-mobile-theme main video,
+  .admin-mobile-theme main canvas {
+    max-width: 100%;
+  }
+
+  .admin-mobile-theme main table {
+    min-width: 42rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-mobile-theme *,
+  .admin-mobile-theme *::before,
+  .admin-mobile-theme *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
