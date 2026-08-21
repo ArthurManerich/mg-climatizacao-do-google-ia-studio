@@ -4,9 +4,14 @@
   "description": "Serviços de instalação, higienização e manutenção de ar-condicionado em Blumenau e região.",
   "icons": [
     {
-      "src": "/brand/logo-principal.jpg",
+      "src": "/brand/logo-192.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/brand/logo-512.webp",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/webp"
     }
   ],
   "start_url": "/",

@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, User, X } from 'lucide-react';
-import { motion } from 'motion/react';
 
 interface AccessModeModalProps { isOpen: boolean; onClose: () => void; }
 const focusableSelector = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -41,8 +40,8 @@ export default function AccessModeModal({ isOpen, onClose }: AccessModeModalProp
   const selectAdmin = () => { sessionStorage.setItem('mg_access_mode', 'admin'); onClose(); navigate('/login'); };
 
   return isOpen ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-brand-navy-950/90 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-          <motion.div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="access-modal-title" tabIndex={-1} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.16 }} className="relative max-h-full w-full max-w-2xl overflow-y-auto rounded-feature border border-line bg-surface shadow-floating">
+        <div className="modal-backdrop-reveal fixed inset-0 z-50 flex items-center justify-center bg-brand-navy-950/90 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-sm" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+          <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="access-modal-title" tabIndex={-1} className="modal-panel-reveal relative max-h-full w-full max-w-2xl overflow-y-auto rounded-feature border border-line bg-surface shadow-floating">
             <header className="relative bg-brand-navy-800 p-5 pr-16 text-white sm:p-7 sm:pr-20">
               <button ref={closeButtonRef} type="button" onClick={onClose} className="absolute right-3 top-3 flex min-h-11 min-w-11 items-center justify-center rounded-full text-slate-200 transition-colors hover:bg-white/10 hover:text-white" aria-label="Fechar janela de seleção de acesso"><X aria-hidden="true" className="h-5 w-5" /></button>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan-400">MG Climatização</p>
@@ -65,7 +64,7 @@ export default function AccessModeModal({ isOpen, onClose }: AccessModeModalProp
                 <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-brand-navy-800">Fazer login <ArrowRight aria-hidden="true" className="h-4 w-4" /></span>
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
   ) : null;
 }

@@ -13,7 +13,6 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -51,12 +50,8 @@ const ServiceCard = memo(function ServiceCard({
   const serviceMsg = `Olá! Gostaria de solicitar um orçamento para: ${title}`;
 
   return (
-    <motion.article
+    <article
       id={id}
-      variants={{
-        hidden: { opacity: 0, y: 16 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-      }}
       className="flex h-full flex-col rounded-card border border-line bg-surface p-5 transition-colors hover:border-brand-cyan-600/50 sm:p-6"
     >
       <div className="flex items-start gap-4">
@@ -88,7 +83,7 @@ const ServiceCard = memo(function ServiceCard({
         Solicitar orçamento
         <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
       </button>
-    </motion.article>
+    </article>
   );
 });
 

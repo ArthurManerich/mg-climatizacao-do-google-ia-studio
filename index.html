@@ -29,9 +29,43 @@
     <meta property="twitter:image" content="https://mgclimabnu.com.br/brand/logo-principal.jpg" />
 
     <!-- Favicon & PWA Manifest -->
-    <link rel="icon" type="image/jpeg" href="/brand/logo-principal.jpg" />
-    <link rel="apple-touch-icon" href="/brand/logo-principal.jpg" />
+    <link rel="icon" type="image/webp" href="/brand/logo-96.webp" />
+    <link rel="apple-touch-icon" href="/brand/logo-192.webp" />
     <link rel="manifest" href="/manifest.json" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/plus-jakarta-sans-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/space-grotesk-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      media="(max-width: 1023px)"
+      href="/brand/fotos/atendimento-real-hero-480.webp"
+      imagesrcset="/brand/fotos/atendimento-real-hero-480.webp 480w, /brand/fotos/atendimento-real-hero-768.webp 768w"
+      imagesizes="(min-width: 1024px) 40vw, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      media="(min-width: 1024px)"
+      href="/brand/fotos/atendimento-real-hero-768.webp"
+      imagesrcset="/brand/fotos/atendimento-real-hero-768.webp 768w, /brand/fotos/atendimento-real-hero-1200.webp 1200w"
+      imagesizes="40vw"
+      fetchpriority="high"
+    />
 
     <!-- Schema.org JSON-LD (Informações estruturadas reais) -->
     <script type="application/ld+json">
@@ -60,9 +94,6 @@
       }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body class="font-sans antialiased">
     <div id="root"></div>

@@ -7,7 +7,7 @@ interface HeaderProps {
   onOpenAccessModal?: () => void;
 }
 
-const OFFICIAL_LOGO = '/brand/logo-principal.jpg';
+const OFFICIAL_HEADER_LOGO = '/brand/logo-96.webp';
 
 const navigation = [
   { label: 'Início', href: '#inicio' },
@@ -53,14 +53,16 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
             aria-label="MG Climatização — início"
           >
             <img
-              src={settings.logo_url || OFFICIAL_LOGO}
+              src={settings.logo_url || OFFICIAL_HEADER_LOGO}
               alt="Logo da MG Climatização"
+              width="96"
+              height="96"
               decoding="async"
               fetchPriority="high"
               referrerPolicy="no-referrer"
               onError={(event) => {
-                if (!event.currentTarget.src.endsWith(OFFICIAL_LOGO)) {
-                  event.currentTarget.src = OFFICIAL_LOGO;
+                if (!event.currentTarget.src.endsWith(OFFICIAL_HEADER_LOGO)) {
+                  event.currentTarget.src = OFFICIAL_HEADER_LOGO;
                 }
               }}
               className="h-11 w-11 shrink-0 rounded-control border border-white/10 bg-brand-navy-950 object-contain sm:h-12 sm:w-12"

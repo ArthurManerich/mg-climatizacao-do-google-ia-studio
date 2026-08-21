@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshCw, Snowflake } from 'lucide-react';
-import { motion } from 'motion/react';
 import { pillarsData } from '../../data/services';
 import { servicesService } from '../../services/servicesService';
 import { Service } from '../../types';
@@ -11,6 +10,8 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
+  const servicesGridRef = useRef<HTMLDivElement>(null);
+  const [showServiceCards, setShowServiceCards] = useState(false);
 
   const loadServices = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -43,10 +44,23 @@ export default function Services() {
     };
   }, [loadServices]);
 
-  const listVariants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.08 } },
-  };
+  useEffect(() => {
+    const grid = servicesGridRef.current;
+    if (!grid) return;
+    if (typeof window.IntersectionObserver !== 'function') {
+      setShowServiceCards(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setShowServiceCards(true);
+      observer.disconnect();
+    }, { rootMargin: '80px 0px' });
+
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [loading]);
 
   return (
     <>
@@ -117,12 +131,9 @@ export default function Services() {
               <p className="mt-1 text-sm text-ink-muted">Novos serviços serão apresentados aqui quando estiverem disponíveis.</p>
             </div>
           ) : (
-            <motion.div
-              className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-              variants={listVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-50px' }}
+            <div
+              ref={servicesGridRef}
+              className={`services-grid grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 ${showServiceCards ? 'services-grid-visible' : ''}`}
             >
               {servicesList.map((service, index) => (
                 <ServiceCard
@@ -134,7 +145,7 @@ export default function Services() {
                   bulletPoints={service.bullet_points || []}
                 />
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </section>
