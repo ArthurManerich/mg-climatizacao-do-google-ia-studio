@@ -9,6 +9,9 @@ export const WHATSAPP = {
   name: "MG Climatização",
 };
 
+// Link oficial direto para avaliações da MG Climatização no Google.
+export const GOOGLE_REVIEW_URL = "https://g.page/r/Cd42q0aM-ZcUEAE/review";
+
 export const TEAM_CONTACTS = {
   marcos: {
     name: "Marcos Manerich",

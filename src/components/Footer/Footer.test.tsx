@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import Contact from '../Contact/Contact';
 import FloatingWhatsApp from '../WhatsAppButton/FloatingWhatsApp';
+import FloatingGoogleReview from '../GoogleReviewButton/FloatingGoogleReview';
 import Footer from './Footer';
 import { WhatsAppContactProvider } from '../../context/WhatsAppContactContext';
 
@@ -52,5 +53,14 @@ describe('fechamento público da landing page', () => {
     expect(button.className).not.toMatch(/animate-(bounce|pulse|ping)/);
     fireEvent.click(button);
     expect(screen.getByRole('dialog', { name: /Com quem você deseja falar/i })).toBeInTheDocument();
+  });
+
+  it('oferece avaliação pública no Google em um botão flutuante separado', () => {
+    render(<FloatingGoogleReview />);
+    const link = screen.getByRole('link', { name: 'Avaliar a MG Climatização no Google' });
+    expect(link).toHaveAttribute('href', 'https://g.page/r/Cd42q0aM-ZcUEAE/review');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(link).toHaveClass('h-12', 'w-12');
   });
 });

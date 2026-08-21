@@ -8,6 +8,7 @@ import BudgetSimulator from './components/BudgetSimulator/BudgetSimulator';
 import Contact from './components/Contact/Contact';
 import Footer from './components/Footer/Footer';
 import FloatingWhatsApp from './components/WhatsAppButton/FloatingWhatsApp';
+import FloatingGoogleReview from './components/GoogleReviewButton/FloatingGoogleReview';
 import DeferredSection from './components/DeferredSection/DeferredSection';
 import { BudgetProvider } from './context/BudgetContext';
 import { SettingsProvider } from './context/SettingsContext';
@@ -74,6 +75,7 @@ function LandingPage() {
         <Contact />
       </main>
       <Footer />
+      <FloatingGoogleReview />
       <FloatingWhatsApp />
 
       {isAccessModalOpen && (
