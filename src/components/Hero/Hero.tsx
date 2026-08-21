@@ -3,7 +3,8 @@ import { ArrowRight, MapPin, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSettings } from '../../context/SettingsContext';
 import { DEFAULT_QUICK_QUOTE_MESSAGE, getWhatsAppLink } from '../../utils/whatsapp';
-import technicianHeroImg from '../../assets/images/hvac_technician_hero_1786544677995.jpg';
+
+const uniformHeroImg = '/brand/referencias/camisa-uniforme-mg-v2.png';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -104,8 +105,8 @@ export default function Hero() {
           >
             <div className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
               <img
-                src={technicianHeroImg}
-                alt="Profissional de climatização realizando atendimento em equipamento de ar-condicionado"
+                src={uniformHeroImg}
+                alt="Uniforme oficial da MG Climatização, exibido de frente e de costas"
                 decoding="async"
                 fetchPriority="high"
                 referrerPolicy="no-referrer"

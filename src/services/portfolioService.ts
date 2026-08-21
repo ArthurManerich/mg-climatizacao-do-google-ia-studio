@@ -1,14 +1,9 @@
 import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Portfolio } from '../types';
-import { IMAGES } from '../config';
 import { uploadService } from './uploadService';
 import { DeleteResult } from './deleteResult';
 import { BatchCreateResult, MutationResult } from './mutationResult';
 import { createReadError } from './readError';
-
-const LOCAL_STORAGE_KEY = 'mgclimatizacao_portfolio';
-
-const initialItems: Portfolio[] = [];
 
 function sanitizePortfolio(items: Portfolio[]): Portfolio[] {
   if (!Array.isArray(items)) return [];

@@ -7,6 +7,7 @@ import { servicesService } from '../../../services/servicesService';
 import { faqService } from '../../../services/faqService';
 import { testimonialsService } from '../../../services/testimonialsService';
 import { settingsService } from '../../../services/settingsService';
+import { adminSettingsService } from '../../../services/adminSettingsService';
 import { usePortfolio } from './usePortfolio';
 import { useBeforeAfter } from './useBeforeAfter';
 import { useServices } from './useServices';
@@ -58,7 +59,7 @@ export function useAdminData() {
       servicesService.getAll(),
       faqService.getAll(),
       testimonialsService.getAll(),
-      settingsService.get('budget_prices'),
+      adminSettingsService.getBudgetPrices(),
       settingsService.getCompanySettings()
     ] as const);
 

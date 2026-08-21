@@ -1,5 +1,6 @@
 import { supabase, hasSupabaseConfig } from '../lib/supabase';
-import { defaultSimulatorConfig } from '../config/simulator';
+import { defaultPublicSimulatorConfig } from '../config/simulator';
+import type { PublicSimulatorConfig } from '../types';
 import {
   DEFAULT_COMPANY_SETTINGS,
   type CompanySettings,
@@ -7,31 +8,38 @@ import {
   type WhatsappContact,
 } from '../types/settings.types';
 
-const defaultWhatsappContact: WhatsappContact = {
-  number: DEFAULT_COMPANY_SETTINGS.whatsapp_number,
-  message: DEFAULT_COMPANY_SETTINGS.whatsapp_message,
-};
-
-const localFallbacks: Record<string, unknown> = {
-  company_settings: DEFAULT_COMPANY_SETTINGS,
-  whatsapp_contact: defaultWhatsappContact,
-  simulator_config: defaultSimulatorConfig,
-  budget_prices: {
-    categories: {
-      instalacao: 350,
-      manutencao: 150,
-      higienizacao: 120,
-      'carga-gas': 180,
-    },
-  },
-};
-
 const nonEmpty = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+function sanitizePublicSimulatorConfig(value: unknown): PublicSimulatorConfig | undefined {
+  if (!isRecord(value) || !Array.isArray(value.services) || !Array.isArray(value.capacities) || !Array.isArray(value.propertyTypes)) {
+    return undefined;
+  }
+
+  const services = value.services.flatMap(item => {
+    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label) || !nonEmpty(item.icon) || !nonEmpty(item.description)) return [];
+    return [{ id: item.id, label: item.label, icon: item.icon, description: item.description }];
+  });
+  const capacities = value.capacities.flatMap(item => {
+    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label) || !nonEmpty(item.desc)) return [];
+    return [{ id: item.id, label: item.label, desc: item.desc }];
+  });
+  const propertyTypes = value.propertyTypes.flatMap(item => {
+    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label)) return [];
+    return [{ id: item.id, label: item.label }];
+  });
+
+  return services.length && capacities.length && propertyTypes.length
+    ? { services, capacities, propertyTypes }
+    : undefined;
+}
 
 async function readSetting<T>(key: string): Promise<T | undefined> {
   const { data, error } = await supabase
     .from('settings')
-    .select('*')
+    .select('value')
     .eq('key', key)
     .maybeSingle();
 
@@ -43,13 +51,13 @@ async function readSetting<T>(key: string): Promise<T | undefined> {
 }
 
 export const settingsService = {
-  async get<T = unknown>(key: string): Promise<T | undefined> {
+  async getPublicSimulatorConfig(): Promise<PublicSimulatorConfig> {
     if (!hasSupabaseConfig()) {
-      return localFallbacks[key] as T | undefined;
+      return defaultPublicSimulatorConfig;
     }
 
-    const value = await readSetting<T>(key);
-    return value ?? localFallbacks[key] as T | undefined;
+    const value = await readSetting<unknown>('simulator_public_config');
+    return sanitizePublicSimulatorConfig(value) ?? defaultPublicSimulatorConfig;
   },
 
   async getCompanySettings(): Promise<SettingsWithFallback> {
@@ -83,19 +91,5 @@ export const settingsService = {
       settings,
       source: company ? 'company_settings' : legacy ? 'whatsapp_contact' : 'defaults',
     };
-  },
-
-  async set<T>(key: string, value: T): Promise<void> {
-    if (!hasSupabaseConfig()) {
-      throw new Error('Não foi possível salvar as configurações: conexão com o Supabase não está configurada.');
-    }
-
-    const { error } = await supabase
-      .from('settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() });
-
-    if (error) {
-      throw new Error('Não foi possível salvar as configurações no banco de dados.');
-    }
   },
 };

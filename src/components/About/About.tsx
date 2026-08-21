@@ -1,8 +1,8 @@
 import React from 'react';
 
 const facts = [
-  { value: '90 dias', label: 'Garantia nos serviços' },
-  { value: 'Nota Fiscal', label: 'Emitida nos atendimentos' },
+  { value: 'Marcos Manerich', label: 'Responsável pela MG Climatização' },
+  { value: 'Blumenau', label: 'Atendimento na cidade e região' },
   { value: 'NR-35', label: 'Capacitação válida' },
 ];
 

@@ -231,7 +231,7 @@ export function SimulatorManager() {
                 {config.services.map((service) => (
                   <React.Fragment key={service.id}>
                     {config.capacities.map((btu, idx) => {
-                      const priceObj = config.basePrices?.[service.id]?.[btu.id] || { min: 150, max: 250, time: "2 horas" };
+                      const priceObj = config.basePrices?.[service.id]?.[btu.id] || { min: 0, max: 0, time: '' };
                       return (
                         <tr key={`${service.id}-${btu.id}`} className="hover:bg-[#E6F5FC]/40 transition-colors">
                           {idx === 0 && (

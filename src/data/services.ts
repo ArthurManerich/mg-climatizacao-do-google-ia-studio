@@ -1,19 +1,9 @@
 import {
   Building2,
-  ShieldCheck,
-  FileCheck,
+  HardHat,
+  Snowflake,
   LucideIcon,
 } from 'lucide-react';
-
-export interface ServiceData {
-  id: string;
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  bulletPoints: string[];
-}
-
-export const servicesData: ServiceData[] = [];
 
 export interface PillarData {
   icon: LucideIcon;
@@ -28,13 +18,13 @@ export const pillarsData: PillarData[] = [
     description: 'Atendimento para diferentes necessidades de climatização.'
   },
   {
-    icon: FileCheck,
-    title: 'Nota Fiscal',
-    description: 'Emissão de Nota Fiscal nos serviços realizados.'
+    icon: Snowflake,
+    title: 'Climatização e refrigeração',
+    description: 'Instalação, manutenção, higienização e outros serviços disponíveis.'
   },
   {
-    icon: ShieldCheck,
-    title: 'Garantia de 90 dias',
-    description: 'Garantia informada para os serviços executados.'
+    icon: HardHat,
+    title: 'Trabalho em altura',
+    description: 'Atendimento em altura quando necessário e conforme as condições do serviço.'
   }
 ];

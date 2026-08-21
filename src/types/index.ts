@@ -67,14 +67,6 @@ export type FaqItem = Faq;
 export type ServiceItem = Service;
 export type BeforeAfterItem = BeforeAfter;
 
-export interface Estimation {
-  min: number;
-  max: number;
-  time: string;
-}
-
-export type EstimatedPrice = Estimation;
-
 export interface SimulatorServiceOption {
   id: string;
   label: string;
@@ -94,6 +86,11 @@ export interface SimulatorPropertyOption {
   multiplier: number;
 }
 
+export interface PublicSimulatorPropertyOption {
+  id: string;
+  label: string;
+}
+
 export interface SimulatorBasePrice {
   min: number;
   max: number;
@@ -107,3 +104,8 @@ export interface SimulatorConfig {
   basePrices: Record<string, Record<string, SimulatorBasePrice>>;
 }
 
+export interface PublicSimulatorConfig {
+  services: SimulatorServiceOption[];
+  capacities: SimulatorBtuOption[];
+  propertyTypes: PublicSimulatorPropertyOption[];
+}

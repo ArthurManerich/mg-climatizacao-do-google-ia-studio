@@ -56,7 +56,7 @@ export default function Services() {
             <div>
               <p className="text-sm font-semibold text-brand-cyan-700">Compromissos no atendimento</p>
               <h2 id="pilares-title" className="mt-2 font-display text-2xl font-bold text-brand-navy-800 sm:text-3xl">
-                Relações claras do início ao fim.
+                Soluções para cada necessidade.
               </h2>
             </div>
 

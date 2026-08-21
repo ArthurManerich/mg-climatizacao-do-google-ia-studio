@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
   servicesGetAll: vi.fn(),
   faqGetAll: vi.fn(),
   testimonialsGetAll: vi.fn(),
-  settingsGet: vi.fn(),
+  getBudgetPrices: vi.fn(),
   getCompanySettings: vi.fn(),
 }));
 
@@ -25,7 +25,10 @@ vi.mock('../../../services/servicesService', () => ({ servicesService: { getAll:
 vi.mock('../../../services/faqService', () => ({ faqService: { getAll: mocks.faqGetAll } }));
 vi.mock('../../../services/testimonialsService', () => ({ testimonialsService: { getAll: mocks.testimonialsGetAll } }));
 vi.mock('../../../services/settingsService', () => ({
-  settingsService: { get: mocks.settingsGet, getCompanySettings: mocks.getCompanySettings },
+  settingsService: { getCompanySettings: mocks.getCompanySettings },
+}));
+vi.mock('../../../services/adminSettingsService', () => ({
+  adminSettingsService: { getBudgetPrices: mocks.getBudgetPrices },
 }));
 vi.mock('../../../services/uploadService', () => ({
   uploadService: { uploadImage: vi.fn(), deleteImage: vi.fn() },
@@ -48,7 +51,7 @@ function setSuccessfulReads() {
   mocks.servicesGetAll.mockResolvedValue([]);
   mocks.faqGetAll.mockResolvedValue([]);
   mocks.testimonialsGetAll.mockResolvedValue([]);
-  mocks.settingsGet.mockResolvedValue({ base: 100 });
+  mocks.getBudgetPrices.mockResolvedValue({ base: 100 });
   mocks.getCompanySettings.mockResolvedValue({ settings: DEFAULT_COMPANY_SETTINGS, source: 'company_settings' });
 }
 
