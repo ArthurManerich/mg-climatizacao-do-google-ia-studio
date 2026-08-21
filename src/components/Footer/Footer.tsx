@@ -1,100 +1,53 @@
-import React from 'react';
-import { Wind, Heart, Instagram, Facebook, MapPin, Mail, Phone } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
+
+const OFFICIAL_LOGO = '/brand/logo-principal.jpg';
+const OFFICIAL_DOMAIN = 'https://mgclimabnu.com.br/';
+const footerLinks = [
+  ['Início', '#inicio'], ['Serviços', '#servicos'], ['Sobre', '#sobre'],
+  ['Montar solicitação', '#orcamento-online'], ['Portfólio', '#portfolio'], ['Dúvidas', '#faq'],
+] as const;
 
 export default function Footer() {
   const { settings } = useSettings();
 
   return (
-    <footer className="bg-[#001D38] text-slate-300 py-10 sm:py-12 border-t border-[#002E5C]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 pb-8 border-b border-[#002E5C] text-sm">
-          
-          {/* Logo & Description */}
-          <div className="space-y-3 sm:space-y-4 col-span-1">
-            <a href="#inicio" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#002E5C] text-white flex items-center justify-center font-bold text-base shadow-sm overflow-hidden flex-shrink-0 border border-[#0096D6]/40">
-                {settings.logo_url ? (
-                  <img src={settings.logo_url} alt={settings.company_name} loading="lazy" decoding="async" referrerPolicy="no-referrer" className="max-w-full max-h-full object-contain" />
-                ) : (
-                  <Wind className="w-4 h-4 text-[#00B2FF]" />
-                )}
-              </div>
-              <span className="text-base sm:text-lg font-bold font-display tracking-tight text-white">
-                {settings.company_name}
-              </span>
+    <footer className="border-t border-white/10 bg-brand-navy-950 text-slate-300">
+      <div className="mx-auto max-w-7xl px-gutter py-9 sm:px-gutter-lg sm:py-11">
+        <div className="grid gap-8 border-b border-white/10 pb-8 md:grid-cols-[1.1fr_0.9fr_1fr]">
+          <div className="max-w-sm">
+            <a href="#inicio" className="inline-flex min-h-11 items-center gap-3" aria-label="MG Climatização — voltar ao início">
+              <span className="h-14 w-14 overflow-hidden rounded-card border border-white/10 bg-brand-navy-900"><img src={settings.logo_url || OFFICIAL_LOGO} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = OFFICIAL_LOGO; }} alt="Logo oficial da MG Climatização" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></span>
+              <span className="text-lg font-bold text-white">{settings.company_name}</span>
             </a>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Instalação, manutenção, higienização e carga de gás para ar-condicionado. Atendimento residencial e empresarial com garantia e nota fiscal.
-            </p>
-            
-            {/* Social icons */}
-            <div className="flex items-center gap-3 pt-1">
-              {settings.instagram && (
-                <a href={settings.instagram} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-lg bg-[#002E5C] hover:bg-[#0096D6] hover:text-white flex items-center justify-center transition-all text-slate-300 min-w-[36px] min-h-[36px]" aria-label="Instagram">
-                  <Instagram className="w-4 h-4" />
-                </a>
-              )}
-              {settings.facebook && (
-                <a href={settings.facebook} target="_blank" rel="noreferrer" className="w-9 h-9 rounded-lg bg-[#002E5C] hover:bg-[#0096D6] hover:text-white flex items-center justify-center transition-all text-slate-300 min-w-[36px] min-h-[36px]" aria-label="Facebook">
-                  <Facebook className="w-4 h-4" />
-                </a>
-              )}
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">Climatização e refrigeração para residências e empresas em Blumenau e região.</p>
+            <a href={OFFICIAL_DOMAIN} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-brand-cyan-400 hover:text-white">mgclimabnu.com.br</a>
+            <div className="mt-2 flex gap-2">
+              {settings.instagram && <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Instagram aria-hidden="true" className="h-5 w-5" /></a>}
+              {settings.facebook && <a href={settings.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Facebook aria-hidden="true" className="h-5 w-5" /></a>}
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white">Acesso Rápido</h4>
-            <div className="flex flex-col gap-1.5 text-xs font-semibold">
-              <a href="#inicio" className="hover:text-white transition-colors py-1">Início</a>
-              <a href="#servicos" className="hover:text-white transition-colors py-1">Serviços</a>
-              <a href="#antes-depois" className="hover:text-white transition-colors py-1">Antes & Depois</a>
-              <a href="#portfolio" className="hover:text-white transition-colors py-1">Meu Portfólio</a>
-              <a href="#orcamento-online" className="hover:text-white transition-colors py-1">Simular Preço</a>
-              <a href="#faq" className="hover:text-white transition-colors py-1">Dúvidas</a>
+          <nav aria-label="Links do rodapé">
+            <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Navegação</h2>
+            <div className="mt-3 grid grid-cols-2 gap-x-4">
+              {footerLinks.map(([label, href]) => <a key={href} href={href} className="inline-flex min-h-11 items-center text-sm text-slate-400 transition-colors hover:text-white">{label}</a>)}
+            </div>
+          </nav>
+
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Contato</h2>
+            <div className="mt-3 space-y-1 text-sm">
+              {settings.phone && <a href={`tel:${settings.phone.replace(/\D/g, '')}`} className="flex min-h-11 items-center gap-3 text-slate-300 hover:text-white"><Phone aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.phone}</a>}
+              {settings.email && <a href={`mailto:${settings.email}`} className="flex min-h-11 items-center gap-3 break-all text-slate-300 hover:text-white"><Mail aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.email}</a>}
+              <p className="flex min-h-11 items-center gap-3 text-slate-300"><MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.address || 'Blumenau e região'}</p>
             </div>
           </div>
-
-          {/* Contact Details */}
-          <div className="space-y-3 col-span-1 sm:col-span-2 md:col-span-2">
-            <h4 className="text-xs font-black uppercase tracking-wider text-white">Contato & Localização</h4>
-            <div className="space-y-2.5 text-xs">
-              {settings.address && (
-                <p className="flex items-start gap-2 text-slate-300">
-                  <MapPin className="w-4 h-4 text-[#0096D6] shrink-0 mt-0.5" />
-                  <span>{settings.address}</span>
-                </p>
-              )}
-              {settings.email && (
-                <p className="flex items-center gap-2 text-slate-300">
-                  <Mail className="w-4 h-4 text-[#0096D6] shrink-0" />
-                  <a href={`mailto:${settings.email}`} className="hover:text-white transition-colors py-0.5">{settings.email}</a>
-                </p>
-              )}
-              {settings.phone && (
-                <p className="flex items-center gap-2 text-slate-300">
-                  <Phone className="w-4 h-4 text-[#0096D6] shrink-0" />
-                  <a href={`tel:${settings.phone.replace(/\D/g, '')}`} className="hover:text-white transition-colors py-1 underline-offset-2 hover:underline">
-                    {settings.phone}
-                  </a>
-                </p>
-              )}
-            </div>
-          </div>
-
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs text-slate-400 text-center">
+        <div className="flex flex-col gap-3 pt-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {settings.company_name}. Todos os direitos reservados.</p>
-          <div className="flex items-center gap-4">
-            <a href="/login" className="hover:text-[#0096D6] transition-colors text-[11px] font-medium text-slate-400">
-              Área Restrita (Admin)
-            </a>
-          </div>
-          <p className="flex items-center gap-1 justify-center">
-            Feito com dedicação e <Heart className="w-3.5 h-3.5 text-rose-500 fill-current" /> para Blumenau e Região.
-          </p>
+          <a href="/login" className="inline-flex min-h-11 items-center text-slate-500 transition-colors hover:text-brand-cyan-400">Área restrita</a>
         </div>
       </div>
     </footer>

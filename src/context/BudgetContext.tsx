@@ -3,24 +3,28 @@ import { getWhatsAppLink } from '../utils/whatsapp';
 import { useSettings } from './SettingsContext';
 import { settingsService } from '../services/settingsService';
 import { defaultSimulatorConfig } from '../config/simulator';
-import { SimulatorConfig, EstimatedPrice } from '../types';
+import { SimulatorConfig } from '../types';
 
 export interface SimulatorState {
   serviceType: string;
   capacity: string;
   quantity: number;
   propertyType: string;
+  necessity: string;
+  city: string;
+  serviceAddress: string;
+  fullName: string;
 }
 
 export interface BudgetContextType {
   simulator: SimulatorState;
   setSimulator: React.Dispatch<React.SetStateAction<SimulatorState>>;
-  estimation: EstimatedPrice;
   config: SimulatorConfig;
   loadingConfig: boolean;
   configError: string | null;
   reloadConfig: () => Promise<void>;
   handleSendSimulation: () => void;
+  resetSimulator: () => void;
   getServiceLabel: (id: string) => string;
   getCapacityLabel: (id: string) => string;
   getPropertyLabel: (id: string) => string;
@@ -28,18 +32,24 @@ export interface BudgetContextType {
 
 const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
 
+const initialSimulatorState: SimulatorState = {
+  serviceType: '',
+  capacity: '',
+  quantity: 1,
+  propertyType: '',
+  necessity: '',
+  city: '',
+  serviceAddress: '',
+  fullName: '',
+};
+
 export function BudgetProvider({ children }: { children: ReactNode }) {
   const { settings } = useSettings();
   const [config, setConfig] = useState<SimulatorConfig>(defaultSimulatorConfig);
   const [loadingConfig, setLoadingConfig] = useState<boolean>(true);
   const [configError, setConfigError] = useState<string | null>(null);
 
-  const [simulator, setSimulator] = useState<SimulatorState>({
-    serviceType: '',
-    capacity: '',
-    quantity: 1,
-    propertyType: '',
-  });
+  const [simulator, setSimulator] = useState<SimulatorState>(initialSimulatorState);
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -78,64 +88,53 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
     return found ? found.label : id;
   }, [config.propertyTypes]);
 
-  const estimation = useMemo((): EstimatedPrice => {
-    const basePrices = config.basePrices || defaultSimulatorConfig.basePrices;
-    const base = basePrices[simulator.serviceType]?.[simulator.capacity] || { min: 150, max: 250, time: "2 horas" };
-    
-    const prop = config.propertyTypes.find(p => p.id === simulator.propertyType);
-    const multiplier = prop ? prop.multiplier : 1.0;
-    
-    const qty = Math.max(1, simulator.quantity);
-    const qtyDiscount = qty >= 3 ? 0.9 : qty >= 2 ? 0.95 : 1.0;
-
-    return {
-      min: Math.round(base.min * multiplier * qty * qtyDiscount),
-      max: Math.round(base.max * multiplier * qty * qtyDiscount),
-      time: base.time || "2 a 3 horas",
-    };
-  }, [config, simulator.serviceType, simulator.capacity, simulator.propertyType, simulator.quantity]);
-
   const handleSendSimulation = useCallback(() => {
-    const serviceName = getServiceLabel(simulator.serviceType) || 'Instalação';
-    const capacityName = getCapacityLabel(simulator.capacity) || '12.000 BTUs';
-    const propertyName = getPropertyLabel(simulator.propertyType) || 'Residencial';
+    const serviceName = getServiceLabel(simulator.serviceType);
+    const capacityName = simulator.capacity === 'nao-sei'
+      ? 'Não sei informar'
+      : getCapacityLabel(simulator.capacity);
+    const propertyName = getPropertyLabel(simulator.propertyType);
 
     const message =
-      `Olá ${settings.company_name}!\n\n` +
-      `Fiz uma simulação de orçamento no seu site:\n` +
-      `• Serviço: ${serviceName}\n` +
-      `• Capacidade: ${capacityName}\n` +
-      `• Quantidade: ${simulator.quantity} aparelho(s)\n` +
-      `• Tipo de Imóvel: ${propertyName}\n` +
-      `• Valor Estimado no Site: R$ ${estimation.min} a R$ ${estimation.max}\n\n` +
-      `Gostaria de agendar ou confirmar este orçamento!\n` +
-      `Meu nome é: \n` +
-      `Bairro/Cidade: `;
+      `Olá! Gostaria de solicitar um orçamento.\n\n` +
+      `Nome: ${simulator.fullName.trim()}\n` +
+      `Cidade: ${simulator.city.trim()}\n` +
+      `Endereço do serviço: ${simulator.serviceAddress.trim()}\n` +
+      `Serviço: ${serviceName}\n` +
+      `Equipamento: ${capacityName}\n` +
+      `Quantidade: ${simulator.quantity}\n` +
+      `Tipo de imóvel: ${propertyName}\n` +
+      `Necessidade: ${simulator.necessity.trim()}\n\n` +
+      `Gostaria de conversar sobre o atendimento e o valor do serviço.`;
 
     window.open(getWhatsAppLink(message, settings.whatsapp_number), 'whatsapp', 'noopener,noreferrer');
-  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, simulator, estimation, settings]);
+  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, simulator, settings.whatsapp_number]);
+
+  const resetSimulator = useCallback(() => {
+    setSimulator(initialSimulatorState);
+  }, []);
 
   const contextValue = useMemo(() => ({
     simulator,
     setSimulator,
-    estimation,
     config,
     loadingConfig,
     configError,
     reloadConfig: fetchConfig,
     handleSendSimulation,
+    resetSimulator,
     getServiceLabel,
     getCapacityLabel,
     getPropertyLabel
   }), [
     simulator,
     setSimulator,
-    estimation,
     config,
     loadingConfig,
     configError,
     fetchConfig,
     handleSendSimulation,
+    resetSimulator,
     getServiceLabel,
     getCapacityLabel,
     getPropertyLabel

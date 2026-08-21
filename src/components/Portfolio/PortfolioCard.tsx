@@ -1,110 +1,32 @@
-import React, { memo } from 'react';
-import { Phone, Trash2, Maximize2 } from 'lucide-react';
+import { memo, useState } from 'react';
+import { ImageOff, Maximize2, Trash2 } from 'lucide-react';
 import { Photo } from '../../types';
-import { getWhatsAppLink } from '../../utils/whatsapp';
-import { useSettings } from '../../context/SettingsContext';
-import { IMAGES } from '../../config';
-import { motion } from 'motion/react';
 
 interface PortfolioCardProps {
-  key?: React.Key;
   item: Photo;
   onRemove?: (id: number) => void;
-  onPreview?: (item: Photo) => void;
+  onPreview?: (item: Photo, opener: HTMLButtonElement) => void;
 }
 
-const PortfolioCard = memo(function PortfolioCard({ item, onRemove, onPreview }: PortfolioCardProps) {
-  const { settings } = useSettings();
-  const categoryLabel = 
-    item.category === 'instalacao' 
-      ? 'Instalação' 
-      : item.category === 'manutencao' 
-        ? 'Manutenção' 
-        : item.category === 'higienizacao' 
-          ? 'Higienização' 
-          : item.category === 'comercial'
-            ? 'Comercial'
-            : 'Ar Condicionado';
+const categoryNames: Record<string, string> = { instalacao: 'Instalação', manutencao: 'Manutenção', higienizacao: 'Higienização', comercial: 'Comercial' };
 
-  const whatsappMessage = `Olá MG Climatização! Vi o serviço "${item.title}" no seu portfólio. Gostaria de solicitar um orçamento parecido para minha residência!`;
+const PortfolioCard = memo(function PortfolioCard({ item, onRemove, onPreview }: PortfolioCardProps) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const categoryLabel = categoryNames[item.category?.toLowerCase()] || item.category || 'Serviço';
 
   return (
-    <motion.div 
-      id={`portfolio-item-${item.id}`}
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.3 }}
-      whileHover={{ y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)' }}
-      className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#E2E8F0] shadow-sm flex flex-col justify-between transition-colors duration-300 hover:border-[#0096D6]"
-    >
-      <div 
-        role="button"
-        tabIndex={0}
-        aria-label={`Ampliar foto do serviço: ${item.title}`}
-        onClick={() => onPreview && onPreview(item)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            if (onPreview) onPreview(item);
-          }
-        }}
-        className="relative aspect-[4/3] overflow-hidden bg-[#002E5C] cursor-pointer group/img focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0096D6] focus-visible:ring-offset-2"
-        title="Clique ou pressione Enter para ampliar a foto"
-      >
-        <img 
-          src={item.img} 
-          alt={item.title} 
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300"
-          referrerPolicy="no-referrer"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = IMAGES.portfolioDefault;
-          }}
-        />
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 bg-[#002E5C]/90 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm">
-          {categoryLabel}
-        </div>
-
-        <div className="absolute bottom-3 right-3 bg-[#002E5C]/80 backdrop-blur-sm text-white text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5 opacity-90 sm:opacity-0 group-hover/img:opacity-100 transition-opacity">
-          <Maximize2 className="w-3.5 h-3.5 text-[#0096D6]" />
-          <span>Ampliar</span>
-        </div>
+    <article id={`portfolio-item-${item.id}`} className="group overflow-hidden rounded-card border border-line bg-surface shadow-card transition-[border-color,box-shadow] hover:border-brand-cyan-600/40 hover:shadow-card-hover">
+      <button type="button" onClick={(event) => onPreview?.(item, event.currentTarget)} className="relative block aspect-[4/3] min-h-44 w-full overflow-hidden bg-brand-navy-900 text-left" aria-label={`Ampliar foto do serviço: ${item.title}`}>
+        {imageFailed ? <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-slate-300"><ImageOff aria-hidden="true" className="h-7 w-7 text-brand-cyan-400" /><span className="text-xs font-semibold">Imagem indisponível</span></span> : <img src={item.img} alt={item.title} loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setImageFailed(true)} className="h-full w-full object-cover transition-transform duration-base group-hover:scale-[1.02]" />}
+        <span className="absolute left-3 top-3 rounded-pill bg-brand-navy-950/85 px-3 py-1 text-[0.6875rem] font-bold uppercase tracking-wider text-white backdrop-blur-sm">{categoryLabel}</span>
+        {!imageFailed && <span className="absolute bottom-3 right-3 flex min-h-9 items-center gap-1.5 rounded-pill bg-brand-navy-950/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm"><Maximize2 aria-hidden="true" className="h-3.5 w-3.5 text-brand-cyan-400" /> Ampliar</span>}
+      </button>
+      <div className="p-4 sm:p-5">
+        <h3 className="text-lg font-bold text-ink">{item.title}</h3>
+        {item.description && <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-muted">{item.description}</p>}
+        {onRemove && <button type="button" onClick={() => onRemove(item.id)} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-control border border-line px-3 py-2 text-sm font-semibold text-ink-muted hover:border-red-200 hover:text-red-600"><Trash2 aria-hidden="true" className="h-4 w-4" /> Remover</button>}
       </div>
-
-      <div className="p-4 sm:p-5 flex-grow flex flex-col justify-between">
-        <div>
-          <h3 className="font-bold text-[#002E5C] text-sm sm:text-base font-display mb-1">{item.title}</h3>
-          <p className="text-[#475569] text-xs leading-relaxed">
-            Serviço executado com qualidade e acabamento profissional MG Climatização.
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 gap-2">
-          <a 
-            href={getWhatsAppLink(whatsappMessage, settings.whatsapp_number)}
-            target="whatsapp"
-            rel="noopener noreferrer"
-            className="flex-1 inline-flex items-center justify-center gap-2 text-xs font-extrabold text-[#002E5C] bg-[#E6F5FC] hover:bg-[#0096D6] hover:text-white transition-colors py-2.5 px-3 rounded-xl min-h-[44px]"
-          >
-            <Phone className="w-3.5 h-3.5 fill-current flex-shrink-0" />
-            <span>Fazer Orçamento</span>
-          </a>
-
-          {onRemove && (
-            <button 
-              onClick={() => onRemove(item.id)}
-              className="text-slate-400 hover:text-red-500 p-2 rounded-xl border border-slate-200 hover:border-red-200 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-              title="Remover do site"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-      </div>
-    </motion.div>
+    </article>
   );
 });
 

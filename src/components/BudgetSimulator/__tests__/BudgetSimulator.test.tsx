@@ -1,19 +1,42 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { afterEach, describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import BudgetSimulator from '../BudgetSimulator';
 import { BudgetProvider } from '../../../context/BudgetContext';
 import { SettingsProvider } from '../../../context/SettingsContext';
 
-// Helper function to render BudgetSimulator with providers
-const renderWithProvider = () => {
-  return render(
-    <SettingsProvider>
-      <BudgetProvider>
-        <BudgetSimulator />
-      </BudgetProvider>
-    </SettingsProvider>
-  );
+const renderWithProvider = () => render(
+  <SettingsProvider>
+    <BudgetProvider>
+      <BudgetSimulator />
+    </BudgetProvider>
+  </SettingsProvider>,
+);
+
+const selectServiceAndContinue = () => {
+  fireEvent.click(screen.getByRole('button', { name: /^Instalação$/i }));
+  fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
+};
+
+const completeRequest = async () => {
+  selectServiceAndContinue();
+
+  await screen.findByRole('heading', { name: /Equipamento e necessidade/i });
+  fireEvent.change(screen.getByLabelText(/Tipo ou capacidade do equipamento/i), { target: { value: 'nao-sei' } });
+  fireEvent.change(screen.getByLabelText(/Problema ou necessidade/i), { target: { value: 'O aparelho não está resfriando.' } });
+  fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
+
+  await screen.findByRole('heading', { name: /Onde será o atendimento/i });
+  fireEvent.change(screen.getByLabelText(/Tipo de imóvel/i), { target: { value: 'casa' } });
+  fireEvent.change(screen.getByLabelText(/^Cidade$/i), { target: { value: 'Blumenau' } });
+  fireEvent.change(screen.getByLabelText(/Endereço do serviço/i), { target: { value: 'Rua das Flores, 100' } });
+  fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
+
+  await screen.findByRole('heading', { name: /Como podemos identificar você/i });
+  fireEvent.change(screen.getByLabelText(/Nome completo/i), { target: { value: 'Maria da Silva' } });
+  fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
+
+  await screen.findByRole('heading', { name: /Revise sua solicitação/i });
 };
 
 describe('BudgetSimulator Component', () => {
@@ -21,67 +44,69 @@ describe('BudgetSimulator Component', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders budget simulator stages', () => {
+  it('apresenta o fluxo como montagem de solicitação, sem preço público', () => {
     renderWithProvider();
-    
-    expect(screen.getByText('1. Qual serviço você precisa?')).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: /Conte o que você precisa/i })).toBeInTheDocument();
+    expect(screen.getByText(/Passo 1 de 5/i)).toBeInTheDocument();
+    expect(screen.queryByText(/R\$|Valor Estimado|simular preço|orçamento na hora/i)).not.toBeInTheDocument();
   });
 
-  it('updates the selected service on click', async () => {
+  it('mostra validação objetiva quando o serviço não foi informado', () => {
     renderWithProvider();
-    
-    const instalacaoBtn = screen.getAllByRole('button').find(btn => btn.textContent?.includes('Instalação'));
-    expect(instalacaoBtn).toBeDefined();
-    if (instalacaoBtn) {
-      expect(instalacaoBtn).toHaveAttribute('aria-pressed', 'false');
-      fireEvent.click(instalacaoBtn);
-      await waitFor(() => {
-        expect(instalacaoBtn).toHaveAttribute('aria-pressed', 'true');
-      });
-    }
+
+    fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Selecione o serviço desejado.');
   });
 
-  it('opens WhatsApp with pre-filled message on send action after completing steps', async () => {
+  it('permite voltar para revisar uma etapa anterior', async () => {
+    renderWithProvider();
+    selectServiceAndContinue();
+
+    await screen.findByRole('heading', { name: /Equipamento e necessidade/i });
+    fireEvent.click(screen.getByRole('button', { name: /Voltar/i }));
+
+    expect(await screen.findByText(/Qual serviço você precisa/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Instalação$/i })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('monta a mensagem do WhatsApp sem preço e limpa os dados ao iniciar nova solicitação', async () => {
     const openMock = vi.fn();
     vi.stubGlobal('open', openMock);
-
     renderWithProvider();
 
-    // Step 1: Select service and click Avançar
-    const serviceBtn = screen.getByRole('button', { name: /^Instalação\b/i });
-    fireEvent.click(serviceBtn);
+    await completeRequest();
 
-    const nextBtn1 = screen.getByRole('button', { name: /Avançar/i });
-    fireEvent.click(nextBtn1);
+    expect(screen.getByText('Maria da Silva')).toBeInTheDocument();
+    expect(screen.getByText('Rua das Flores, 100')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Editar/i })).toHaveLength(4);
 
-    // Step 2: Select BTU and click Avançar
-    await waitFor(() => expect(screen.getByText(/Qual a capacidade do aparelho em BTUs/i)).toBeInTheDocument());
-    const btuBtn = screen.getByRole('button', { name: /12\.000 BTUs/i });
-    fireEvent.click(btuBtn);
+    fireEvent.click(screen.getByRole('button', { name: /Enviar pelo WhatsApp/i }));
 
-    const nextBtn2 = screen.getByRole('button', { name: /Avançar/i });
-    fireEvent.click(nextBtn2);
-
-    // Step 3: Quantity and click Avançar
-    await waitFor(() => expect(screen.getByText(/Selecione a quantidade/i)).toBeInTheDocument());
-    const nextBtn3 = screen.getByRole('button', { name: /Avançar/i });
-    fireEvent.click(nextBtn3);
-
-    // Step 4: Property type and click Avançar
-    await waitFor(() => expect(screen.getByText(/Qual o tipo de imóvel/i)).toBeInTheDocument());
-    const propertyBtn = screen.getByRole('button', { name: /Residencial|Casa/i });
-    fireEvent.click(propertyBtn);
-
-    const nextBtn4 = screen.getByRole('button', { name: /Avançar/i });
-    fireEvent.click(nextBtn4);
-
-    // Step 5: Summary & Send WhatsApp
-    await waitFor(() => expect(screen.getByText(/Resumo do Pedido/i)).toBeInTheDocument());
-    const sendBtn = screen.getByRole('button', { name: /CHAMAR NO WHATSAPP|AGENDAR PELO WHATSAPP/i });
-    fireEvent.click(sendBtn);
-
-    expect(openMock).toHaveBeenCalled();
-    expect(openMock.mock.calls[0][0]).toContain('wa.me');
+    expect(openMock).toHaveBeenCalledOnce();
+    const whatsappUrl = String(openMock.mock.calls[0][0]);
+    const decodedUrl = decodeURIComponent(whatsappUrl);
+    expect(decodedUrl).toContain('Nome: Maria da Silva');
+    expect(decodedUrl).toContain('Cidade: Blumenau');
+    expect(decodedUrl).toContain('Endereço do serviço: Rua das Flores, 100');
+    expect(decodedUrl).toContain('Equipamento: Não sei informar');
+    expect(decodedUrl).toContain('Necessidade: O aparelho não está resfriando.');
+    expect(decodedUrl).not.toMatch(/R\$|preço|estimad|desconto/i);
     expect(openMock.mock.calls[0][1]).toBe('whatsapp');
+
+    fireEvent.click(screen.getByRole('button', { name: /Nova solicitação/i }));
+    expect(await screen.findByText(/Qual serviço você precisa/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Instalação$/i })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('permite editar o resumo sem perder os dados em memória', async () => {
+    renderWithProvider();
+    await completeRequest();
+
+    fireEvent.click(screen.getAllByRole('button', { name: /Editar/i })[2]);
+
+    expect(await screen.findByDisplayValue('Blumenau')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Rua das Flores, 100')).toBeInTheDocument();
   });
 });

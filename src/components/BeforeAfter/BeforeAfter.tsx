@@ -1,312 +1,96 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Sliders, Phone, Sparkles } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AlertCircle, ImageOff, Phone, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { BRAND } from '../../config';
+import { useSettings } from '../../context/SettingsContext';
 import { beforeAfterService } from '../../services/beforeAfterService';
 import { BeforeAfterItem } from '../../types';
 import { getWhatsAppLink } from '../../utils/whatsapp';
-import { useSettings } from '../../context/SettingsContext';
-import { IMAGES, BRAND } from '../../config';
-import { motion } from 'motion/react';
+
+function UnavailableImage({ label }: { label: string }) {
+  return <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-navy-900 text-white/75"><ImageOff aria-hidden="true" className="h-7 w-7 text-brand-cyan-400" /><span className="text-xs font-semibold">{label} indisponível</span></div>;
+}
 
 export default function BeforeAfter() {
   const { settings } = useSettings();
   const [items, setItems] = useState<BeforeAfterItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
-
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [beforeFailed, setBeforeFailed] = useState(false);
+  const [afterFailed, setAfterFailed] = useState(false);
   const sliderContainerRef = useRef<HTMLDivElement>(null);
 
+  const loadItems = useCallback(async () => {
+    setLoading(true); setError(null);
+    try { setItems((await beforeAfterService.getAll()) || []); setSelectedIndex(0); }
+    catch (loadError) { console.warn('Erro ao carregar comparativos antes/depois:', loadError); setError('Não foi possível carregar os comparativos agora.'); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { void loadItems(); }, [loadItems]);
   useEffect(() => {
     const container = sliderContainerRef.current;
     if (!container) return;
-
-    const updateWidth = () => {
-      if (container) {
-        setContainerWidth(container.getBoundingClientRect().width);
-      }
-    };
-
+    const updateWidth = () => setContainerWidth(container.getBoundingClientRect().width);
     updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [items, selectedIndex]);
 
-    const resizeObserver = new ResizeObserver(() => {
-      updateWidth();
-    });
-
-    resizeObserver.observe(container);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [items, selectedIndex, loading]);
-
-  useEffect(() => {
-    let isMounted = true;
-    beforeAfterService.getAll()
-      .then(data => {
-        if (isMounted) {
-          setItems(data || []);
-          setLoading(false);
-        }
-      })
-      .catch(err => {
-        console.warn('Erro ao carregar comparativos antes/depois:', err);
-        if (isMounted) setLoading(false);
-      });
-    return () => { isMounted = false; };
-  }, []);
-
-  const currentItem = items[selectedIndex] || items[0];
-
-  const handleMove = useCallback((clientX: number) => {
+  const currentItem = items[selectedIndex];
+  useEffect(() => { setBeforeFailed(false); setAfterFailed(false); }, [currentItem?.id]);
+  const updatePosition = useCallback((clientX: number) => {
     const container = sliderContainerRef.current;
     if (!container) return;
     const rect = container.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const position = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(position);
+    setSliderPosition(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100)));
   }, []);
 
-  // Bind mouse/touch down listeners on the container element
-  useEffect(() => {
-    const container = sliderContainerRef.current;
-    if (!container) return;
-
-    const handleStart = (e: MouseEvent | TouchEvent) => {
-      setIsDragging(true);
-      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-      handleMove(clientX);
-    };
-
-    container.addEventListener('mousedown', handleStart);
-    container.addEventListener('touchstart', handleStart, { passive: true });
-
-    return () => {
-      container.removeEventListener('mousedown', handleStart);
-      container.removeEventListener('touchstart', handleStart);
-    };
-  }, [handleMove]);
-
-  // Bind move & up listeners globally when dragging
-  useEffect(() => {
-    if (!isDragging) return;
-
-    const handleUpdate = (e: MouseEvent | TouchEvent) => {
-      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-      handleMove(clientX);
-    };
-
-    const handleStop = () => {
-      setIsDragging(false);
-    };
-
-    window.addEventListener('mousemove', handleUpdate);
-    window.addEventListener('touchmove', handleUpdate, { passive: true });
-    window.addEventListener('mouseup', handleStop);
-    window.addEventListener('touchend', handleStop);
-
-    return () => {
-      window.removeEventListener('mousemove', handleUpdate);
-      window.removeEventListener('touchmove', handleUpdate);
-      window.removeEventListener('mouseup', handleStop);
-      window.removeEventListener('touchend', handleStop);
-    };
-  }, [isDragging, handleMove]);
-
-  const containerVariants: any = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut' },
-    },
-  };
-
   return (
-    <motion.section 
-      id="antes-depois" 
-      className="py-12 sm:py-16 md:py-20 bg-[#002E5C] text-white relative overflow-hidden"
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-50px' }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0096D6]/10 to-[#00B2FF]/10 pointer-events-none"></div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#002E5C] bg-[#E6F5FC] px-3.5 py-1.5 rounded-full border border-[#0096D6]/40">
-            Trabalhos Reais da MG Climatização
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-display text-white mt-3 sm:mt-4 mb-3 sm:mb-4">
-            Comparativo Antes & Depois
-          </h2>
-          <p className="text-slate-200 text-xs sm:text-base leading-relaxed">
-            Veja na prática o resultado dos nossos serviços de higienização, manutenção e instalação de ar-condicionado. Arraste a barra para comparar!
-          </p>
-        </div>
+    <section id="antes-depois" className="relative overflow-hidden bg-brand-navy-950 py-section text-white">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_10%,rgba(0,178,255,0.14),transparent_38%)]" />
+      <div className="relative mx-auto max-w-7xl px-gutter sm:px-gutter-lg">
+        <header className="mx-auto mb-8 max-w-3xl text-center sm:mb-12">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-cyan-400">Resultados reais</p>
+          <h2 className="mt-3 text-3xl font-bold text-white sm:text-4xl">Antes &amp; Depois</h2>
+          <p className="mt-4 text-sm leading-relaxed text-slate-300 sm:text-base">Compare os registros publicados pela MG Climatização arrastando o controle sobre a imagem.</p>
+        </header>
 
-        {/* State check for loading / empty */}
         {loading ? (
-          <div className="text-center py-12 bg-[#002447] rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 border-3 border-[#0096D6] border-t-transparent rounded-full animate-spin" />
-            <p className="text-slate-300 font-bold text-sm">Carregando...</p>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="text-center py-12 bg-[#002447] rounded-2xl border border-white/10 px-4 max-w-2xl mx-auto">
-            <Sparkles className="w-10 h-10 text-[#F5A524] mx-auto mb-3" />
-            <p className="text-white font-bold text-base">Em breve adicionaremos novos trabalhos de Antes & Depois.</p>
-            <p className="text-slate-300 text-xs mt-1">Os comparativos antes e depois dos serviços da MG Climatização serão publicados em breve.</p>
-          </div>
+          <div role="status" className="mx-auto flex min-h-44 max-w-3xl flex-col items-center justify-center gap-3 rounded-feature border border-white/10 bg-white/[0.04] px-5 text-center"><span aria-hidden="true" className="h-8 w-8 animate-spin rounded-full border-2 border-brand-cyan-400 border-t-transparent" /><p className="text-sm font-semibold text-slate-200">Carregando comparativos…</p></div>
+        ) : error ? (
+          <div role="alert" className="mx-auto flex min-h-44 max-w-3xl flex-col items-center justify-center gap-3 rounded-feature border border-white/10 bg-white/[0.04] px-5 text-center"><AlertCircle aria-hidden="true" className="h-8 w-8 text-brand-cyan-400" /><p className="font-semibold text-white">{error}</p><button type="button" onClick={() => void loadItems()} className="inline-flex min-h-11 items-center gap-2 rounded-control bg-brand-cyan-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-cyan-700"><RefreshCw aria-hidden="true" className="h-4 w-4" /> Tentar novamente</button></div>
+        ) : !currentItem ? (
+          <div className="mx-auto flex min-h-44 max-w-3xl flex-col items-center justify-center rounded-feature border border-white/10 bg-white/[0.04] px-5 text-center"><ImageOff aria-hidden="true" className="mb-3 h-8 w-8 text-brand-cyan-400" /><p className="font-semibold text-white">Nenhum comparativo publicado no momento.</p><p className="mt-1 text-sm text-slate-300">Novos registros aparecerão aqui quando forem adicionados.</p></div>
         ) : (
-          <>
-            {/* Multi-item selector tabs if multiple items exist */}
-            {items.length > 1 && (
-              <div className="flex items-center justify-center gap-2 flex-wrap mb-8">
-                {items.map((item, idx) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setSelectedIndex(idx);
-                      setSliderPosition(50);
-                    }}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      selectedIndex === idx
-                        ? 'bg-[#0096D6] text-white shadow-md shadow-[#0096D6]/30 font-extrabold'
-                        : 'bg-[#002447] text-slate-200 hover:bg-[#001D38]'
-                    }`}
-                  >
-                    {item.title}
-                  </button>
-                ))}
+          <div className="mx-auto max-w-5xl">
+            {items.length > 1 && <div aria-label="Escolher comparativo" className="mb-5 flex gap-2 overflow-x-auto pb-2 sm:justify-center">{items.map((item, index) => <button key={item.id} type="button" aria-pressed={selectedIndex === index} onClick={() => { setSelectedIndex(index); setSliderPosition(50); }} className={`min-h-11 shrink-0 rounded-pill border px-4 py-2 text-sm font-semibold transition-colors ${selectedIndex === index ? 'border-brand-cyan-400 bg-brand-cyan-600 text-white' : 'border-white/15 bg-white/[0.04] text-slate-200 hover:bg-white/[0.08]'}`}>{item.title}</button>)}</div>}
+            <article className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
+              <div ref={sliderContainerRef} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); updatePosition(event.clientX); }} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) updatePosition(event.clientX); }} className="relative aspect-[4/3] w-full cursor-ew-resize select-none overflow-hidden bg-brand-navy-900 touch-pan-y sm:aspect-[16/10]" aria-hidden="true">
+                {beforeFailed ? <UnavailableImage label="Imagem de antes" /> : <img src={currentItem.before_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setBeforeFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
+                <span className="absolute left-3 top-3 rounded-pill bg-brand-navy-950/85 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Antes</span>
+                <div className="absolute inset-0 overflow-hidden" style={{ width: `${sliderPosition}%` }}>
+                  {afterFailed ? <UnavailableImage label="Imagem de depois" /> : <img src={currentItem.after_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setAfterFailed(true)} className="absolute inset-0 max-w-none object-cover" style={{ width: containerWidth ? `${containerWidth}px` : '100%', height: '100%' }} />}
+                  <span className="absolute right-3 top-3 rounded-pill bg-brand-cyan-700/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Depois</span>
+                </div>
+                <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-lg" style={{ left: `${sliderPosition}%` }}><span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-brand-cyan-600 text-white shadow-floating"><SlidersHorizontal className="h-5 w-5" /></span></div>
               </div>
-            )}
-
-            {/* Visualizador de Antes e Depois */}
-            <div className="max-w-4xl mx-auto bg-white text-slate-900 p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xl flex flex-col gap-4 sm:gap-6">
-              
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                <div>
-                  <h3 className="text-lg sm:text-xl font-bold font-display text-[#002E5C]">{currentItem.title}</h3>
-                  <p className="text-[#475569] text-xs mt-0.5">{currentItem.description}</p>
-                </div>
-                
-                {/* Controles rápidos de visualização */}
-                <div className="flex gap-1.5 flex-wrap sm:flex-nowrap flex-shrink-0 w-full sm:w-auto mt-1 sm:mt-0">
-                  <button 
-                    onClick={() => setSliderPosition(100)}
-                    className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#002E5C] text-xs font-bold min-h-[40px] cursor-pointer flex-1 sm:flex-initial text-center transition-colors"
-                  >
-                    Ver Antes
-                  </button>
-                  <button 
-                    onClick={() => setSliderPosition(50)}
-                    className="px-3 py-2 rounded-xl bg-[#E6F5FC] hover:bg-[#0096D6]/20 text-[#002E5C] text-xs font-bold min-h-[40px] cursor-pointer flex-1 sm:flex-initial text-center transition-colors"
-                  >
-                    Meio a Meio
-                  </button>
-                  <button 
-                    onClick={() => setSliderPosition(0)}
-                    className="px-3 py-2 rounded-xl bg-[#0096D6]/10 hover:bg-[#0096D6]/20 text-[#002E5C] text-xs font-bold min-h-[40px] cursor-pointer flex-1 sm:flex-initial text-center transition-colors"
-                  >
-                    Ver Depois
-                  </button>
-                </div>
+              <div className="grid gap-5 p-5 sm:grid-cols-[1fr_minmax(15rem,22rem)] sm:items-center sm:p-7">
+                <div><h3 className="text-xl font-bold text-white">{currentItem.title}</h3>{currentItem.description && <p className="mt-2 text-sm leading-relaxed text-slate-300">{currentItem.description}</p>}</div>
+                <label className="block text-sm font-semibold text-slate-200"><span className="mb-2 flex justify-between gap-3"><span>Arraste para comparar</span><span aria-hidden="true">{Math.round(sliderPosition)}%</span></span><input type="range" min="0" max="100" value={sliderPosition} onChange={(event) => setSliderPosition(Number(event.target.value))} className="h-11 w-full cursor-ew-resize accent-brand-cyan-600" aria-label="Posição da comparação entre antes e depois" /></label>
               </div>
-
-              {/* Slider de Arrastar */}
-              <div className="flex flex-col items-center">
-                <div 
-                  ref={sliderContainerRef}
-                  className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden select-none cursor-ew-resize border border-slate-200 shadow-inner group touch-none"
-                >
-                  {/* Before Image (Background) */}
-                  <img 
-                    src={currentItem.before_img} 
-                    alt="Foto de antes — aparelho antes do serviço" 
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                    referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = IMAGES.before;
-                    }}
-                  />
-                  <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-red-700 text-white text-[9px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded shadow-md">
-                    Antes
-                  </div>
-
-                  {/* After Image (Foreground with dynamic width) */}
-                  <div 
-                    className="absolute inset-0 overflow-hidden pointer-events-none"
-                    style={{ width: `${sliderPosition}%` }}
-                  >
-                    <img 
-                      src={currentItem.after_img} 
-                      alt="Foto de depois — aparelho após o serviço" 
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute inset-0 h-full object-cover max-w-none"
-                      referrerPolicy="no-referrer"
-                      style={{ 
-                        width: containerWidth ? `${containerWidth}px` : '100%', 
-                        height: '100%' 
-                      }}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = IMAGES.after;
-                      }}
-                    />
-                    <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 bg-[#002E5C] text-white text-[9px] sm:text-xs font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded shadow-md whitespace-nowrap">
-                      Depois (Serviço Concluído)
-                    </div>
-                  </div>
-
-                  {/* Draggable Divider Bar */}
-                  <div 
-                    className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize flex items-center justify-center pointer-events-none"
-                    style={{ left: `${sliderPosition}%` }}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-[#0096D6] text-white flex items-center justify-center shadow-2xl border-2 border-white -ml-0.5 transform active:scale-110 transition-transform">
-                      <Sliders className="w-5 h-5 rotate-90" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Accessible Touch Range Slider Bar for Mobile */}
-                <div className="w-full mt-3 px-1">
-                  <div className="flex justify-between text-[11px] font-bold text-[#475569] mb-1">
-                    <span>← Arraste para comparar</span>
-                    <span>{Math.round(sliderPosition)}%</span>
-                  </div>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="100" 
-                    value={sliderPosition} 
-                    onChange={(e) => setSliderPosition(Number(e.target.value))}
-                    className="w-full accent-[#0096D6] h-2 bg-slate-200 rounded-lg cursor-pointer touch-none"
-                    aria-label="Controle de comparação antes e depois"
-                  />
-                </div>
+              <div className="border-t border-white/10 px-5 py-4 sm:px-7">
+                <a href={getWhatsAppLink(`Olá ${BRAND.name}! Vi o comparativo "${currentItem.title}" e gostaria de solicitar um orçamento.`, settings.whatsapp_number)} target="whatsapp" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 py-2.5 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600">
+                  <Phone aria-hidden="true" className="h-4 w-4" /> Solicitar orçamento
+                </a>
               </div>
-
-              {/* Botão de WhatsApp Dedicado */}
-              <a 
-                href={getWhatsAppLink(`Olá ${BRAND.name}! Vi o serviço de antes e depois "${currentItem.title}" no seu site e gostaria de solicitar um orçamento!`, settings.whatsapp_number)}
-                target="whatsapp"
-                rel="noopener noreferrer"
-                className="w-full py-3.5 sm:py-4 rounded-xl text-center text-xs sm:text-sm font-bold bg-[#0096D6] hover:bg-[#0082BA] active:bg-[#002E5C] text-white flex items-center justify-center gap-2 shadow-md transition-colors min-h-[48px]"
-              >
-                <Phone className="w-4 h-4 fill-current flex-shrink-0" /> Solicitar Orçamento para este Serviço por WhatsApp
-              </a>
-
-            </div>
-          </>
+            </article>
+          </div>
         )}
-
       </div>
-    </motion.section>
+    </section>
   );
 }

@@ -33,7 +33,7 @@ describe('FAQ Component', () => {
 
   it('renders all FAQ questions', async () => {
     renderWithProvider(<FAQ />);
-    expect(screen.getByText('Dúvidas Frequentes')).toBeInTheDocument();
+    expect(await screen.findByText('Dúvidas frequentes')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText('Quanto custa instalar um ar-condicionado?')).toBeInTheDocument();
       expect(screen.getByText('Vocês fazem manutenção preventiva?')).toBeInTheDocument();
@@ -85,5 +85,18 @@ describe('FAQ Component', () => {
 
     expect(await screen.findByText('Pergunta atualizada?')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('distingue estado vazio de erro inicial', async () => {
+    const getAll = vi.mocked(faqService.getAll);
+    getAll.mockResolvedValueOnce([]);
+    const emptyView = renderWithProvider(<FAQ />);
+    expect(await screen.findByText('Nenhuma pergunta publicada no momento.')).toBeInTheDocument();
+    emptyView.unmount();
+
+    getAll.mockRejectedValueOnce(new Error('falha'));
+    renderWithProvider(<FAQ />);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível carregar as perguntas frequentes.');
+    expect(screen.queryByText('Nenhuma pergunta publicada no momento.')).not.toBeInTheDocument();
   });
 });

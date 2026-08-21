@@ -1,17 +1,17 @@
 {
   "short_name": "MG Climatização",
   "name": "MG Climatização - Instalação e Manutenção de Ar-Condicionado",
-  "description": "Especialistas em instalação, higienização e manutenção de ar-condicionado em Blumenau e região.",
+  "description": "Serviços de instalação, higienização e manutenção de ar-condicionado em Blumenau e região.",
   "icons": [
     {
-      "src": "/favicon.jpg",
+      "src": "/brand/logo-principal.jpg",
       "sizes": "512x512",
       "type": "image/jpeg"
     }
   ],
   "start_url": "/",
-  "background_color": "#ffffff",
-  "theme_color": "#f59e0b",
+  "background_color": "#00152b",
+  "theme_color": "#00152b",
   "display": "standalone",
   "orientation": "portrait"
 }

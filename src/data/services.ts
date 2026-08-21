@@ -1,12 +1,6 @@
 import {
-  Wind,
-  Sparkles,
-  Wrench,
-  Gauge,
   Building2,
   ShieldCheck,
-  Clock,
-  ThumbsUp,
   FileCheck,
   LucideIcon,
 } from 'lucide-react';
@@ -29,23 +23,18 @@ export interface PillarData {
 
 export const pillarsData: PillarData[] = [
   {
-    icon: ShieldCheck,
-    title: "Técnicos Certificados",
-    description: "Profissionais experientes com treinamento em climatização residencial e comercial."
-  },
-  {
-    icon: Clock,
-    title: "Pontualidade Garantida",
-    description: "Respeitamos o horário agendado. Seu tempo é prioridade."
+    icon: Building2,
+    title: 'Residencial e empresarial',
+    description: 'Atendimento para diferentes necessidades de climatização.'
   },
   {
     icon: FileCheck,
-    title: "Nota Fiscal",
-    description: "Emitimos nota fiscal em todos os serviços para sua tranquilidade."
+    title: 'Nota Fiscal',
+    description: 'Emissão de Nota Fiscal nos serviços realizados.'
   },
   {
-    icon: ThumbsUp,
-    title: "Garantia no Serviço",
-    description: "Todos os serviços executados com garantia e suporte pós-atendimento."
+    icon: ShieldCheck,
+    title: 'Garantia de 90 dias',
+    description: 'Garantia informada para os serviços executados.'
   }
 ];

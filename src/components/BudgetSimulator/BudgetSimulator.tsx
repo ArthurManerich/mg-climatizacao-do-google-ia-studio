@@ -1,56 +1,55 @@
 import React, { useState } from 'react';
-import { 
-  Wind, 
-  Wrench, 
-  Sparkles, 
-  Gauge, 
-  Check, 
-  Clock, 
-  Phone, 
-  Minus, 
-  Plus, 
-  Home, 
-  Building2, 
-  Building, 
-  ChevronLeft, 
-  ChevronRight,
+import {
   AlertCircle,
+  Building,
+  Building2,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Fan,
+  Gauge,
+  Home,
+  Minus,
+  Plus,
+  RefreshCw,
+  Send,
   ShieldCheck,
-  Unplug,
+  Sparkles,
   Store,
-  RefreshCw
+  Unplug,
+  Wind,
+  Wrench,
 } from 'lucide-react';
-import { useBudget } from '../../context/BudgetContext';
 import { motion } from 'motion/react';
+import { useBudget } from '../../context/BudgetContext';
+
+const steps = [
+  { number: 1, label: 'Serviço' },
+  { number: 2, label: 'Equipamento' },
+  { number: 3, label: 'Local' },
+  { number: 4, label: 'Identificação' },
+  { number: 5, label: 'Resumo' },
+];
 
 export default function BudgetSimulator() {
   const {
     simulator,
     setSimulator,
-    estimation,
     config,
     loadingConfig,
     configError,
     reloadConfig,
     handleSendSimulation,
+    resetSimulator,
     getServiceLabel,
     getCapacityLabel,
-    getPropertyLabel
+    getPropertyLabel,
   } = useBudget();
-
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
-  const steps = [
-    { number: 1, label: 'Serviço' },
-    { number: 2, label: 'BTUs' },
-    { number: 3, label: 'Quantidade' },
-    { number: 4, label: 'Imóvel' },
-    { number: 5, label: 'Resumo' },
-  ];
-
   const getIconComponent = (iconName: string) => {
-    const iconMap: Record<string, any> = {
+    const iconMap = {
       Wind,
       ShieldCheck,
       Wrench,
@@ -60,557 +59,390 @@ export default function BudgetSimulator() {
       Home,
       Building,
       Building2,
-      Store
+      Store,
+      Fan,
     };
-    return iconMap[iconName] || Wind;
+    return iconMap[iconName as keyof typeof iconMap] || Wind;
   };
 
-  const handleServiceSelect = (id: string) => {
-    setSimulator(prev => ({ ...prev, serviceType: id }));
+  const updateField = <K extends keyof typeof simulator>(field: K, value: (typeof simulator)[K]) => {
+    setSimulator((current) => ({ ...current, [field]: value }));
     setError(null);
   };
 
-  const handleBtuSelect = (id: string) => {
-    setSimulator(prev => ({ ...prev, capacity: id }));
-    setError(null);
-  };
-
-  const adjustQuantity = (delta: number) => {
-    setSimulator(prev => ({
-      ...prev,
-      quantity: Math.max(1, Math.min(10, prev.quantity + delta)),
-    }));
-  };
-
-  const handlePropertySelect = (id: string) => {
-    setSimulator(prev => ({ ...prev, propertyType: id }));
-    setError(null);
-  };
-
-  const isStepCompleted = (currentStep: number): boolean => {
-    if (currentStep === 1) return Boolean(simulator.serviceType);
-    if (currentStep === 2) return Boolean(simulator.capacity);
-    if (currentStep === 3) return simulator.quantity >= 1;
-    if (currentStep === 4) return Boolean(simulator.propertyType);
-    return true;
-  };
-
-  const validateStep = (currentStep: number): boolean => {
-    setError(null);
-    if (currentStep === 1) {
-      if (!simulator.serviceType) {
-        setError("Por favor, selecione um tipo de serviço para continuar.");
-        return false;
-      }
-    } else if (currentStep === 2) {
-      if (!simulator.capacity) {
-        setError("Por favor, selecione a capacidade em BTUs adequada.");
-        return false;
-      }
-    } else if (currentStep === 4) {
-      if (!simulator.propertyType) {
-        setError("Por favor, selecione o tipo de imóvel para o atendimento.");
-        return false;
-      }
+  const validateStep = (currentStep: number) => {
+    if (currentStep === 1 && !simulator.serviceType) {
+      return 'Selecione o serviço desejado.';
     }
-    return true;
+    if (currentStep === 2 && !simulator.capacity) {
+      return 'Informe a capacidade do equipamento ou selecione “Não sei informar”.';
+    }
+    if (currentStep === 2 && !simulator.necessity.trim()) {
+      return 'Descreva brevemente o problema ou a necessidade.';
+    }
+    if (currentStep === 3 && !simulator.propertyType) {
+      return 'Selecione o tipo de imóvel.';
+    }
+    if (currentStep === 3 && !simulator.city.trim()) {
+      return 'Informe a cidade do atendimento.';
+    }
+    if (currentStep === 3 && !simulator.serviceAddress.trim()) {
+      return 'Informe o endereço onde o serviço será realizado.';
+    }
+    if (currentStep === 4 && !simulator.fullName.trim()) {
+      return 'Informe seu nome completo.';
+    }
+    return null;
   };
 
   const handleNext = () => {
-    if (validateStep(step)) {
-      setStep(prev => Math.min(5, prev + 1));
+    const validationError = validateStep(step);
+    if (validationError) {
+      setError(validationError);
+      return;
     }
+    setError(null);
+    setStep((current) => Math.min(5, current + 1));
   };
 
   const handleBack = () => {
     setError(null);
-    setStep(prev => Math.max(1, prev - 1));
+    setStep((current) => Math.max(1, current - 1));
+  };
+
+  const editStep = (targetStep: number) => {
+    setError(null);
+    setStep(targetStep);
   };
 
   const handleRestart = () => {
-    setSimulator({
-      serviceType: '',
-      capacity: '',
-      quantity: 1,
-      propertyType: '',
-    });
+    resetSimulator();
     setError(null);
     setStep(1);
   };
 
-  const services = config?.services || [];
-  const btuOptions = config?.capacities || [];
-  const properties = (config?.propertyTypes || []).map(p => {
-    let icon = Home;
-    let desc = 'Atendimento em residências.';
-    if (p.id === 'casa') {
-      icon = Home;
-      desc = 'Instalação e serviços padrão em residências térreas ou sobrados.';
-    } else if (p.id === 'apartamento') {
-      icon = Building;
-      desc = 'Adequado para normas de condomínios, sacadas e furação especial.';
-    } else if (p.id === 'empresa') {
-      icon = Building2;
-      desc = 'Serviços corporativos para escritórios, indústrias e prédios comerciais.';
-    } else if (p.id === 'comercio') {
-      icon = Store;
-      desc = 'Lojas, restaurantes e estabelecimentos comerciais.';
-    }
-    return {
-      id: p.id,
-      label: p.label,
-      icon,
-      desc
-    };
-  });
-
+  const equipmentLabel = simulator.capacity === 'nao-sei'
+    ? 'Não sei informar'
+    : getCapacityLabel(simulator.capacity);
 
   return (
-    <section id="orcamento-online" className="py-12 sm:py-16 md:py-20 bg-slate-50/80 border-t border-[#E2E8F0]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-10">
-          <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#002E5C] bg-[#E6F5FC] border border-[#0096D6]/30 px-3 py-1.5 rounded-full">
-            Simulador de Climatização
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#002E5C] font-display mt-3 sm:mt-4 mb-2">
-            Simule seu Orçamento na Hora
+    <section id="orcamento-online" className="border-t border-line bg-surface-subtle py-section sm:py-section-lg">
+      <div className="mx-auto max-w-5xl px-gutter sm:px-gutter-lg lg:px-8">
+        <div className="mb-8 max-w-3xl sm:mb-10">
+          <p className="text-sm font-semibold text-brand-cyan-700">Solicitação de orçamento</p>
+          <h2 className="mt-2 font-display text-3xl font-bold leading-tight text-brand-navy-800 sm:text-4xl">
+            Conte o que você precisa.
           </h2>
-          <p className="text-[#475569] text-xs sm:text-base leading-relaxed">
-            Selecione as especificações abaixo e descubra uma estimativa de preço instantânea para o seu projeto.
+          <p className="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
+            Organize as informações do atendimento e envie sua solicitação para conversarmos pelo WhatsApp.
           </p>
         </div>
 
-        {/* Stepper Indicator - Desktop */}
-        <div className="hidden sm:flex justify-between items-center mb-12 relative px-4">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0 rounded-full" />
-          <div 
-            className="absolute top-1/2 left-0 h-1 bg-[#0096D6] -translate-y-1/2 z-0 transition-all duration-300 rounded-full"
-            style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
-          />
-          
-          {steps.map((s) => (
-            <div key={s.number} className="flex flex-col items-center z-10">
-              <button
-                onClick={() => {
-                  if (s.number < step) {
-                    setStep(s.number);
-                    setError(null);
-                  }
-                }}
-                disabled={s.number >= step}
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                  step === s.number
-                    ? 'bg-[#002E5C] text-white shadow-lg ring-4 ring-[#E6F5FC]'
-                    : step > s.number
-                    ? 'bg-[#0096D6] text-white cursor-pointer hover:bg-[#0082BA]'
-                    : 'bg-white border-2 border-slate-200 text-slate-400 cursor-not-allowed'
-                }`}
-              >
-                {step > s.number ? <Check className="w-5 h-5 stroke-[3]" /> : s.number}
-              </button>
-              <span className={`text-xs font-bold mt-2 ${step === s.number ? 'text-[#002E5C]' : 'text-[#475569]'}`}>
-                {s.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Stepper Indicator - Mobile */}
-        <div className="sm:hidden mb-6 bg-white p-3.5 rounded-2xl border border-[#E2E8F0] shadow-sm">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#475569]">
-              Passo {step} de 5
-            </span>
-            <span className="text-sm font-extrabold text-[#0096D6]">
-              {steps[step - 1].label}
-            </span>
-          </div>
-          <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-3">
-            <div 
-              className="h-full bg-[#0096D6] transition-all duration-300 rounded-full"
-              style={{ width: `${(step / steps.length) * 100}%` }}
-            />
-          </div>
-          {/* Mobile step quick nav */}
-          <div className="flex justify-between gap-1 pt-1 border-t border-slate-100">
-            {steps.map((s) => (
-              <button
-                key={s.number}
-                onClick={() => {
-                  if (s.number < step) {
-                    setStep(s.number);
-                    setError(null);
-                  }
-                }}
-                disabled={s.number >= step}
-                className={`flex-1 py-1 px-0.5 rounded text-[11px] font-bold text-center transition-colors ${
-                  step === s.number
-                    ? 'bg-[#E6F5FC] text-[#002E5C]'
-                    : step > s.number
-                    ? 'bg-slate-100 text-[#475569] hover:bg-slate-200'
-                    : 'text-slate-300'
-                }`}
-              >
-                {s.number}. {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Wizard Main Card */}
-        <div className="bg-white p-4 sm:p-6 md:p-10 rounded-2xl sm:rounded-3xl border border-[#E2E8F0] shadow-sm relative min-h-[350px] flex flex-col justify-between">
-          
-          {/* Step Header */}
-          {step < 5 && (
-            <div className="mb-4 sm:mb-6">
-              <h3 className="text-base sm:text-xl font-extrabold text-[#002E5C] font-display">
-                {step === 1 && "1. Qual serviço você precisa?"}
-                {step === 2 && "2. Qual a capacidade do aparelho em BTUs?"}
-                {step === 3 && "3. Quantos aparelhos receberão o serviço?"}
-                {step === 4 && "4. Qual o tipo de imóvel?"}
-              </h3>
-              <p className="text-xs sm:text-sm text-[#475569] mt-1 mb-3 sm:mb-4">
-                {step === 1 && "Selecione a opção desejada para o atendimento. O formulário não avançará sozinho."}
-                {step === 2 && "Caso não saiba a potência exata, selecione a opção aproximada mais próxima."}
-                {step === 3 && "Você pode simular de 1 a 10 aparelhos simultâneos com descontos."}
-                {step === 4 && "A estrutura do imóvel pode influenciar o tempo e complexidade."}
-              </p>
-
-              {/* Error Message */}
-              {error && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl flex items-center gap-2 text-xs font-semibold"
-                >
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                  <span>{error}</span>
-                </motion.div>
-              )}
-            </div>
-          )}
-
-          {/* Animated step wrapper */}
-          <div className="flex-1">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+        {configError && (
+          <div role="alert" className="mb-5 flex flex-col gap-3 rounded-card border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold text-amber-900">Não foi possível atualizar as opções da solicitação.</p>
+            <button
+              type="button"
+              onClick={() => void reloadConfig()}
+              disabled={loadingConfig}
+              className="inline-flex min-h-11 items-center gap-2 self-start rounded-control px-2 text-sm font-bold text-brand-navy-800 disabled:opacity-60"
             >
-              {/* STEP 1: Tipo de serviço */}
+              <RefreshCw className="h-4 w-4" aria-hidden="true" />
+              {loadingConfig ? 'Tentando novamente...' : 'Tentar novamente'}
+            </button>
+          </div>
+        )}
+
+        <div className="overflow-hidden rounded-feature border border-line bg-surface shadow-card">
+          <div className="border-b border-line bg-brand-navy-950 px-4 py-4 text-white sm:px-7">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className="text-sm font-semibold text-slate-300">Passo {step} de {steps.length}</span>
+              <span className="text-sm font-bold text-brand-cyan-400">{steps[step - 1].label}</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
+              <div
+                className="h-full rounded-full bg-brand-cyan-400 transition-[width]"
+                style={{ width: `${(step / steps.length) * 100}%` }}
+              />
+            </div>
+            <ol className="mt-4 hidden grid-cols-5 gap-3 text-xs sm:grid" aria-label="Etapas da solicitação">
+              {steps.map((item) => (
+                <li key={item.number} className={step >= item.number ? 'text-white' : 'text-slate-500'}>
+                  <span className="font-bold">{item.number}.</span> {item.label}
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="p-4 sm:p-7 lg:p-9">
+            {error && (
+              <motion.div
+                role="alert"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 flex items-start gap-2 rounded-control border border-rose-200 bg-rose-50 px-3 py-3 text-sm font-semibold text-rose-800"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                {error}
+              </motion.div>
+            )}
+
+            <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
               {step === 1 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  {services.map((item) => {
-                    const IconComp = typeof item.icon === 'string' ? getIconComponent(item.icon) : (item.icon || Wind);
-                    const isSelected = simulator.serviceType === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => handleServiceSelect(item.id)}
-                        className={`p-3.5 sm:p-5 min-h-[52px] rounded-2xl border-2 text-left transition-all relative overflow-hidden group cursor-pointer ${
-                          isSelected
-                            ? 'border-[#0096D6] bg-[#E6F5FC]/60 text-[#002E5C] shadow-sm'
-                            : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          <div className={`p-2.5 sm:p-3 rounded-xl ${
-                            isSelected ? 'bg-[#002E5C] text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
-                          } transition-colors flex-shrink-0`}>
-                            <IconComp className="w-5 h-5 sm:w-6 sm:h-6" />
-                          </div>
-                          <div className="pr-6 min-w-0">
-                            <h4 className="font-bold text-sm sm:text-base text-[#002E5C]">{item.label}</h4>
-                            <p className="text-xs text-[#475569] mt-0.5 sm:mt-1 leading-relaxed">{item.description}</p>
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute top-3 right-3 w-5 h-5 bg-[#0096D6] rounded-full flex items-center justify-center text-white">
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* STEP 2: BTUs */}
-              {step === 2 && (
-                <div className="space-y-2.5 sm:space-y-3">
-                  {btuOptions.map((item) => {
-                    const isSelected = simulator.capacity === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => handleBtuSelect(item.id)}
-                        className={`w-full p-3.5 sm:p-4.5 min-h-[52px] rounded-2xl border-2 text-left flex justify-between items-center transition-all cursor-pointer ${
-                          isSelected
-                            ? 'border-[#0096D6] bg-[#E6F5FC]/60 text-[#002E5C] shadow-sm'
-                            : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        <div className="pr-3">
-                          <span className="font-bold text-sm sm:text-base text-[#002E5C] block">{item.label}</span>
-                          <span className="text-[11px] sm:text-xs text-[#475569] mt-0.5 block">{item.desc}</span>
-                        </div>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0 ${
-                          isSelected ? 'border-[#0096D6] bg-[#0096D6] text-white' : 'border-slate-300 bg-white'
-                        }`}>
-                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* STEP 3: Quantidade */}
-              {step === 3 && (
-                <div className="flex flex-col items-center justify-center py-6 sm:py-10 bg-slate-50/50 rounded-2xl border border-[#E2E8F0]">
-                  <span className="text-xs font-bold text-[#475569] uppercase tracking-wider mb-4">
-                    Selecione a quantidade
-                  </span>
-                  <div className="flex items-center gap-4 sm:gap-6">
-                    <button
-                      type="button"
-                      aria-label="Diminuir quantidade de aparelhos"
-                      onClick={() => adjustQuantity(-1)}
-                      disabled={simulator.quantity <= 1}
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 flex items-center justify-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0096D6] ${
-                        simulator.quantity <= 1
-                          ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
-                          : 'border-slate-200 bg-white hover:border-[#0096D6] hover:text-[#0096D6] hover:bg-[#E6F5FC]'
-                      }`}
-                    >
-                      <Minus className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
-                    <span className="text-4xl sm:text-5xl font-black font-display text-[#002E5C] w-16 sm:w-20 text-center select-none">
-                      {simulator.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      aria-label="Aumentar quantidade de aparelhos"
-                      onClick={() => adjustQuantity(1)}
-                      disabled={simulator.quantity >= 10}
-                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl border-2 flex items-center justify-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0096D6] ${
-                        simulator.quantity >= 10
-                          ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
-                          : 'border-slate-200 bg-white hover:border-[#0096D6] hover:text-[#0096D6] hover:bg-[#E6F5FC]'
-                      }`}
-                    >
-                      <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
+                <fieldset>
+                  <legend className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Qual serviço você precisa?</legend>
+                  <p className="mt-2 text-sm text-ink-muted">Escolha a opção mais próxima da sua necessidade.</p>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {config.services.map((item) => {
+                      const Icon = getIconComponent(item.icon);
+                      const selected = simulator.serviceType === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => updateField('serviceType', item.id)}
+                          className={`flex min-h-14 items-center gap-3 rounded-control border px-4 py-3 text-left text-sm font-bold transition-colors ${
+                            selected
+                              ? 'border-brand-cyan-600 bg-brand-cyan-50 text-brand-navy-800'
+                              : 'border-line text-ink-muted hover:border-brand-cyan-600/50 hover:text-brand-navy-800'
+                          }`}
+                        >
+                          <Icon className={`h-5 w-5 shrink-0 ${selected ? 'text-brand-cyan-700' : 'text-slate-400'}`} aria-hidden="true" />
+                          <span>{item.label}</span>
+                          {selected && <Check className="ml-auto h-4 w-4 text-brand-cyan-700" aria-hidden="true" />}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <p className="text-xs text-[#475569] mt-4 font-medium text-center px-2">
-                    Descontos progressivos são aplicados para 2 ou mais aparelhos!
+                </fieldset>
+              )}
+
+              {step === 2 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Equipamento e necessidade</h3>
+                  <p className="mt-2 text-sm text-ink-muted">Informe apenas o que souber sobre o equipamento.</p>
+                  <div className="mt-5 grid gap-5 md:grid-cols-2">
+                    <div>
+                      <label htmlFor="equipment-capacity" className="text-sm font-bold text-brand-navy-800">Tipo ou capacidade do equipamento</label>
+                      <select
+                        id="equipment-capacity"
+                        value={simulator.capacity}
+                        onChange={(event) => updateField('capacity', event.target.value)}
+                        className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-base text-ink-muted"
+                      >
+                        <option value="">Selecione uma opção</option>
+                        <option value="nao-sei">Não sei informar</option>
+                        {config.capacities.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+                      </select>
+                    </div>
+
+                    <div>
+                      <span className="text-sm font-bold text-brand-navy-800">Quantidade de equipamentos</span>
+                      <div className="mt-2 flex min-h-12 items-center rounded-control border border-line bg-surface">
+                        <button
+                          type="button"
+                          aria-label="Diminuir quantidade de equipamentos"
+                          onClick={() => updateField('quantity', Math.max(1, simulator.quantity - 1))}
+                          disabled={simulator.quantity <= 1}
+                          className="flex min-h-12 min-w-12 items-center justify-center text-brand-navy-800 disabled:text-slate-300"
+                        >
+                          <Minus className="h-5 w-5" />
+                        </button>
+                        <output className="flex-1 text-center font-display text-xl font-bold text-brand-navy-800" aria-label={`${simulator.quantity} equipamentos`}>
+                          {simulator.quantity}
+                        </output>
+                        <button
+                          type="button"
+                          aria-label="Aumentar quantidade de equipamentos"
+                          onClick={() => updateField('quantity', Math.min(10, simulator.quantity + 1))}
+                          disabled={simulator.quantity >= 10}
+                          className="flex min-h-12 min-w-12 items-center justify-center text-brand-navy-800 disabled:text-slate-300"
+                        >
+                          <Plus className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label htmlFor="service-necessity" className="text-sm font-bold text-brand-navy-800">Problema ou necessidade</label>
+                      <textarea
+                        id="service-necessity"
+                        value={simulator.necessity}
+                        onChange={(event) => updateField('necessity', event.target.value)}
+                        rows={4}
+                        maxLength={500}
+                        placeholder="Ex.: aparelho não está resfriando ou preciso instalar um equipamento."
+                        className="mt-2 w-full resize-y rounded-control border border-line bg-surface px-3 py-3 text-base text-ink-muted placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div>
+                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Onde será o atendimento?</h3>
+                  <p className="mt-2 text-sm text-ink-muted">Esses dados serão usados somente na mensagem enviada ao WhatsApp.</p>
+                  <div className="mt-5 grid gap-5 md:grid-cols-2">
+                    <div>
+                      <label htmlFor="property-type" className="text-sm font-bold text-brand-navy-800">Tipo de imóvel</label>
+                      <select
+                        id="property-type"
+                        value={simulator.propertyType}
+                        onChange={(event) => updateField('propertyType', event.target.value)}
+                        className="mt-2 min-h-12 w-full rounded-control border border-line bg-surface px-3 text-base text-ink-muted"
+                      >
+                        <option value="">Selecione uma opção</option>
+                        {config.propertyTypes.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="service-city" className="text-sm font-bold text-brand-navy-800">Cidade</label>
+                      <input
+                        id="service-city"
+                        type="text"
+                        autoComplete="address-level2"
+                        enterKeyHint="next"
+                        value={simulator.city}
+                        onChange={(event) => updateField('city', event.target.value)}
+                        placeholder="Ex.: Blumenau"
+                        className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label htmlFor="service-address" className="text-sm font-bold text-brand-navy-800">Endereço do serviço</label>
+                      <input
+                        id="service-address"
+                        type="text"
+                        autoComplete="street-address"
+                        enterKeyHint="next"
+                        value={simulator.serviceAddress}
+                        onChange={(event) => updateField('serviceAddress', event.target.value)}
+                        placeholder="Rua, número e complemento, se houver"
+                        className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="max-w-xl">
+                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Como podemos identificar você?</h3>
+                  <p className="mt-2 text-sm text-ink-muted">Informe somente seu nome para compor a solicitação.</p>
+                  <div className="mt-5">
+                    <label htmlFor="customer-name" className="text-sm font-bold text-brand-navy-800">Nome completo</label>
+                    <input
+                      id="customer-name"
+                      type="text"
+                      name="name"
+                      autoComplete="name"
+                      enterKeyHint="done"
+                      value={simulator.fullName}
+                      onChange={(event) => updateField('fullName', event.target.value)}
+                      placeholder="Digite seu nome completo"
+                      className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400"
+                    />
+                  </div>
+                  <p className="mt-4 text-sm leading-relaxed text-ink-muted">
+                    Nome, cidade e endereço permanecem apenas nesta solicitação e não são salvos pelo site.
                   </p>
                 </div>
               )}
 
-              {/* STEP 4: Tipo de imóvel */}
-              {step === 4 && (
-                <div className="space-y-2.5 sm:space-y-3">
-                  {properties.map((item) => {
-                    const IconComp = item.icon;
-                    const isSelected = simulator.propertyType === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        aria-pressed={isSelected}
-                        onClick={() => handlePropertySelect(item.id)}
-                        className={`w-full p-3.5 sm:p-5 min-h-[52px] rounded-2xl border-2 text-left transition-all relative overflow-hidden group cursor-pointer ${
-                          isSelected
-                            ? 'border-[#0096D6] bg-[#E6F5FC]/60 text-[#002E5C] shadow-md'
-                            : 'border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          <div className={`p-2.5 sm:p-3 rounded-xl ${
-                            isSelected ? 'bg-[#002E5C] text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
-                          } transition-colors flex-shrink-0`}>
-                            <IconComp className="w-5 h-5 sm:w-6 sm:h-6" />
-                          </div>
-                          <div className="pr-6 min-w-0">
-                            <h4 className="font-bold text-sm sm:text-base text-[#002E5C]">{item.label}</h4>
-                            <p className="text-xs text-[#475569] mt-0.5 sm:mt-1 leading-relaxed">{item.desc}</p>
-                          </div>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute top-3 right-3 w-5 h-5 bg-[#0096D6] rounded-full flex items-center justify-center text-white">
-                            <Check className="w-3 h-3 stroke-[3]" />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* STEP 5: Resumo */}
               {step === 5 && (
-                <div className="grid md:grid-cols-12 gap-5 sm:gap-8">
-                  {/* Left Column: Details & Price */}
-                  <div className="md:col-span-7 space-y-4 sm:space-y-5">
-                    <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-[#E2E8F0]">
-                      <h4 className="text-xs font-bold text-[#002E5C] uppercase tracking-widest mb-3 sm:mb-4 border-b border-slate-200 pb-2">
-                        Resumo do Pedido
-                      </h4>
-                      
-                      <div className="space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
-                        <div className="flex justify-between items-center gap-2">
-                          <span className="text-[#475569] font-medium">Serviço:</span>
-                          <span className="font-extrabold text-[#002E5C] text-right">
-                            {getServiceLabel(simulator.serviceType)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center gap-2">
-                          <span className="text-[#475569] font-medium">Capacidade:</span>
-                          <span className="font-extrabold text-[#002E5C] text-right">
-                            {getCapacityLabel(simulator.capacity)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center gap-2">
-                          <span className="text-[#475569] font-medium">Quantidade:</span>
-                          <span className="font-extrabold text-[#002E5C] text-right">
-                            {simulator.quantity} aparelho(s)
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center gap-2">
-                          <span className="text-[#475569] font-medium">Tipo de Imóvel:</span>
-                          <span className="font-extrabold text-[#002E5C] text-right">
-                            {getPropertyLabel(simulator.propertyType)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-[#E6F5FC] p-4 sm:p-6 rounded-2xl border border-[#0096D6]/30">
-                      <span className="text-[10px] font-bold text-[#0096D6] uppercase tracking-widest block mb-1">
-                        Valor Estimado Total
-                      </span>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-2xl sm:text-4xl font-black text-[#002E5C] font-display tracking-tight">
-                          R$ {estimation.min} <span className="text-sm sm:text-base text-[#475569] font-semibold uppercase">a</span> R$ {estimation.max}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 mt-2 sm:mt-3 text-xs text-[#002E5C] font-semibold">
-                        <Clock className="w-4 h-4 text-[#0096D6] flex-shrink-0" />
-                        <span>Tempo estimado de serviço: ~{estimation.time}</span>
-                      </div>
-                    </div>
+                <div>
+                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Revise sua solicitação</h3>
+                  <p className="mt-2 text-sm text-ink-muted">Você pode editar qualquer grupo antes de abrir o WhatsApp.</p>
+                  <div className="mt-5 grid gap-4 md:grid-cols-2">
+                    <SummaryGroup title="Serviço" onEdit={() => editStep(1)}>
+                      <SummaryLine label="Serviço" value={getServiceLabel(simulator.serviceType)} />
+                    </SummaryGroup>
+                    <SummaryGroup title="Equipamento" onEdit={() => editStep(2)}>
+                      <SummaryLine label="Equipamento" value={equipmentLabel} />
+                      <SummaryLine label="Quantidade" value={String(simulator.quantity)} />
+                      <SummaryLine label="Necessidade" value={simulator.necessity} />
+                    </SummaryGroup>
+                    <SummaryGroup title="Local" onEdit={() => editStep(3)}>
+                      <SummaryLine label="Imóvel" value={getPropertyLabel(simulator.propertyType)} />
+                      <SummaryLine label="Cidade" value={simulator.city} />
+                      <SummaryLine label="Endereço" value={simulator.serviceAddress} />
+                    </SummaryGroup>
+                    <SummaryGroup title="Identificação" onEdit={() => editStep(4)}>
+                      <SummaryLine label="Nome" value={simulator.fullName} />
+                    </SummaryGroup>
                   </div>
 
-                  {/* Right Column: CTA & Benefits */}
-                  <div className="md:col-span-5 flex flex-col justify-between">
-                    <div className="space-y-3 sm:space-y-4">
-                      <h4 className="text-xs font-bold text-[#002E5C] uppercase tracking-widest">
-                        Próximo Passo
-                      </h4>
-                      <p className="text-xs text-[#475569] leading-relaxed">
-                        Seu orçamento simulado está pronto! Clique no botão abaixo para nos enviar os detalhes diretamente no WhatsApp para agendarmos o seu atendimento.
-                      </p>
-
-                      <div className="bg-slate-50 p-3.5 sm:p-4 rounded-xl border border-slate-100 space-y-2 text-xs">
-                        <div className="flex items-center gap-2 text-[#002E5C] font-semibold">
-                          <Check className="w-4 h-4 text-[#0096D6] stroke-[3] flex-shrink-0" />
-                          <span>Orçamento rápido e sem custo</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[#002E5C] font-semibold">
-                          <Check className="w-4 h-4 text-[#0096D6] stroke-[3] flex-shrink-0" />
-                          <span>Garantia de 90 dias no serviço</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[#002E5C] font-semibold">
-                          <Check className="w-4 h-4 text-[#0096D6] stroke-[3] flex-shrink-0" />
-                          <span>Técnicos limpos e uniformizados</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-5 sm:mt-6 space-y-2.5">
-                      <button
-                        type="button"
-                        onClick={handleSendSimulation}
-                        className="w-full bg-[#0096D6] hover:bg-[#0082BA] active:bg-[#002E5C] text-white font-extrabold py-3.5 sm:py-4.5 rounded-2xl text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 group cursor-pointer min-h-[48px]"
-                      >
-                        <Phone className="w-4.5 h-4.5 fill-current flex-shrink-0" />
-                        <span>CHAMAR NO WHATSAPP</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={handleRestart}
-                        className="w-full bg-slate-100 hover:bg-slate-200 text-[#002E5C] font-bold py-3 sm:py-3.5 rounded-2xl text-xs transition-colors cursor-pointer min-h-[44px]"
-                      >
-                        Iniciar Nova Simulação
-                      </button>
-                    </div>
+                  <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
+                    <button
+                      type="button"
+                      onClick={handleSendSimulation}
+                      className="inline-flex min-h-[3.25rem] items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-6 text-base font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600"
+                    >
+                      <Send className="h-5 w-5" aria-hidden="true" />
+                      Enviar pelo WhatsApp
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRestart}
+                      className="inline-flex min-h-12 items-center justify-center rounded-control border border-line px-5 text-sm font-bold text-brand-navy-800 transition-colors hover:bg-surface-subtle"
+                    >
+                      Nova solicitação
+                    </button>
                   </div>
                 </div>
               )}
             </motion.div>
-          </div>
 
-          {/* Card Footer Navigation for steps */}
-          <div className="flex justify-between items-center gap-3 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100">
-            {step > 1 ? (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="bg-slate-100 hover:bg-slate-200 text-[#002E5C] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer min-h-[48px] sm:min-h-[50px] px-4 sm:px-6 rounded-2xl border border-slate-200"
-              >
-                <ChevronLeft className="w-5 h-5" /> <span>Voltar</span>
-              </button>
-            ) : (
-              <div />
-            )}
-            
-            {step < 5 ? (
-              <div className="flex flex-col items-end gap-1">
+            <div className="mt-7 flex items-center justify-between gap-3 border-t border-line pt-5">
+              {step > 1 && step < 5 ? (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex min-h-12 items-center gap-1 rounded-control px-3 text-sm font-bold text-brand-navy-800 transition-colors hover:bg-surface-subtle"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                  Voltar
+                </button>
+              ) : <span />}
+              {step < 5 && (
                 <button
                   type="button"
                   onClick={handleNext}
-                  disabled={!isStepCompleted(step)}
-                  className={`font-extrabold px-6 sm:px-8 py-3 rounded-2xl text-xs sm:text-sm transition-all shadow-md flex items-center justify-center gap-2 min-h-[48px] sm:min-h-[50px] ${
-                    !isStepCompleted(step)
-                      ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none border border-slate-200'
-                      : 'bg-[#0096D6] hover:bg-[#0082BA] active:bg-[#002E5C] text-white cursor-pointer shadow-[#0096D6]/20'
-                  }`}
+                  className="inline-flex min-h-12 items-center gap-1 rounded-control bg-brand-cyan-600 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-cyan-700"
                 >
-                  <span>Avançar</span> <ChevronRight className="w-5 h-5" />
+                  Continuar
+                  <ChevronRight className="h-5 w-5" />
                 </button>
-                {!isStepCompleted(step) && (
-                  <span className="text-[10px] text-[#0096D6] font-semibold flex items-center gap-1">
-                    <AlertCircle className="w-3 h-3 shrink-0" /> Selecione uma opção acima para avançar
-                  </span>
-                )}
-              </div>
-            ) : (
-              <span className="text-xs font-bold text-[#002E5C] bg-[#E6F5FC] px-3 py-1.5 rounded-xl border border-[#0096D6]/30 flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-[#0096D6] stroke-[3]" /> Simulação Concluída
-              </span>
-            )}
+              )}
+            </div>
           </div>
-
         </div>
-
-        {/* Dynamic bottom tip */}
-        <div className="mt-6 flex gap-2 items-start justify-center bg-[#FFFBEB] border border-[#F5A524]/30 p-4 rounded-2xl max-w-2xl mx-auto">
-          <AlertCircle className="w-5 h-5 text-[#F5A524] shrink-0 mt-0.5" />
-          <p className="text-xs text-[#002E5C] leading-relaxed">
-            <strong className="text-[#F5A524]">⚠️ Importante:</strong> Os valores gerados no simulador são referenciais estimados para serviços em condições normais de acesso. Confirmações de infraestrutura complexa ou tubulações adicionais serão analisadas sob consulta.
-          </p>
-        </div>
-
       </div>
     </section>
+  );
+}
+
+function SummaryGroup({ title, onEdit, children }: { title: string; onEdit: () => void; children: React.ReactNode }) {
+  return (
+    <section className="rounded-card border border-line bg-surface-subtle p-4">
+      <div className="mb-3 flex items-center justify-between gap-3 border-b border-line pb-3">
+        <h4 className="font-display text-base font-bold text-brand-navy-800">{title}</h4>
+        <button type="button" onClick={onEdit} className="min-h-11 rounded-control px-2 text-sm font-bold text-brand-cyan-700 hover:text-brand-navy-800">
+          Editar
+        </button>
+      </div>
+      <dl className="space-y-2">{children}</dl>
+    </section>
+  );
+}
+
+function SummaryLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid gap-1 text-sm sm:grid-cols-[7rem_1fr] sm:gap-3">
+      <dt className="font-medium text-ink-muted">{label}</dt>
+      <dd className="break-words font-semibold text-brand-navy-800">{value}</dd>
+    </div>
   );
 }

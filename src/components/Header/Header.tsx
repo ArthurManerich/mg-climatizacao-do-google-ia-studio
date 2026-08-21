@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Wind, Phone, Menu, X, ShieldCheck, UserCheck } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, Menu, ShieldCheck, X } from 'lucide-react';
 import { getWhatsAppLink } from '../../utils/whatsapp';
 import { useSettings } from '../../context/SettingsContext';
 
@@ -7,169 +7,175 @@ interface HeaderProps {
   onOpenAccessModal?: () => void;
 }
 
+const OFFICIAL_LOGO = '/brand/logo-principal.jpg';
+
+const navigation = [
+  { label: 'Início', href: '#inicio' },
+  { label: 'Serviços', href: '#servicos' },
+  { label: 'Sobre', href: '#sobre' },
+  { label: 'Antes & Depois', href: '#antes-depois' },
+  { label: 'Portfólio', href: '#portfolio' },
+  { label: 'Dúvidas', href: '#faq' },
+  { label: 'Contato', href: '#contato' },
+];
+
 export default function Header({ onOpenAccessModal }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { settings } = useSettings();
+  const whatsappHref = getWhatsAppLink(
+    settings.whatsapp_message || 'Olá! Gostaria de solicitar um orçamento para climatização.',
+    settings.whatsapp_number,
+  );
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b-2 border-[#E2E8F0] shadow-sm" id="header">
-      {/* Top Banner for Interface Selector */}
-      {onOpenAccessModal && (
-        <div className="bg-[#002E5C] text-slate-200 px-3 sm:px-4 py-1.5 text-xs flex items-center justify-between border-b border-[#001D3D]">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
-            <span className="flex items-center gap-1.5 font-medium text-[11px] sm:text-xs min-w-0">
-              <UserCheck className="w-3.5 h-3.5 text-[#00B2FF] shrink-0" />
-              <span className="truncate">Modo Atual: <strong className="text-white">Cliente (Sem Admin)</strong></span>
-            </span>
-            <button 
-              onClick={onOpenAccessModal}
-              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#F5A524] hover:text-[#00B2FF] underline underline-offset-2 transition-colors cursor-pointer shrink-0 min-h-[32px]"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>Mudar Modo / Login</span>
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          
-          {/* Logo */}
-          <a href="#inicio" className="flex items-center gap-2 sm:gap-2.5 group min-w-0 flex-shrink-1 py-1">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-slate-50 flex items-center justify-center font-bold text-lg shadow-sm border border-[#E2E8F0] group-hover:bg-[#002E5C] transition-colors duration-300 flex-shrink-0">
-              {settings.logo_url ? (
-                <img src={settings.logo_url} alt={settings.company_name} decoding="async" fetchPriority="high" referrerPolicy="no-referrer" className="max-w-full max-h-full object-contain" />
-              ) : (
-                <Wind className="w-5 h-5 text-[#0096D6] group-hover:text-white transition-colors" />
-              )}
-            </div>
-            <div className="flex flex-col min-w-0">
-              <span className="text-base sm:text-xl font-extrabold font-display tracking-tight text-[#002E5C] leading-none truncate max-w-[180px] xs:max-w-[240px] sm:max-w-none">
+    <header
+      className="sticky top-0 z-50 w-full border-b border-white/10 bg-brand-navy-950/95 text-white shadow-card backdrop-blur-md"
+      id="header"
+    >
+      <div className="mx-auto max-w-7xl px-gutter sm:px-gutter-lg lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+          <a
+            href="#inicio"
+            className="flex min-w-0 items-center gap-2.5 rounded-control focus-visible:outline-offset-4 sm:gap-3"
+            aria-label="MG Climatização — início"
+          >
+            <img
+              src={settings.logo_url || OFFICIAL_LOGO}
+              alt="Logo da MG Climatização"
+              decoding="async"
+              fetchPriority="high"
+              referrerPolicy="no-referrer"
+              onError={(event) => {
+                if (!event.currentTarget.src.endsWith(OFFICIAL_LOGO)) {
+                  event.currentTarget.src = OFFICIAL_LOGO;
+                }
+              }}
+              className="h-11 w-11 shrink-0 rounded-control border border-white/10 bg-brand-navy-950 object-contain sm:h-12 sm:w-12"
+            />
+            <span className="min-w-0">
+              <span className="block truncate font-display text-base font-bold leading-tight text-white sm:text-lg">
                 {settings.company_name}
               </span>
-              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest text-[#0096D6] mt-0.5 sm:mt-1">
-                Climatização
-              </span>
-            </div>
+              <span className="block text-xs font-medium leading-tight text-brand-cyan-400">Climatização</span>
+            </span>
           </a>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-7">
-            <a href="#inicio" className="text-xs lg:text-sm font-medium text-slate-600 hover:text-[#002E5C] transition-colors">Início</a>
-            <a href="#servicos" className="text-xs lg:text-sm font-medium text-slate-600 hover:text-[#002E5C] transition-colors">Serviços</a>
-            
-            {/* Highlighted Orçamento Online */}
-            <a 
-              href="#orcamento-online" 
-              className="text-xs lg:text-sm font-extrabold text-[#002E5C] bg-[#E6F5FC] hover:bg-[#d2edfa] border border-[#0096D6]/30 px-3.5 py-1.5 rounded-xl transition-all shadow-xs flex items-center gap-1.5"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#0096D6] animate-pulse"></span>
-              <span>Orçamento Online</span>
-            </a>
-
-            <a href="#antes-depois" className="text-xs lg:text-sm font-medium text-slate-600 hover:text-[#002E5C] transition-colors">Antes & Depois</a>
-            <a href="#portfolio" className="text-xs lg:text-sm font-medium text-slate-600 hover:text-[#002E5C] transition-colors">Meu Portfólio</a>
-            <a href="#faq" className="text-xs lg:text-sm font-medium text-slate-600 hover:text-[#002E5C] transition-colors">Dúvidas</a>
+          <nav className="hidden items-center gap-4 xl:flex" aria-label="Navegação principal">
+            {navigation.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="rounded-control px-1 py-3 text-sm font-medium text-slate-200 transition-colors hover:text-brand-cyan-400"
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
-          {/* Desktop Right Button */}
-          <div className="hidden md:flex items-center gap-3">
-            <a 
-              href={getWhatsAppLink(settings.whatsapp_message || "Olá! Gostaria de solicitar um orçamento para climatização.", settings.whatsapp_number)}
+          <div className="hidden shrink-0 items-center gap-2 lg:flex">
+            {onOpenAccessModal && (
+              <button
+                type="button"
+                onClick={onOpenAccessModal}
+                className="inline-flex min-h-11 min-w-11 items-center gap-2 rounded-control px-3 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+                aria-label="Alterar modo de acesso ou fazer login"
+              >
+                <ShieldCheck className="h-4 w-4 text-brand-cyan-400" aria-hidden="true" />
+                <span className="hidden 2xl:inline">Acesso</span>
+              </button>
+            )}
+            <a
+              href={whatsappHref}
               target="whatsapp"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#0096D6] hover:bg-[#0082BA] active:bg-[#002E5C] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 text-sm font-bold text-brand-navy-950 shadow-card transition-colors hover:bg-brand-orange-600"
             >
-              <Phone className="w-4 h-4 fill-current" /> Falar no WhatsApp
+              Solicitar orçamento
+              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </a>
           </div>
 
-          {/* Mobile Menu Trigger */}
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-[#002E5C] hover:bg-slate-100 active:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0096D6] transition-colors"
-            aria-label={mobileMenuOpen ? "Fechar menu de navegação" : "Abrir menu de navegação"}
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-white/10 text-white transition-colors hover:bg-white/10 lg:hidden"
+            aria-label={mobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div id="mobile-menu" className="md:hidden border-b border-[#E2E8F0] bg-white/98 backdrop-blur-md px-4 pt-3 pb-6 flex flex-col gap-1 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
-          {onOpenAccessModal && (
-            <button 
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAccessModal();
-              }}
-              className="text-xs font-bold text-[#002E5C] bg-[#E6F5FC] hover:bg-[#d0ecf9] border border-[#0096D6]/30 py-3 px-3.5 rounded-xl mb-3 flex items-center justify-between transition-colors min-h-[44px]"
-            >
-              <span className="flex items-center gap-1.5">
-                <UserCheck className="w-4 h-4 text-[#0096D6]" />
-                <span>Modo Atual: <strong>Cliente</strong></span>
-              </span>
-              <span className="text-[#0096D6] font-extrabold underline text-[11px]">Mudar / Login</span>
-            </button>
-          )}
+        <div
+          id="mobile-menu"
+          className="border-t border-white/10 bg-brand-navy-950 px-gutter pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-floating lg:hidden"
+        >
+          <nav className="mx-auto flex max-w-7xl flex-col" aria-label="Navegação mobile">
+            {navigation.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={closeMobileMenu}
+                className="flex min-h-12 items-center rounded-control px-3 text-base font-medium text-slate-100 transition-colors hover:bg-white/5 hover:text-brand-cyan-400"
+              >
+                {item.label}
+              </a>
+            ))}
 
-          <a 
-            href="#inicio" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-semibold min-h-[48px] px-3 flex items-center gap-3 text-[#002E5C] hover:text-[#0096D6] hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100"
-          >
-            <span>Início</span>
-          </a>
-          <a 
-            href="#servicos" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-semibold min-h-[48px] px-3 flex items-center gap-3 text-[#002E5C] hover:text-[#0096D6] hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100"
-          >
-            <span>Serviços</span>
-          </a>
-          <a 
-            href="#orcamento-online" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-extrabold min-h-[48px] px-3.5 flex items-center justify-between text-[#002E5C] bg-[#E6F5FC] border border-[#0096D6]/30 rounded-xl transition-colors border-b border-slate-100 my-1"
-          >
-            <span>Orçamento Online</span>
-            <span className="text-[10px] font-black uppercase tracking-wider bg-[#0096D6] text-white px-2 py-0.5 rounded-md">Simular</span>
-          </a>
-          <a 
-            href="#antes-depois" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-semibold min-h-[48px] px-3 flex items-center gap-3 text-[#002E5C] hover:text-[#0096D6] hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100"
-          >
-            <span>Antes & Depois</span>
-          </a>
-          <a 
-            href="#portfolio" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-semibold min-h-[48px] px-3 flex items-center gap-3 text-[#002E5C] hover:text-[#0096D6] hover:bg-slate-50 rounded-xl transition-colors border-b border-slate-100"
-          >
-            <span>Meu Portfólio</span>
-          </a>
-          <a 
-            href="#faq" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-base font-semibold min-h-[48px] px-3 flex items-center gap-3 text-[#002E5C] hover:text-[#0096D6] hover:bg-slate-50 rounded-xl transition-colors mb-3"
-          >
-            <span>Dúvidas</span>
-          </a>
-          
-          <a 
-            href={getWhatsAppLink(settings.whatsapp_message || "Olá! Gostaria de solicitar um orçamento para climatização.", settings.whatsapp_number)}
-            target="whatsapp"
-            rel="noopener noreferrer"
-            className="w-full text-center bg-[#0096D6] hover:bg-[#0082BA] active:bg-[#002E5C] text-white min-h-[50px] py-3.5 px-4 rounded-2xl text-base font-extrabold shadow-md flex items-center justify-center gap-2.5 transition-all mt-1"
-          >
-            <Phone className="w-5 h-5 fill-current" />
-            <span>Falar no WhatsApp</span>
-          </a>
+            <div className="mt-3 grid gap-2 border-t border-white/10 pt-4 sm:grid-cols-2">
+              <a
+                href="#orcamento-online"
+                onClick={closeMobileMenu}
+                className="inline-flex min-h-12 items-center justify-center rounded-control border border-brand-cyan-600/60 px-4 text-sm font-bold text-white transition-colors hover:bg-brand-cyan-600/15"
+              >
+                Montar solicitação
+              </a>
+              <a
+                href={whatsappHref}
+                target="whatsapp"
+                rel="noopener noreferrer"
+                onClick={closeMobileMenu}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600"
+              >
+                Solicitar orçamento
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+
+            {onOpenAccessModal && (
+              <button
+                type="button"
+                onClick={() => {
+                  closeMobileMenu();
+                  menuButtonRef.current?.focus();
+                  onOpenAccessModal();
+                }}
+                className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-control px-3 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                <ShieldCheck className="h-4 w-4 text-brand-cyan-400" aria-hidden="true" />
+                Alterar modo de acesso ou fazer login
+              </button>
+            )}
+          </nav>
         </div>
       )}
     </header>

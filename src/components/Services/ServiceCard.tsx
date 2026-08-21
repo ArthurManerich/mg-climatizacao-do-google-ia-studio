@@ -1,8 +1,21 @@
 import React, { memo } from 'react';
-import { LucideIcon, Check, Wind, ShieldCheck, Sparkles, Gauge, Wrench, Settings, Flame, Zap, Fan, Phone, Building2 } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Building2,
+  Fan,
+  Flame,
+  Gauge,
+  LucideIcon,
+  Settings,
+  ShieldCheck,
+  Sparkles,
+  Wind,
+  Wrench,
+  Zap,
+} from 'lucide-react';
 import { motion } from 'motion/react';
-import { getWhatsAppLink } from '../../utils/whatsapp';
 import { useSettings } from '../../context/SettingsContext';
+import { getWhatsAppLink } from '../../utils/whatsapp';
 
 const iconMap: Record<string, LucideIcon> = {
   Wind,
@@ -14,7 +27,7 @@ const iconMap: Record<string, LucideIcon> = {
   Settings,
   Flame,
   Zap,
-  Fan
+  Fan,
 };
 
 interface ServiceCardProps {
@@ -35,55 +48,49 @@ const ServiceCard = memo(function ServiceCard({
 }: ServiceCardProps) {
   const { settings } = useSettings();
   const IconComponent: LucideIcon = typeof icon === 'string' ? (iconMap[icon] || Wrench) : icon;
-
-  const cardVariants: any = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
-  };
-
+  const visiblePoints = bulletPoints.slice(0, 2);
   const serviceMsg = `Olá! Gostaria de solicitar um orçamento para: ${title}`;
 
   return (
-    <motion.div 
-      id={id} 
-      variants={cardVariants}
-      whileHover={{ y: -6, boxShadow: '0 10px 25px -5px rgba(0, 46, 92, 0.12), 0 8px 10px -6px rgba(0, 150, 214, 0.1)' }}
-      className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-[#E2E8F0] shadow-sm flex flex-col justify-between group transition-all duration-300 hover:border-[#0096D6]"
+    <motion.article
+      id={id}
+      variants={{
+        hidden: { opacity: 0, y: 16 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+      }}
+      className="flex h-full flex-col rounded-card border border-line bg-surface p-5 transition-colors hover:border-brand-cyan-600/50 sm:p-6"
     >
-      <div>
-        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#E6F5FC] text-[#0096D6] flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-[#002E5C] group-hover:text-white transition-colors duration-300 flex-shrink-0">
-          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className="flex items-start gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-cyan-50 text-brand-cyan-700">
+          <IconComponent className="h-5 w-5" aria-hidden="true" />
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-[#002E5C] mb-2 font-display">{title}</h3>
-        <p className="text-[#475569] text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
-          {description}
-        </p>
-        <ul className="text-xs text-[#475569] space-y-1.5 sm:space-y-2 mb-4">
-          {bulletPoints.map((point, index) => (
-            <li key={index} className="flex items-start sm:items-center gap-2">
-              <Check className="w-3.5 h-3.5 text-[#0096D6] flex-shrink-0 mt-0.5 sm:mt-0" />
-              <span className="leading-tight">{point}</span>
+        <div className="min-w-0">
+          <h3 className="font-display text-lg font-bold leading-snug text-brand-navy-800">{title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{description}</p>
+        </div>
+      </div>
+
+      {visiblePoints.length > 0 && (
+        <ul className="mt-4 space-y-2 border-t border-line pt-4 text-sm text-ink-muted">
+          {visiblePoints.map((point, index) => (
+            <li key={index} className="flex items-start gap-2.5">
+              <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-brand-cyan-600" aria-hidden="true" />
+              <span>{point}</span>
             </li>
           ))}
         </ul>
-      </div>
+      )}
 
-      <div className="pt-3 border-t border-[#E2E8F0] mt-2">
-        <a 
-          href={getWhatsAppLink(serviceMsg, settings.whatsapp_number)}
-          target="whatsapp"
-          rel="noopener noreferrer"
-          className="w-full inline-flex items-center justify-center gap-2 bg-[#E6F5FC] hover:bg-[#0096D6] text-[#002E5C] hover:text-white font-extrabold py-2.5 px-3 rounded-xl text-xs sm:text-sm border border-[#0096D6]/20 transition-all min-h-[44px] group/btn"
-        >
-          <Phone className="w-4 h-4 text-[#0096D6] group-hover/btn:text-white fill-current flex-shrink-0" />
-          <span>Solicitar Orçamento</span>
-        </a>
-      </div>
-    </motion.div>
+      <a
+        href={getWhatsAppLink(serviceMsg, settings.whatsapp_number)}
+        target="whatsapp"
+        rel="noopener noreferrer"
+        className="mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-control pt-5 text-sm font-bold text-brand-cyan-700 transition-colors hover:text-brand-navy-800"
+      >
+        Solicitar orçamento
+        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+      </a>
+    </motion.article>
   );
 });
 

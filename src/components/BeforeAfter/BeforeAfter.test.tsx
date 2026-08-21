@@ -1,0 +1,44 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import BeforeAfter from './BeforeAfter';
+
+const mocks = vi.hoisted(() => ({ getAll: vi.fn() }));
+vi.mock('../../services/beforeAfterService', () => ({ beforeAfterService: { getAll: mocks.getAll } }));
+vi.mock('../../context/SettingsContext', () => ({ useSettings: () => ({ settings: { whatsapp_number: '5547997464218' } }) }));
+
+class ResizeObserverMock { observe() {} disconnect() {} }
+vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+
+describe('BeforeAfter', () => {
+  beforeEach(() => mocks.getAll.mockReset());
+
+  it('distingue estado vazio de erro de leitura', async () => {
+    mocks.getAll.mockResolvedValueOnce([]);
+    const view = render(<BeforeAfter />);
+    expect(await screen.findByText('Nenhum comparativo publicado no momento.')).toBeInTheDocument();
+    view.unmount();
+
+    mocks.getAll.mockRejectedValueOnce(new Error('falha de leitura'));
+    render(<BeforeAfter />);
+    expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível carregar os comparativos agora.');
+    expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeInTheDocument();
+  });
+
+  it('oferece controle acessível e preserva pan vertical na imagem', async () => {
+    mocks.getAll.mockResolvedValue([{ id: 1, title: 'Higienização', description: 'Registro real', before_img: '/antes.webp', after_img: '/depois.webp' }]);
+    const { container } = render(<BeforeAfter />);
+    await screen.findByText('Higienização');
+    const range = screen.getByRole('slider', { name: 'Posição da comparação entre antes e depois' });
+    fireEvent.change(range, { target: { value: '70' } });
+    expect(range).toHaveValue('70');
+    expect(container.querySelector('.touch-pan-y')).toBeInTheDocument();
+  });
+
+  it('permite tentar novamente após falha', async () => {
+    mocks.getAll.mockRejectedValueOnce(new Error('falha')).mockResolvedValueOnce([]);
+    render(<BeforeAfter />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Tentar novamente' }));
+    await waitFor(() => expect(mocks.getAll).toHaveBeenCalledTimes(2));
+    expect(await screen.findByText('Nenhum comparativo publicado no momento.')).toBeInTheDocument();
+  });
+});

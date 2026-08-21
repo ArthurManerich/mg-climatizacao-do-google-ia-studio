@@ -18,13 +18,13 @@ export const defaultSimulatorConfig: SimulatorConfig = {
       id: 'manutencao-corretiva', 
       label: 'Manutenção Corretiva', 
       icon: 'Wrench', 
-      description: 'Diagnóstico e reparo técnico imediato para aparelhos com falhas.' 
+      description: 'Diagnóstico e manutenção para equipamentos com falhas.'
     },
     { 
       id: 'higienizacao', 
       label: 'Higienização', 
       icon: 'Sparkles', 
-      description: 'Limpeza profunda bactericida de evaporadora e condensadora com sanificação.' 
+      description: 'Higienização dos componentes do equipamento.'
     },
     { 
       id: 'carga-gas', 

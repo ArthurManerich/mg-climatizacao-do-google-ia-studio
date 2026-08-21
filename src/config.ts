@@ -1,7 +1,7 @@
 export const BRAND = {
   name: "MG Climatização",
   slug: "mgclimatizacao",
-  domain: "mgclimatizacao.com.br",
+  domain: "mgclimabnu.com.br",
 };
 
 export const WHATSAPP = {
