@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Menu, ShieldCheck, X } from 'lucide-react';
-import { getWhatsAppLink } from '../../utils/whatsapp';
 import { useSettings } from '../../context/SettingsContext';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 
 interface HeaderProps {
   onOpenAccessModal?: () => void;
@@ -23,10 +23,8 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { settings } = useSettings();
-  const whatsappHref = getWhatsAppLink(
-    settings.whatsapp_message || 'Olá! Gostaria de solicitar um orçamento para climatização.',
-    settings.whatsapp_number,
-  );
+  const { openWhatsAppSelector } = useWhatsAppContact();
+  const whatsappMessage = settings.whatsapp_message || 'Olá! Gostaria de solicitar um orçamento para climatização.';
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
@@ -87,7 +85,7 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
             ))}
           </nav>
 
-          <div className="hidden shrink-0 items-center gap-2 lg:flex">
+          <div className="hidden shrink-0 items-center gap-2 xl:flex">
             {onOpenAccessModal && (
               <button
                 type="button"
@@ -96,25 +94,33 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
                 aria-label="Alterar modo de acesso ou fazer login"
               >
                 <ShieldCheck className="h-4 w-4 text-brand-cyan-400" aria-hidden="true" />
-                <span className="hidden 2xl:inline">Acesso</span>
+                <span>Acesso</span>
               </button>
             )}
-            <a
-              href={whatsappHref}
-              target="whatsapp"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => openWhatsAppSelector(whatsappMessage)}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 text-sm font-bold text-brand-navy-950 shadow-card transition-colors hover:bg-brand-orange-600"
             >
               Solicitar orçamento
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </a>
+            </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => openWhatsAppSelector(whatsappMessage)}
+            className="ml-auto hidden min-h-11 shrink-0 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 text-sm font-bold text-brand-navy-950 shadow-card transition-colors hover:bg-brand-orange-600 md:inline-flex xl:hidden"
+          >
+            Solicitar orçamento
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </button>
 
           <button
             ref={menuButtonRef}
             type="button"
             onClick={() => setMobileMenuOpen((open) => !open)}
-            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-white/10 text-white transition-colors hover:bg-white/10 lg:hidden"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-control border border-white/10 text-white transition-colors hover:bg-white/10 xl:hidden"
             aria-label={mobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
@@ -127,7 +133,7 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
       {mobileMenuOpen && (
         <div
           id="mobile-menu"
-          className="border-t border-white/10 bg-brand-navy-950 px-gutter pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-floating lg:hidden"
+          className="border-t border-white/10 bg-brand-navy-950 px-gutter pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-floating xl:hidden"
         >
           <nav className="mx-auto flex max-w-7xl flex-col" aria-label="Navegação mobile">
             {navigation.map((item) => (
@@ -149,16 +155,14 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
               >
                 Montar solicitação
               </a>
-              <a
-                href={whatsappHref}
-                target="whatsapp"
-                rel="noopener noreferrer"
-                onClick={closeMobileMenu}
+              <button
+                type="button"
+                onClick={() => { closeMobileMenu(); openWhatsAppSelector(whatsappMessage); }}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600"
               >
                 Solicitar orçamento
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              </button>
             </div>
 
             {onOpenAccessModal && (

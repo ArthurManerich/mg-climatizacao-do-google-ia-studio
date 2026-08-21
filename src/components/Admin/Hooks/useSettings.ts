@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { settingsService } from '../../../services/settingsService';
+import { adminSettingsService } from '../../../services/adminSettingsService';
 import { uploadService } from '../../../services/uploadService';
 import type { CleanupResult } from '../../../services/mutationResult';
 import { useUploads } from './useUploads';
@@ -124,7 +124,7 @@ export function useSettings() {
         logo_url: companyLogo,
       };
 
-      await settingsService.set('company_settings', compSettings);
+      await adminSettingsService.set('company_settings', compSettings);
       confirmedLogoRef.current = companyLogo;
       setConfirmedLogoUrl(companyLogo);
       updatePendingUrls(pendingLogoUrlsRef.current.filter(url => url !== companyLogo));

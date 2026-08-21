@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, ChevronDown, HelpCircle, MessageCircle, RefreshCw } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useSettings } from '../../context/SettingsContext';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 import { faqService } from '../../services/faqService';
 import { Faq } from '../../types';
-import { getWhatsAppLink } from '../../utils/whatsapp';
 
 export default function FAQ() {
-  const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [faqList, setFaqList] = useState<Faq[]>([]);
   const [loading, setLoading] = useState(true);
@@ -77,7 +76,7 @@ export default function FAQ() {
 
         <div className="mt-8 flex flex-col gap-4 border-l-2 border-brand-cyan-600 pl-4 sm:mt-10 sm:flex-row sm:items-center sm:justify-between sm:pl-6">
           <div><h3 className="text-lg font-bold text-ink">Ainda ficou com alguma dúvida?</h3><p className="mt-1 text-sm text-ink-muted">Converse diretamente com a MG Climatização.</p></div>
-          <a href={getWhatsAppLink('Olá! Tenho uma dúvida sobre os serviços de climatização.', settings.whatsapp_number)} target="whatsapp" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-cyan-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-cyan-700"><MessageCircle aria-hidden="true" className="h-4 w-4" /> Chamar no WhatsApp</a>
+          <button type="button" onClick={() => openWhatsAppSelector('Olá! Tenho uma dúvida sobre os serviços de climatização.')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-cyan-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-cyan-700"><MessageCircle aria-hidden="true" className="h-4 w-4" /> Chamar no WhatsApp</button>
         </div>
       </div>
     </section>

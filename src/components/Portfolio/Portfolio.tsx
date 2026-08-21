@@ -1,16 +1,15 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { AlertCircle, ImageOff, Phone, RefreshCw, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useSettings } from '../../context/SettingsContext';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 import { usePortfolio } from '../../hooks/usePortfolio';
 import { Photo } from '../../types';
-import { getWhatsAppLink } from '../../utils/whatsapp';
 import PortfolioCard from './PortfolioCard';
 
 const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export default function Portfolio() {
-  const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
   const { userPhotos, loading, error, reloadPhotos } = usePortfolio();
   const [previewPhoto, setPreviewPhoto] = useState<Photo | null>(null);
   const [previewImageFailed, setPreviewImageFailed] = useState(false);
@@ -77,7 +76,7 @@ export default function Portfolio() {
               </div>
               <div className="flex flex-col gap-4 border-t border-white/10 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-5">
                 <div className="pr-12 sm:pr-0"><p className="text-xs font-bold uppercase tracking-wider text-brand-cyan-400">{previewPhoto.category || 'Serviço'}</p><h3 id={titleId} className="mt-1 text-lg font-bold text-white sm:text-xl">{previewPhoto.title}</h3>{previewPhoto.description && <p className="mt-1 text-sm text-slate-300">{previewPhoto.description}</p>}</div>
-                <a href={getWhatsAppLink(`Olá! Vi o serviço "${previewPhoto.title}" no portfólio e gostaria de solicitar um orçamento.`, settings.whatsapp_number)} target="whatsapp" rel="noopener noreferrer" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 py-2.5 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600"><Phone aria-hidden="true" className="h-4 w-4" /> Solicitar orçamento</a>
+                <button type="button" onClick={() => openWhatsAppSelector(`Olá! Vi o serviço "${previewPhoto.title}" no portfólio e gostaria de solicitar um orçamento.`)} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 py-2.5 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600"><Phone aria-hidden="true" className="h-4 w-4" /> Solicitar orçamento</button>
               </div>
             </motion.div>
           </motion.div>

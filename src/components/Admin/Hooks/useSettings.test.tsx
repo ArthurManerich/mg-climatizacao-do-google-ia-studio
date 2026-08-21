@@ -12,7 +12,7 @@ vi.mock('./useUploads', () => ({
   useUploads: () => ({ isUploading: false, progress: 0, uploadImage: mocks.uploadImage }),
 }));
 vi.mock('../../../services/uploadService', () => ({ uploadService: { deleteImage: mocks.deleteImage } }));
-vi.mock('../../../services/settingsService', () => ({ settingsService: { set: mocks.settingsSet } }));
+vi.mock('../../../services/adminSettingsService', () => ({ adminSettingsService: { set: mocks.settingsSet } }));
 
 import { useSettings } from './useSettings';
 

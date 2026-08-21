@@ -1,14 +1,9 @@
 import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { BeforeAfter } from '../types';
-import { IMAGES } from '../config';
 import { uploadService } from './uploadService';
 import { DeleteResult } from './deleteResult';
 import { MutationResult } from './mutationResult';
 import { createReadError } from './readError';
-
-const LOCAL_STORAGE_KEY = 'mgclimatizacao_before_after';
-
-const initialItems: BeforeAfter[] = [];
 
 async function cleanupReplacedImages(
   previousImages: Pick<BeforeAfter, 'before_img' | 'after_img'> | undefined,

@@ -7,25 +7,38 @@ import { DEFAULT_COMPANY_SETTINGS } from '../../../types/settings.types';
 const mocks = vi.hoisted(() => ({
   getCurrentUser: vi.fn(),
   signOut: vi.fn(),
+  invalidateAdminAuthorization: vi.fn(),
+  navigate: vi.fn(),
   portfolioGetAll: vi.fn(),
   beforeAfterGetAll: vi.fn(),
   servicesGetAll: vi.fn(),
   faqGetAll: vi.fn(),
   testimonialsGetAll: vi.fn(),
-  settingsGet: vi.fn(),
+  getBudgetPrices: vi.fn(),
   getCompanySettings: vi.fn(),
 }));
 
 vi.mock('../../../services/authService', () => ({
-  authService: { getCurrentUser: mocks.getCurrentUser, signOut: mocks.signOut },
+  authService: {
+    getCurrentUser: mocks.getCurrentUser,
+    signOut: mocks.signOut,
+    invalidateAdminAuthorization: mocks.invalidateAdminAuthorization,
+  },
 }));
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return { ...actual, useNavigate: () => mocks.navigate };
+});
 vi.mock('../../../services/portfolioService', () => ({ portfolioService: { getAll: mocks.portfolioGetAll } }));
 vi.mock('../../../services/beforeAfterService', () => ({ beforeAfterService: { getAll: mocks.beforeAfterGetAll } }));
 vi.mock('../../../services/servicesService', () => ({ servicesService: { getAll: mocks.servicesGetAll } }));
 vi.mock('../../../services/faqService', () => ({ faqService: { getAll: mocks.faqGetAll } }));
 vi.mock('../../../services/testimonialsService', () => ({ testimonialsService: { getAll: mocks.testimonialsGetAll } }));
 vi.mock('../../../services/settingsService', () => ({
-  settingsService: { get: mocks.settingsGet, getCompanySettings: mocks.getCompanySettings },
+  settingsService: { getCompanySettings: mocks.getCompanySettings },
+}));
+vi.mock('../../../services/adminSettingsService', () => ({
+  adminSettingsService: { getBudgetPrices: mocks.getBudgetPrices },
 }));
 vi.mock('../../../services/uploadService', () => ({
   uploadService: { uploadImage: vi.fn(), deleteImage: vi.fn() },
@@ -48,7 +61,7 @@ function setSuccessfulReads() {
   mocks.servicesGetAll.mockResolvedValue([]);
   mocks.faqGetAll.mockResolvedValue([]);
   mocks.testimonialsGetAll.mockResolvedValue([]);
-  mocks.settingsGet.mockResolvedValue({ base: 100 });
+  mocks.getBudgetPrices.mockResolvedValue({ base: 100 });
   mocks.getCompanySettings.mockResolvedValue({ settings: DEFAULT_COMPANY_SETTINGS, source: 'company_settings' });
 }
 
@@ -119,5 +132,19 @@ describe('useAdminData - leituras independentes', () => {
     });
 
     expect(result.current.portfolios[0]?.title).toBe('Resposta recente');
+  });
+
+  it('invalida o estado administrativo e navega para login mesmo se o logout falhar', async () => {
+    mocks.signOut.mockResolvedValueOnce({ error: new Error('falha remota') });
+    const { result } = renderHook(() => useAdminData(), { wrapper });
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.handleLogout();
+    });
+
+    expect(mocks.signOut).toHaveBeenCalledOnce();
+    expect(mocks.invalidateAdminAuthorization).toHaveBeenCalledOnce();
+    expect(mocks.navigate).toHaveBeenCalledWith('/login', { replace: true });
   });
 });

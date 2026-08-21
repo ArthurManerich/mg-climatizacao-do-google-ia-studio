@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { settingsService } from '../../../services/settingsService';
-import { defaultSimulatorConfig } from '../../../config/simulator';
+import { adminSettingsService } from '../../../services/adminSettingsService';
+import { defaultAdminSimulatorConfig } from '../../../config/adminSimulator';
 import { 
   SimulatorConfig, 
   SimulatorServiceOption, 
@@ -10,7 +10,7 @@ import {
 } from '../../../types';
 
 export function useSimulator() {
-  const [config, setConfig] = useState<SimulatorConfig>(defaultSimulatorConfig);
+  const [config, setConfig] = useState<SimulatorConfig>(defaultAdminSimulatorConfig);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,11 +20,11 @@ export function useSimulator() {
     try {
       setLoading(true);
       setError(null);
-      const data = await settingsService.get<SimulatorConfig>('simulator_config');
+      const data = await adminSettingsService.getAdminSimulatorConfig();
       if (data && data.services && data.capacities) {
         setConfig(data);
       } else {
-        setConfig(defaultSimulatorConfig);
+        setConfig(defaultAdminSimulatorConfig);
       }
     } catch (err: any) {
       console.error("Erro ao carregar configuracoes do simulador:", err);
@@ -43,7 +43,7 @@ export function useSimulator() {
       setSaving(true);
       setError(null);
       setSuccess(null);
-      await settingsService.set('simulator_config', newConfig);
+      await adminSettingsService.set('simulator_config', newConfig);
       setConfig(newConfig);
       setSuccess("Configurações do simulador salvas com sucesso!");
       setTimeout(() => setSuccess(null), 3000);
@@ -62,7 +62,7 @@ export function useSimulator() {
       if (!nextPrices[serviceId]) {
         nextPrices[serviceId] = {};
       }
-      const current = nextPrices[serviceId][capacityId] || { min: 100, max: 200, time: "2 horas" };
+      const current = nextPrices[serviceId][capacityId] || { min: 0, max: 0, time: '' };
       nextPrices[serviceId][capacityId] = {
         ...current,
         [field]: value
@@ -114,7 +114,7 @@ export function useSimulator() {
   };
 
   const resetToDefault = () => {
-    setConfig(defaultSimulatorConfig);
+    setConfig(defaultAdminSimulatorConfig);
   };
 
   return {

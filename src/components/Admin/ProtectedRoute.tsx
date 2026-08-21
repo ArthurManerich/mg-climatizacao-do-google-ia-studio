@@ -8,25 +8,70 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized'>('loading');
 
   useEffect(() => {
-    const checkAuth = async () => {
+    let active = true;
+    let validating = false;
+    let validationId = 0;
+
+    const checkAuth = async (hideProtectedContent = true) => {
+      if (validating) return;
+      validating = true;
+      const currentValidationId = ++validationId;
+      if (hideProtectedContent) setStatus('loading');
+
       try {
         const { data } = await authService.getCurrentAdmin();
-        setIsAdmin(data.isAdmin);
-      } catch (err) {
-        setIsAdmin(false);
+        if (active && currentValidationId === validationId) {
+          setStatus(data.isAdmin ? 'authorized' : 'unauthorized');
+        }
+      } catch {
+        if (active && currentValidationId === validationId) setStatus('unauthorized');
       } finally {
-        setLoading(false);
+        validating = false;
       }
     };
-    
-    checkAuth();
+
+    void checkAuth();
+
+    const { data: { subscription } } = authService.onAuthStateChange((event, session) => {
+      if (!active) return;
+
+      if (event === 'SIGNED_OUT' || !session) {
+        validationId += 1;
+        setStatus('unauthorized');
+        return;
+      }
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+        void checkAuth();
+      }
+    });
+
+    const unsubscribeAuthorizationFailure = authService.onAdminAuthorizationFailure(() => {
+      if (!active) return;
+      void checkAuth();
+    });
+
+    const revalidateOnFocus = () => void checkAuth();
+    const revalidateWhenVisible = () => {
+      if (document.visibilityState === 'visible') void checkAuth();
+    };
+    window.addEventListener('focus', revalidateOnFocus);
+    document.addEventListener('visibilitychange', revalidateWhenVisible);
+
+    return () => {
+      active = false;
+      validationId += 1;
+      subscription.unsubscribe();
+      unsubscribeAuthorizationFailure();
+      window.removeEventListener('focus', revalidateOnFocus);
+      document.removeEventListener('visibilitychange', revalidateWhenVisible);
+    };
   }, []);
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center" id="protected-route-loading">
         <Loader2 className="w-8 h-8 text-[#0096D6] animate-spin" />
@@ -35,7 +80,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!isAdmin) {
+  if (status === 'unauthorized') {
     return <Navigate to="/login" replace />;
   }
 

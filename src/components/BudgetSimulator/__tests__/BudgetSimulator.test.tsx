@@ -4,12 +4,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import BudgetSimulator from '../BudgetSimulator';
 import { BudgetProvider } from '../../../context/BudgetContext';
 import { SettingsProvider } from '../../../context/SettingsContext';
+import { WhatsAppContactProvider } from '../../../context/WhatsAppContactContext';
 
 const renderWithProvider = () => render(
   <SettingsProvider>
-    <BudgetProvider>
-      <BudgetSimulator />
-    </BudgetProvider>
+    <WhatsAppContactProvider>
+      <BudgetProvider>
+        <BudgetSimulator />
+      </BudgetProvider>
+    </WhatsAppContactProvider>
   </SettingsProvider>,
 );
 
@@ -83,6 +86,10 @@ describe('BudgetSimulator Component', () => {
     expect(screen.getAllByRole('button', { name: /Editar/i })).toHaveLength(4);
 
     fireEvent.click(screen.getByRole('button', { name: /Enviar pelo WhatsApp/i }));
+
+    expect(screen.getByRole('dialog', { name: /Com quem você deseja falar/i })).toBeInTheDocument();
+    expect(openMock).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /Marcos Manerich/i }));
 
     expect(openMock).toHaveBeenCalledOnce();
     const whatsappUrl = String(openMock.mock.calls[0][0]);

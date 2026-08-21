@@ -14,8 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useSettings } from '../../context/SettingsContext';
-import { getWhatsAppLink } from '../../utils/whatsapp';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 
 const iconMap: Record<string, LucideIcon> = {
   Wind,
@@ -46,7 +45,7 @@ const ServiceCard = memo(function ServiceCard({
   description,
   bulletPoints,
 }: ServiceCardProps) {
-  const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
   const IconComponent: LucideIcon = typeof icon === 'string' ? (iconMap[icon] || Wrench) : icon;
   const visiblePoints = bulletPoints.slice(0, 2);
   const serviceMsg = `Olá! Gostaria de solicitar um orçamento para: ${title}`;
@@ -81,15 +80,14 @@ const ServiceCard = memo(function ServiceCard({
         </ul>
       )}
 
-      <a
-        href={getWhatsAppLink(serviceMsg, settings.whatsapp_number)}
-        target="whatsapp"
-        rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={() => openWhatsAppSelector(serviceMsg)}
         className="mt-auto inline-flex min-h-11 items-center gap-2 self-start rounded-control pt-5 text-sm font-bold text-brand-cyan-700 transition-colors hover:text-brand-navy-800"
       >
         Solicitar orçamento
         <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-      </a>
+      </button>
     </motion.article>
   );
 });

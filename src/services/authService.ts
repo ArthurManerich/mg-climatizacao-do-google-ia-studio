@@ -1,4 +1,9 @@
 import { supabase, hasSupabaseConfig } from '../lib/supabase';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
+import {
+  notifyAdminAuthorizationFailure,
+  subscribeAdminAuthorizationFailure,
+} from './adminAuthEvents';
 
 const configurationError = () => new Error(
   'O acesso administrativo está indisponível. Configure as credenciais do Supabase para continuar.'
@@ -87,11 +92,19 @@ export const authService = {
   /**
    * Escuta mudanças de sessão do Supabase.
    */
-  onAuthStateChange(callback: (event: string, session: unknown) => void) {
+  onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
     if (!hasSupabaseConfig()) {
       return { data: { subscription: { unsubscribe: () => {} } } };
     }
 
     return supabase.auth.onAuthStateChange(callback);
+  },
+
+  invalidateAdminAuthorization() {
+    notifyAdminAuthorizationFailure(401);
+  },
+
+  onAdminAuthorizationFailure(callback: () => void) {
+    return subscribeAdminAuthorizationFailure(callback);
   },
 };

@@ -2,10 +2,6 @@ import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Faq } from '../types';
 import { createReadError } from './readError';
 
-const LOCAL_STORAGE_KEY = 'mgclimatizacao_faq';
-
-const initialItems: Faq[] = [];
-
 function isFurnitureText(text: string): boolean {
   if (!text) return false;
   const normalized = text

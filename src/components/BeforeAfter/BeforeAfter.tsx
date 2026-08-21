@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, ImageOff, Phone, RefreshCw, SlidersHorizontal } from 'lucide-react';
 import { BRAND } from '../../config';
-import { useSettings } from '../../context/SettingsContext';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 import { beforeAfterService } from '../../services/beforeAfterService';
 import { BeforeAfterItem } from '../../types';
-import { getWhatsAppLink } from '../../utils/whatsapp';
 
 function UnavailableImage({ label }: { label: string }) {
   return <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-brand-navy-900 text-white/75"><ImageOff aria-hidden="true" className="h-7 w-7 text-brand-cyan-400" /><span className="text-xs font-semibold">{label} indisponível</span></div>;
 }
 
 export default function BeforeAfter() {
-  const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
   const [items, setItems] = useState<BeforeAfterItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,11 +69,11 @@ export default function BeforeAfter() {
             {items.length > 1 && <div aria-label="Escolher comparativo" className="mb-5 flex gap-2 overflow-x-auto pb-2 sm:justify-center">{items.map((item, index) => <button key={item.id} type="button" aria-pressed={selectedIndex === index} onClick={() => { setSelectedIndex(index); setSliderPosition(50); }} className={`min-h-11 shrink-0 rounded-pill border px-4 py-2 text-sm font-semibold transition-colors ${selectedIndex === index ? 'border-brand-cyan-400 bg-brand-cyan-600 text-white' : 'border-white/15 bg-white/[0.04] text-slate-200 hover:bg-white/[0.08]'}`}>{item.title}</button>)}</div>}
             <article className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
               <div ref={sliderContainerRef} onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); updatePosition(event.clientX); }} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) updatePosition(event.clientX); }} className="relative aspect-[4/3] w-full cursor-ew-resize select-none overflow-hidden bg-brand-navy-900 touch-pan-y sm:aspect-[16/10]" aria-hidden="true">
-                {beforeFailed ? <UnavailableImage label="Imagem de antes" /> : <img src={currentItem.before_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setBeforeFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
-                <span className="absolute left-3 top-3 rounded-pill bg-brand-navy-950/85 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Antes</span>
+                {afterFailed ? <UnavailableImage label="Imagem de depois" /> : <img data-comparison-image="after" src={currentItem.after_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setAfterFailed(true)} className="absolute inset-0 h-full w-full object-cover" />}
+                <span className="absolute right-3 top-3 rounded-pill bg-brand-cyan-700/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Depois</span>
                 <div className="absolute inset-0 overflow-hidden" style={{ width: `${sliderPosition}%` }}>
-                  {afterFailed ? <UnavailableImage label="Imagem de depois" /> : <img src={currentItem.after_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setAfterFailed(true)} className="absolute inset-0 max-w-none object-cover" style={{ width: containerWidth ? `${containerWidth}px` : '100%', height: '100%' }} />}
-                  <span className="absolute right-3 top-3 rounded-pill bg-brand-cyan-700/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Depois</span>
+                  {beforeFailed ? <UnavailableImage label="Imagem de antes" /> : <img data-comparison-image="before" src={currentItem.before_img} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" draggable="false" onError={() => setBeforeFailed(true)} className="absolute inset-0 max-w-none object-cover" style={{ width: containerWidth ? `${containerWidth}px` : '100%', height: '100%' }} />}
+                  <span className="absolute left-3 top-3 rounded-pill bg-brand-navy-950/85 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">Antes</span>
                 </div>
                 <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white shadow-lg" style={{ left: `${sliderPosition}%` }}><span className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-brand-cyan-600 text-white shadow-floating"><SlidersHorizontal className="h-5 w-5" /></span></div>
               </div>
@@ -83,9 +82,9 @@ export default function BeforeAfter() {
                 <label className="block text-sm font-semibold text-slate-200"><span className="mb-2 flex justify-between gap-3"><span>Arraste para comparar</span><span aria-hidden="true">{Math.round(sliderPosition)}%</span></span><input type="range" min="0" max="100" value={sliderPosition} onChange={(event) => setSliderPosition(Number(event.target.value))} className="h-11 w-full cursor-ew-resize accent-brand-cyan-600" aria-label="Posição da comparação entre antes e depois" /></label>
               </div>
               <div className="border-t border-white/10 px-5 py-4 sm:px-7">
-                <a href={getWhatsAppLink(`Olá ${BRAND.name}! Vi o comparativo "${currentItem.title}" e gostaria de solicitar um orçamento.`, settings.whatsapp_number)} target="whatsapp" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 py-2.5 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600">
+                <button type="button" onClick={() => openWhatsAppSelector(`Olá ${BRAND.name}! Vi o comparativo "${currentItem.title}" e gostaria de solicitar um orçamento.`)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-4 py-2.5 text-sm font-bold text-brand-navy-950 transition-colors hover:bg-brand-orange-600">
                   <Phone aria-hidden="true" className="h-4 w-4" /> Solicitar orçamento
-                </a>
+                </button>
               </div>
             </article>
           </div>

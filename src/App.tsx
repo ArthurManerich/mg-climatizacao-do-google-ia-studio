@@ -11,6 +11,7 @@ import FloatingWhatsApp from './components/WhatsAppButton/FloatingWhatsApp';
 import AccessModeModal from './components/AccessSelector/AccessModeModal';
 import { BudgetProvider } from './context/BudgetContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { WhatsAppContactProvider } from './context/WhatsAppContactContext';
 
 // Lazy loading core landing sections
 const BeforeAfter = lazy(() => import('./components/BeforeAfter/BeforeAfter'));
@@ -79,7 +80,8 @@ function LandingPage() {
 export default function App() {
   return (
     <SettingsProvider>
-      <BudgetProvider>
+      <WhatsAppContactProvider>
+        <BudgetProvider>
         <BrowserRouter>
           <Suspense fallback={<FullPageLoading />}>
             <Routes>
@@ -96,7 +98,8 @@ export default function App() {
             </Routes>
           </Suspense>
         </BrowserRouter>
-      </BudgetProvider>
+        </BudgetProvider>
+      </WhatsAppContactProvider>
     </SettingsProvider>
   );
 }

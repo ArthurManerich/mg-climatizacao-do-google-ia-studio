@@ -2,8 +2,10 @@ import React from 'react';
 import { ArrowRight, MapPin, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useSettings } from '../../context/SettingsContext';
-import { DEFAULT_QUICK_QUOTE_MESSAGE, getWhatsAppLink } from '../../utils/whatsapp';
-import technicianHeroImg from '../../assets/images/hvac_technician_hero_1786544677995.jpg';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
+import { DEFAULT_QUICK_QUOTE_MESSAGE } from '../../utils/whatsapp';
+
+const heroServiceImg = '/brand/fotos/atendimento-real-hero.jpeg';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -16,6 +18,7 @@ const itemVariants = {
 
 export default function Hero() {
   const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
 
   return (
     <section
@@ -65,19 +68,17 @@ export default function Hero() {
               variants={itemVariants}
               className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <a
-                href={getWhatsAppLink(
+              <button
+                type="button"
+                onClick={() => openWhatsAppSelector(
                   settings.whatsapp_message || DEFAULT_QUICK_QUOTE_MESSAGE,
-                  settings.whatsapp_number,
                 )}
-                target="whatsapp"
-                rel="noopener noreferrer"
                 id="btn-whatsapp-hero"
                 className="inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-6 text-base font-bold text-brand-navy-950 shadow-card transition-colors hover:bg-brand-orange-600 sm:w-auto"
               >
                 Solicitar orçamento
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </a>
+              </button>
               <a
                 href="#orcamento-online"
                 className="inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2 rounded-control border border-brand-cyan-600/60 bg-brand-navy-900/60 px-6 text-base font-bold text-white transition-colors hover:bg-brand-cyan-600/15 sm:w-auto"
@@ -104,12 +105,12 @@ export default function Hero() {
           >
             <div className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
               <img
-                src={technicianHeroImg}
-                alt="Profissional de climatização realizando atendimento em equipamento de ar-condicionado"
+                src={heroServiceImg}
+                alt="Profissional da MG Climatização trabalhando em um aparelho de ar-condicionado"
                 decoding="async"
                 fetchPriority="high"
                 referrerPolicy="no-referrer"
-                className="aspect-[4/3] w-full object-cover object-center"
+                className="aspect-[3/4] w-full object-cover object-center lg:aspect-[4/3] lg:object-[50%_35%]"
               />
               <figcaption className="flex items-center justify-between gap-4 border-t border-white/10 px-4 py-3 text-sm text-slate-300 sm:px-5">
                 <span>Atendimento residencial e empresarial</span>

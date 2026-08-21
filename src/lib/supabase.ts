@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { notifyAdminAuthorizationFailure } from '../services/adminAuthEvents';
 
 // Retrieve Supabase credentials from environment variables
 const rawSupabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
@@ -26,7 +27,16 @@ if (!isConfigured) {
 // Instantiate the Supabase client safely
 export const supabase = createClient(
   isConfigured ? supabaseUrl : 'https://placeholder-url.supabase.co',
-  isConfigured ? supabaseAnonKey : 'placeholder-anon-key'
+  isConfigured ? supabaseAnonKey : 'placeholder-anon-key',
+  {
+    global: {
+      fetch: async (input, init) => {
+        const response = await fetch(input, init);
+        notifyAdminAuthorizationFailure(response.status);
+        return response;
+      },
+    },
+  }
 );
 
 export const hasSupabaseConfig = () => isConfigured;

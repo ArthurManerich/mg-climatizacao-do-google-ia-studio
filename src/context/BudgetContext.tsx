@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
-import { getWhatsAppLink } from '../utils/whatsapp';
-import { useSettings } from './SettingsContext';
+import { useWhatsAppContact } from './WhatsAppContactContext';
 import { settingsService } from '../services/settingsService';
-import { defaultSimulatorConfig } from '../config/simulator';
-import { SimulatorConfig } from '../types';
+import { defaultPublicSimulatorConfig } from '../config/simulator';
+import type { PublicSimulatorConfig } from '../types';
 
 export interface SimulatorState {
   serviceType: string;
@@ -19,7 +18,7 @@ export interface SimulatorState {
 export interface BudgetContextType {
   simulator: SimulatorState;
   setSimulator: React.Dispatch<React.SetStateAction<SimulatorState>>;
-  config: SimulatorConfig;
+  config: PublicSimulatorConfig;
   loadingConfig: boolean;
   configError: string | null;
   reloadConfig: () => Promise<void>;
@@ -44,8 +43,8 @@ const initialSimulatorState: SimulatorState = {
 };
 
 export function BudgetProvider({ children }: { children: ReactNode }) {
-  const { settings } = useSettings();
-  const [config, setConfig] = useState<SimulatorConfig>(defaultSimulatorConfig);
+  const { openWhatsAppSelector } = useWhatsAppContact();
+  const [config, setConfig] = useState<PublicSimulatorConfig>(defaultPublicSimulatorConfig);
   const [loadingConfig, setLoadingConfig] = useState<boolean>(true);
   const [configError, setConfigError] = useState<string | null>(null);
 
@@ -55,11 +54,11 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
     try {
       setLoadingConfig(true);
       setConfigError(null);
-      const data = await settingsService.get<SimulatorConfig>('simulator_config');
+      const data = await settingsService.getPublicSimulatorConfig();
       if (data && data.services && data.capacities) {
         setConfig(data);
       } else {
-        setConfig(defaultSimulatorConfig);
+        setConfig(defaultPublicSimulatorConfig);
       }
     } catch (err: any) {
       console.warn("Erro ao carregar configuracoes do simulador:", err);
@@ -107,8 +106,8 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       `Necessidade: ${simulator.necessity.trim()}\n\n` +
       `Gostaria de conversar sobre o atendimento e o valor do serviço.`;
 
-    window.open(getWhatsAppLink(message, settings.whatsapp_number), 'whatsapp', 'noopener,noreferrer');
-  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, simulator, settings.whatsapp_number]);
+    openWhatsAppSelector(message);
+  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, openWhatsAppSelector, simulator]);
 
   const resetSimulator = useCallback(() => {
     setSimulator(initialSimulatorState);

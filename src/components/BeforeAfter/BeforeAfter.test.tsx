@@ -29,9 +29,33 @@ describe('BeforeAfter', () => {
     const { container } = render(<BeforeAfter />);
     await screen.findByText('Higienização');
     const range = screen.getByRole('slider', { name: 'Posição da comparação entre antes e depois' });
+    const beforeImage = container.querySelector<HTMLImageElement>('[data-comparison-image="before"]');
+    const afterImage = container.querySelector<HTMLImageElement>('[data-comparison-image="after"]');
+
+    expect(range).toHaveValue('50');
+    expect(beforeImage).toHaveAttribute('src', '/antes.webp');
+    expect(afterImage).toHaveAttribute('src', '/depois.webp');
+    expect(screen.getByText('Antes')).toBeInTheDocument();
+    expect(screen.getByText('Depois')).toBeInTheDocument();
+
     fireEvent.change(range, { target: { value: '70' } });
     expect(range).toHaveValue('70');
-    expect(container.querySelector('.touch-pan-y')).toBeInTheDocument();
+    expect(beforeImage).toHaveAttribute('src', '/antes.webp');
+    expect(afterImage).toHaveAttribute('src', '/depois.webp');
+
+    const comparisonSurface = container.querySelector<HTMLDivElement>('.touch-pan-y');
+    expect(comparisonSurface).toBeInTheDocument();
+    Object.defineProperty(comparisonSurface, 'getBoundingClientRect', {
+      value: () => ({ left: 0, width: 200 }),
+    });
+    comparisonSurface!.setPointerCapture = vi.fn();
+    comparisonSurface!.hasPointerCapture = vi.fn(() => true);
+    fireEvent.pointerDown(comparisonSurface!, { pointerId: 1, clientX: 40 });
+    expect(range).toHaveValue('20');
+    fireEvent.pointerMove(comparisonSurface!, { pointerId: 1, clientX: 160 });
+    expect(range).toHaveValue('80');
+    expect(beforeImage).toHaveAttribute('src', '/antes.webp');
+    expect(afterImage).toHaveAttribute('src', '/depois.webp');
   });
 
   it('permite tentar novamente após falha', async () => {
