@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,12 +23,16 @@ vi.mock('../../services/authService', () => ({
 
 import ProtectedRoute from './ProtectedRoute';
 
-function renderRoute() {
+function FormStateProbe() {
+  return <input aria-label="Título em edição" defaultValue="" />;
+}
+
+function renderRoute(content = <div>Conteúdo administrativo</div>) {
   return render(
     <MemoryRouter initialEntries={['/admin']}>
       <Routes>
         <Route path="/login" element={<div>Login seguro</div>} />
-        <Route path="/admin" element={<ProtectedRoute><div>Conteúdo administrativo</div></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute>{content}</ProtectedRoute>} />
       </Routes>
     </MemoryRouter>
   );
@@ -113,8 +117,28 @@ describe('ProtectedRoute', () => {
 
     act(() => window.dispatchEvent(new Event('focus')));
 
-    expect(screen.queryByText('Conteúdo administrativo')).not.toBeInTheDocument();
+    expect(screen.getByText('Conteúdo administrativo')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('Login seguro')).toBeInTheDocument());
+  });
+
+  it('preserva o painel e o formulário montados durante a revalidação após fechar o seletor de arquivos', async () => {
+    let resolveRevalidation: (value: unknown) => void = () => undefined;
+    mocks.getCurrentAdmin
+      .mockResolvedValueOnce({ data: { user: { id: 'admin' }, isAdmin: true }, error: null })
+      .mockReturnValueOnce(new Promise(resolve => { resolveRevalidation = resolve; }));
+    renderRoute(<FormStateProbe />);
+    const field = await screen.findByLabelText('Título em edição');
+    fireEvent.change(field, { target: { value: 'Cadastro preservado' } });
+
+    act(() => window.dispatchEvent(new Event('focus')));
+
+    expect(screen.getByLabelText('Título em edição')).toHaveValue('Cadastro preservado');
+    expect(screen.queryByText(/Verificando permissões/i)).not.toBeInTheDocument();
+
+    await act(async () => {
+      resolveRevalidation({ data: { user: { id: 'admin' }, isAdmin: true }, error: null });
+    });
+    expect(screen.getByLabelText('Título em edição')).toHaveValue('Cadastro preservado');
   });
 
   it.each([401, 403])('revalida e bloqueia o painel após uma resposta %s', async () => {
@@ -126,7 +150,7 @@ describe('ProtectedRoute', () => {
 
     act(() => authorizationFailureCallback());
 
-    expect(screen.queryByText('Conteúdo administrativo')).not.toBeInTheDocument();
+    expect(screen.getByText('Conteúdo administrativo')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText('Login seguro')).toBeInTheDocument());
   });
 

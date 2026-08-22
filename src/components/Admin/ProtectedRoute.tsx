@@ -45,18 +45,18 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       }
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
-        void checkAuth();
+        void checkAuth(false);
       }
     });
 
     const unsubscribeAuthorizationFailure = authService.onAdminAuthorizationFailure(() => {
       if (!active) return;
-      void checkAuth();
+      void checkAuth(false);
     });
 
-    const revalidateOnFocus = () => void checkAuth();
+    const revalidateOnFocus = () => void checkAuth(false);
     const revalidateWhenVisible = () => {
-      if (document.visibilityState === 'visible') void checkAuth();
+      if (document.visibilityState === 'visible') void checkAuth(false);
     };
     window.addEventListener('focus', revalidateOnFocus);
     document.addEventListener('visibilitychange', revalidateWhenVisible);
