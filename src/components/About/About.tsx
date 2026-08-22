@@ -26,7 +26,7 @@ export default function About() {
             Quem está por trás da MG Climatização
           </h2>
           <p className="mt-5 text-base leading-relaxed text-slate-200 sm:text-lg">
-            Marcos Manerich e Gabriel Klaumann formam a equipe da MG Climatização, atendendo residências e empresas de Blumenau e região.
+            Marcos Manerich e Gabriel Klaumann Marcos formam a equipe da MG Climatização, atendendo residências e empresas de Blumenau e região.
           </p>
           <p className="mt-4 text-base leading-relaxed text-slate-300">
             O atendimento abrange instalação, manutenção, higienização, carga de fluido refrigerante e trabalho em altura quando necessário, sempre de acordo com as condições de cada serviço.

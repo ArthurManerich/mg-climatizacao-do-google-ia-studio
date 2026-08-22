@@ -21,7 +21,7 @@ export const TEAM_CONTACTS = {
     message: "Olá, Marcos! Vim pelo site da MG Climatização e gostaria de solicitar um atendimento.",
   },
   gabriel: {
-    name: "Gabriel Klaumann",
+    name: "Gabriel Klaumann Marcos",
     role: "Atendimento técnico",
     number: "5547997464218",
     displayNumber: "(47) 99746-4218",

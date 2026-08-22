@@ -12,7 +12,7 @@ describe('seletor central de WhatsApp', () => {
 
   it.each([
     ['Marcos Manerich', '5547988353004'],
-    ['Gabriel Klaumann', '5547997464218'],
+    ['Gabriel Klaumann Marcos', '5547997464218'],
   ])('abre %s com o destino correto e preserva a mensagem', (name, number) => {
     const openMock = vi.fn();
     vi.stubGlobal('open', openMock);
@@ -45,7 +45,7 @@ describe('seletor central de WhatsApp', () => {
     render(<WhatsAppContactProvider><Opener /></WhatsAppContactProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Abrir contatos' }));
     const closeButton = screen.getByRole('button', { name: 'Fechar seleção de contato' });
-    const gabrielButton = screen.getByRole('button', { name: /Gabriel Klaumann/ });
+    const gabrielButton = screen.getByRole('button', { name: /Gabriel Klaumann Marcos/ });
 
     gabrielButton.focus();
     fireEvent.keyDown(document, { key: 'Tab' });
