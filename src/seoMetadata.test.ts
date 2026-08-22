@@ -32,9 +32,29 @@ describe('SEO local', () => {
       telephone: '+5547997464218',
       sameAs: ['https://instagram.com/mgclimatizacao'],
     });
-    expect(jsonLd.areaServed).toEqual(
-      expect.arrayContaining([expect.objectContaining({ '@type': 'City', name: 'Blumenau' })]),
-    );
+    expect(jsonLd.areaServed.map((area: { name: string }) => area.name)).toEqual([
+      'Blumenau',
+      'Gaspar',
+      'Brusque',
+      'Indaial',
+      'Timbó',
+      'Pomerode',
+      'Penha',
+      'Navegantes',
+      'Balneário Camboriú',
+    ]);
+    jsonLd.areaServed.forEach((area: unknown) => {
+      expect(area).toEqual(
+        expect.objectContaining({
+          '@type': 'City',
+          containedInPlace: expect.objectContaining({
+            '@type': 'State',
+            name: 'Santa Catarina',
+            containedInPlace: { '@type': 'Country', name: 'Brasil' },
+          }),
+        }),
+      );
+    });
     const services = jsonLd.hasOfferCatalog.itemListElement.map(
       (offer: { itemOffered: { name: string } }) => offer.itemOffered.name,
     );
