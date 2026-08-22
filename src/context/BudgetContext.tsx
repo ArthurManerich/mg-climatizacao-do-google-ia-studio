@@ -6,6 +6,7 @@ import type { PublicSimulatorConfig } from '../types';
 
 export interface SimulatorState {
   serviceType: string;
+  equipment: string;
   capacity: string;
   quantity: number;
   propertyType: string;
@@ -33,6 +34,7 @@ const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
 
 const initialSimulatorState: SimulatorState = {
   serviceType: '',
+  equipment: '',
   capacity: '',
   quantity: 1,
   propertyType: '',
@@ -89,6 +91,9 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
 
   const handleSendSimulation = useCallback(() => {
     const serviceName = getServiceLabel(simulator.serviceType);
+    const equipmentName = simulator.equipment === 'nao-sei'
+      ? 'Não sei informar'
+      : simulator.equipment.trim();
     const capacityName = simulator.capacity === 'nao-sei'
       ? 'Não sei informar'
       : getCapacityLabel(simulator.capacity);
@@ -100,7 +105,8 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       `Cidade: ${simulator.city.trim()}\n` +
       `Endereço do serviço: ${simulator.serviceAddress.trim()}\n` +
       `Serviço: ${serviceName}\n` +
-      `Equipamento: ${capacityName}\n` +
+      `Aparelho: ${equipmentName}\n` +
+      `BTUs: ${capacityName}\n` +
       `Quantidade: ${simulator.quantity}\n` +
       `Tipo de imóvel: ${propertyName}\n` +
       `Necessidade: ${simulator.necessity.trim()}\n\n` +
