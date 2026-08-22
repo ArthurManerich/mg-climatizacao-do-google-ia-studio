@@ -10,6 +10,7 @@ import Footer from './components/Footer/Footer';
 import FloatingWhatsApp from './components/WhatsAppButton/FloatingWhatsApp';
 import FloatingGoogleReview from './components/GoogleReviewButton/FloatingGoogleReview';
 import DeferredSection from './components/DeferredSection/DeferredSection';
+import RouteRobotsMeta from './components/Seo/RouteRobotsMeta';
 import { BudgetProvider } from './context/BudgetContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { WhatsAppContactProvider } from './context/WhatsAppContactContext';
@@ -93,6 +94,7 @@ export default function App() {
       <WhatsAppContactProvider>
         <BudgetProvider>
         <BrowserRouter>
+          <RouteRobotsMeta />
           <Suspense fallback={<FullPageLoading />}>
             <Routes>
               <Route path="/" element={<LandingPage />} />

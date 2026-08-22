@@ -97,7 +97,7 @@ export default function Services() {
           <div className="mb-9 max-w-3xl sm:mb-12">
             <p className="text-sm font-semibold text-brand-cyan-700">Serviços</p>
             <h2 className="mt-2 font-display text-3xl font-bold leading-tight text-brand-navy-800 sm:text-4xl">
-              Soluções para climatização e refrigeração.
+              Instalação e manutenção de ar-condicionado em Blumenau.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
               Atendimento residencial e empresarial em Blumenau e região, conforme a necessidade de cada ambiente.

@@ -36,4 +36,9 @@ describe('headers de segurança do Cloudflare', () => {
     const hash = createHash('sha256').update(jsonLd).digest('base64');
     expect(headers).toContain(`'sha256-${hash}'`);
   });
+
+  it('impede indexação das rotas privadas também por header HTTP', () => {
+    expect(headers).toMatch(/\/login\s+X-Robots-Tag: noindex, nofollow/);
+    expect(headers).toMatch(/\/admin\*\s+X-Robots-Tag: noindex, nofollow/);
+  });
 });

@@ -42,11 +42,11 @@ export default function Hero() {
             </div>
 
             <h1 className="hero-reveal hero-reveal-delay-1 max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-              Conforto em cada detalhe.
+              MG Climatização: ar-condicionado em Blumenau com conforto em cada detalhe.
             </h1>
 
             <p className="hero-reveal hero-reveal-delay-2 mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg">
-              Instalação, manutenção e higienização de ar-condicionado para ambientes residenciais e empresariais.
+              Instalação, manutenção, higienização e carga de fluido refrigerante para ambientes residenciais e empresariais.
             </p>
 
             <div className="hero-reveal hero-reveal-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">

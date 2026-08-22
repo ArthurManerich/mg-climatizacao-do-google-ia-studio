@@ -35,6 +35,8 @@ describe('BeforeAfter', () => {
     expect(range).toHaveValue('50');
     expect(beforeImage).toHaveAttribute('src', '/antes.webp');
     expect(afterImage).toHaveAttribute('src', '/depois.webp');
+    expect(beforeImage).toHaveAttribute('alt', 'Situação antes do serviço: Higienização');
+    expect(afterImage).toHaveAttribute('alt', 'Resultado depois do serviço: Higienização');
     expect(screen.getByText('Antes')).toBeInTheDocument();
     expect(screen.getByText('Depois')).toBeInTheDocument();
 
