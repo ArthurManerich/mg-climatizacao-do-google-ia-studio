@@ -5,7 +5,8 @@ import {
   User,
   ExternalLink
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useAdminData, TabType } from './Hooks/useAdminData';
 import { DashboardHome } from './Dashboard/DashboardHome';
 import { 
@@ -176,7 +177,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <AnimatePresence mode="wait">
-              <motion.div
+              <m.div
                 key={admin.activeTab}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -342,7 +343,7 @@ export default function AdminDashboard() {
                   />
                 )}
 
-              </motion.div>
+              </m.div>
             </AnimatePresence>
           )}
 

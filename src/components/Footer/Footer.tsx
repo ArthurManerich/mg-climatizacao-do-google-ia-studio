@@ -1,7 +1,7 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
 
-const OFFICIAL_LOGO = '/brand/logo-principal.jpg';
+const OFFICIAL_LOGO = '/brand/logo-principal-160.webp';
 const OFFICIAL_DOMAIN = 'https://mgclimabnu.com.br/';
 const footerLinks = [
   ['Início', '#inicio'], ['Serviços', '#servicos'], ['Sobre', '#sobre'],
@@ -45,9 +45,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 pt-5 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 pt-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {settings.company_name}. Todos os direitos reservados.</p>
-          <a href="/login" className="inline-flex min-h-11 items-center text-slate-500 transition-colors hover:text-brand-cyan-400">Área restrita</a>
+          <a href="/login" className="inline-flex min-h-11 items-center text-slate-400 transition-colors hover:text-brand-cyan-400">Área restrita</a>
         </div>
       </div>
     </footer>

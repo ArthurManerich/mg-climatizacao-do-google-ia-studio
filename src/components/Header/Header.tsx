@@ -7,7 +7,7 @@ interface HeaderProps {
   onOpenAccessModal?: () => void;
 }
 
-const OFFICIAL_LOGO = '/brand/logo-principal.jpg';
+const OFFICIAL_LOGO = '/brand/logo-principal-160.webp';
 
 const navigation = [
   { label: 'Início', href: '#inicio' },
@@ -52,7 +52,6 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
           <a
             href="#inicio"
             className="flex min-w-0 items-center gap-2.5 rounded-control focus-visible:outline-offset-4 sm:gap-3"
-            aria-label="MG Climatização — início"
           >
             <img
               src={settings.logo_url || OFFICIAL_LOGO}

@@ -1,10 +1,6 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Service } from '../types';
 import { createReadError } from './readError';
-
-const LOCAL_STORAGE_KEY = 'mgclimatizacao_services';
-
-const initialItems: Service[] = [];
+import { waitForCriticalRender } from '../utils/criticalRender';
 
 function isFurnitureText(text: string): boolean {
   if (!text) return false;
@@ -28,6 +24,8 @@ export const servicesService = {
    * Busca todos os serviços
    */
   async getAll(): Promise<Service[]> {
+    await waitForCriticalRender();
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return [];
     }
@@ -61,6 +59,7 @@ export const servicesService = {
    * Cria um novo serviço
    */
   async create(item: Service): Promise<Service> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -82,6 +81,7 @@ export const servicesService = {
    * Atualiza um serviço existente
    */
   async update(id: string, item: Partial<Service>): Promise<Service> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível atualizar: Conexão com o Supabase não está configurada.');
     }
@@ -104,6 +104,7 @@ export const servicesService = {
    * Remove um serviço
    */
   async delete(id: string): Promise<void> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }

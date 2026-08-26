@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/plus-jakarta-sans-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/space-grotesk-latin.woff2") format("woff2");
+}
+
 @theme {
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-display: "Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif;
@@ -9,8 +25,8 @@
   --color-brand-navy-900: #001d3d;
   --color-brand-navy-800: #002e5c;
   --color-brand-navy-700: #003e7a;
-  --color-brand-cyan-700: #0082ba;
-  --color-brand-cyan-600: #0096d6;
+  --color-brand-cyan-700: #006b99;
+  --color-brand-cyan-600: #0077aa;
   --color-brand-cyan-400: #00b2ff;
   --color-brand-cyan-50: #e6f5fc;
   --color-brand-orange-600: #e09216;
@@ -26,8 +42,8 @@
   --color-primary: #002e5c;
   --color-primary-dark: #001d3d;
   --color-primary-light: #003e7a;
-  --color-secondary: #0096d6;
-  --color-secondary-hover: #0082ba;
+  --color-secondary: #0077aa;
+  --color-secondary-hover: #006b99;
   --color-secondary-light: #e6f5fc;
   --color-accent: #00b2ff;
   --color-accent-light: #f0f9ff;

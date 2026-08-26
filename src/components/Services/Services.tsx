@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshCw, Snowflake } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { pillarsData } from '../../data/services';
 import { servicesService } from '../../services/servicesService';
 import { Service } from '../../types';
@@ -117,7 +117,7 @@ export default function Services() {
               <p className="mt-1 text-sm text-ink-muted">Novos serviços serão apresentados aqui quando estiverem disponíveis.</p>
             </div>
           ) : (
-            <motion.div
+            <m.div
               className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
               variants={listVariants}
               initial="hidden"
@@ -134,7 +134,7 @@ export default function Services() {
                   bulletPoints={service.bullet_points || []}
                 />
               ))}
-            </motion.div>
+            </m.div>
           )}
         </div>
       </section>

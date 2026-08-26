@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       try {
         const { data } = await authService.getCurrentAdmin();
         setIsAdmin(data.isAdmin);
-      } catch (err) {
+      } catch {
         setIsAdmin(false);
       } finally {
         setLoading(false);

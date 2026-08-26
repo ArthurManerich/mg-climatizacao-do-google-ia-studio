@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { hasSupabaseConfig } from '../../lib/supabase';
 import { Lock, Mail, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -53,8 +53,8 @@ export default function Login() {
           navigate('/admin');
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Ocorreu um erro inesperado.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Ocorreu um erro inesperado.');
     } finally {
       setLoading(false);
     }
@@ -89,7 +89,7 @@ export default function Login() {
       </div>
 
       <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <motion.div 
+        <m.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
@@ -158,7 +158,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading || !hasSupabaseConfig()}
-                className="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wide uppercase bg-[#0096D6] hover:bg-[#0082BA] text-white transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0096D6] disabled:opacity-50 min-h-[48px]"
+                className="w-full flex justify-center items-center py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold tracking-wide uppercase bg-brand-cyan-600 hover:bg-brand-cyan-700 text-white transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-cyan-600 disabled:opacity-50 min-h-[48px]"
                 id="login-submit-btn"
               >
                 {loading ? (
@@ -183,7 +183,7 @@ export default function Login() {
               </p>
             </div>
           )}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

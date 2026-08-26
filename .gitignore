@@ -2,7 +2,16 @@ node_modules/
 build/
 dist/
 coverage/
+.eslintcache
+.vite/
+.cache/
+.wrangler/
+playwright-report/
+test-results/
+lighthouse-reports/
+*.tmp
 .DS_Store
 *.log
 .env*
 !.env.example
+/mg-climatizacao (3) backup/

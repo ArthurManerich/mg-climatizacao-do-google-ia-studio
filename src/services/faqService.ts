@@ -1,6 +1,6 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Faq } from '../types';
 import { createReadError } from './readError';
+import { waitForCriticalRender, waitForSectionProximity } from '../utils/criticalRender';
 
 function isFurnitureText(text: string): boolean {
   if (!text) return false;
@@ -24,6 +24,9 @@ export const faqService = {
    * Busca todas as perguntas do FAQ
    */
   async getAll(): Promise<Faq[]> {
+    await waitForSectionProximity('faq');
+    await waitForCriticalRender();
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return [];
     }
@@ -53,6 +56,7 @@ export const faqService = {
    * Cria uma nova pergunta no FAQ
    */
   async create(item: Omit<Faq, 'id'>): Promise<Faq> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -74,6 +78,7 @@ export const faqService = {
    * Atualiza uma pergunta existente
    */
   async update(id: number, item: Partial<Faq>): Promise<Faq> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível atualizar: Conexão com o Supabase não está configurada.');
     }
@@ -96,6 +101,7 @@ export const faqService = {
    * Remove uma pergunta do FAQ
    */
   async delete(id: number): Promise<void> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }

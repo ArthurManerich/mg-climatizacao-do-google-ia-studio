@@ -7,17 +7,12 @@ import {
   RefreshCw, 
   Check, 
   AlertCircle, 
-  Sparkles, 
   Wind, 
   Gauge, 
   Building2, 
-  Home, 
-  Layers, 
-  Clock, 
   DollarSign 
 } from 'lucide-react';
 import { useSimulator } from '../Hooks/useSimulator';
-import { motion } from 'motion/react';
 
 export function SimulatorManager() {
   const {

@@ -74,8 +74,8 @@ export function useFAQ() {
         setIsFaqFormOpen(false);
         setEditingFaqId(null);
       }
-    } catch (err: any) {
-      setFaqMessage({ type: 'error', text: 'Erro ao salvar pergunta: ' + (err.message || err) });
+    } catch (err: unknown) {
+      setFaqMessage({ type: 'error', text: 'Erro ao salvar pergunta: ' + (err instanceof Error ? err.message : String(err)) });
     } finally {
       setFaqSaving(false);
     }
@@ -92,8 +92,8 @@ export function useFAQ() {
       setFaqs(prev => prev.filter(f => f.id !== id));
       setFaqMessage({ type: 'success', text: 'Pergunta removida com sucesso!' });
       setDeleteFaqConfirmationId(null);
-    } catch (err: any) {
-      setFaqMessage({ type: 'error', text: 'Erro ao remover pergunta: ' + (err.message || err) });
+    } catch (err: unknown) {
+      setFaqMessage({ type: 'error', text: 'Erro ao remover pergunta: ' + (err instanceof Error ? err.message : String(err)) });
     } finally {
       deletingFaqRef.current = null;
       setDeletingFaqId(null);

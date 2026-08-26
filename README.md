@@ -1,20 +1,53 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# MG Climatização
 
-# Run and deploy your AI Studio app
+Aplicação web corporativa da MG Climatização, construída com React, TypeScript,
+Vite e Supabase.
 
-This contains everything you need to run your app locally.
+## Desenvolvimento local
 
-View your app in AI Studio: https://ai.studio/apps/fa04944f-7dee-4ca3-a273-63fd473ae197
+Pré-requisito: Node.js 22.
 
-## Run Locally
+1. Copie `.env.example` para `.env`.
+2. Preencha as variáveis públicas do projeto Supabase no arquivo local.
+3. Execute `npm ci`.
+4. Execute `npm run dev`.
 
-**Prerequisites:**  Node.js
+Nunca use uma chave `service_role` no frontend.
 
+## Validação
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```text
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+## Produção
+
+O projeto usa npm e deve ser instalado de forma reproduzível com `npm ci`.
+
+O deploy planejado usa Cloudflare Workers com assets estáticos. A configuração
+versionada em `wrangler.jsonc`:
+
+- mantém o Worker `mg-climatizacao-do-google-ia-studio`;
+- serve o diretório gerado `dist`;
+- entrega `index.html` como fallback de SPA para rotas como `/login` e `/admin`;
+- passa as respostas pelo Worker em `worker/index.ts`, que aplica os cabeçalhos
+  de segurança compatíveis com os recursos usados pela aplicação.
+
+As variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` são variáveis
+públicas de compilação do Vite. Elas devem ser configuradas no ambiente de
+build conectado ao GitHub; não são declaradas no `wrangler.jsonc`. Nunca use
+uma chave `service_role` no frontend.
+
+Validação local, sem publicar:
+
+```text
+npm run build
+npm run deploy:check
+npm run test:e2e
+```
+
+O manifesto utiliza ícones dedicados de 192×192, 512×512 e maskable derivados
+da logo oficial. O Open Graph utiliza uma imagem dedicada de 1200×630.

@@ -50,8 +50,6 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({
   portfolioMessage,
   deleteConfirmationId,
   deletingPortfolioId,
-  setIsPortfolioFormOpen,
-  setEditingPortfolioId,
   setPortfolioTitle,
   setPortfolioDescription,
   setPortfolioCategory,

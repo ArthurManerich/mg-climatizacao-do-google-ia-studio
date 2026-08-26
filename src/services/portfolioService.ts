@@ -1,9 +1,8 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Portfolio } from '../types';
-import { uploadService } from './uploadService';
 import { DeleteResult } from './deleteResult';
 import { BatchCreateResult, MutationResult } from './mutationResult';
 import { createReadError } from './readError';
+import { waitForCriticalRender, waitForSectionProximity } from '../utils/criticalRender';
 
 function sanitizePortfolio(items: Portfolio[]): Portfolio[] {
   if (!Array.isArray(items)) return [];
@@ -14,11 +13,19 @@ function sanitizePortfolio(items: Portfolio[]): Portfolio[] {
   );
 }
 
+async function deleteStoredImage(url: string): Promise<void> {
+  const { uploadService } = await import('./uploadService');
+  await uploadService.deleteImage(url);
+}
+
 export const portfolioService = {
   /**
    * Busca todos os itens do portfólio
    */
   async getAll(): Promise<Portfolio[]> {
+    await waitForSectionProximity('portfolio');
+    await waitForCriticalRender();
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return [];
     }
@@ -39,6 +46,7 @@ export const portfolioService = {
    * Adiciona um novo item ao portfólio
    */
   async create(item: Omit<Portfolio, 'id'>): Promise<Portfolio> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -47,28 +55,21 @@ export const portfolioService = {
       throw new Error('A imagem precisa ser enviada para o Supabase Storage primeiro. URLs base64 não são salvas como URL definitiva no banco de dados.');
     }
 
-    console.log("INSERT PORTFOLIO", item);
-
     const { data, error } = await supabase
       .from('portfolio')
       .insert([item])
       .select()
       .single();
 
-    console.log("INSERT RESULT", { data, error });
-
     if (error) {
-      console.error(error);
       if (error.code === '42703' || error.message?.includes('description')) {
-        const { description, ...cleanItem } = item as any;
+        const { description: _description, ...cleanItem } = item;
         const retry = await supabase
           .from('portfolio')
           .insert([cleanItem])
           .select()
           .single();
-        console.log("INSERT RETRY RESULT", retry);
         if (retry.error) {
-          console.error(retry.error);
           throw new Error(`Não foi possível salvar no banco de dados: ${retry.error.message}`);
         }
         return retry.data;
@@ -83,6 +84,7 @@ export const portfolioService = {
    * Adiciona múltiplos itens ao portfólio em lote
    */
   async createBatch(items: Omit<Portfolio, 'id'>[]): Promise<BatchCreateResult<Portfolio>> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -131,6 +133,7 @@ export const portfolioService = {
    * Atualiza um item existente
    */
   async update(id: number, item: Partial<Portfolio>, previousImageUrl?: string): Promise<MutationResult<Portfolio>> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível atualizar: Conexão com o Supabase não está configurada.');
     }
@@ -144,7 +147,7 @@ export const portfolioService = {
 
     if (error) {
       if (error.code === '42703' || error.message?.includes('description')) {
-        const { description, ...cleanItem } = item as any;
+        const { description: _description, ...cleanItem } = item;
         const retry = await supabase
           .from('portfolio')
           .update(cleanItem)
@@ -157,7 +160,7 @@ export const portfolioService = {
         const cleanupErrors: string[] = [];
         if (previousImageUrl && retry.data.img && retry.data.img !== previousImageUrl) {
           try {
-            await uploadService.deleteImage(previousImageUrl);
+            await deleteStoredImage(previousImageUrl);
           } catch (cleanupError) {
             cleanupErrors.push(cleanupError instanceof Error ? cleanupError.message : String(cleanupError));
           }
@@ -170,7 +173,7 @@ export const portfolioService = {
     const cleanupErrors: string[] = [];
     if (previousImageUrl && data.img && data.img !== previousImageUrl) {
       try {
-        await uploadService.deleteImage(previousImageUrl);
+        await deleteStoredImage(previousImageUrl);
       } catch (cleanupError) {
         cleanupErrors.push(cleanupError instanceof Error ? cleanupError.message : String(cleanupError));
       }
@@ -183,6 +186,7 @@ export const portfolioService = {
    * Remove um item do portfólio e, depois, limpa sua imagem do storage
    */
   async delete(id: number): Promise<DeleteResult> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }
@@ -217,7 +221,7 @@ export const portfolioService = {
 
     if (targetItem.img) {
       try {
-        await uploadService.deleteImage(targetItem.img);
+        await deleteStoredImage(targetItem.img);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return {

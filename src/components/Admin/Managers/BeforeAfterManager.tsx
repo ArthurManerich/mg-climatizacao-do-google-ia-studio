@@ -53,8 +53,6 @@ export const BeforeAfterManager: React.FC<BeforeAfterManagerProps> = ({
   beforeAfterMessage,
   deleteBeforeAfterConfirmationId,
   deletingBeforeAfterId,
-  setIsBeforeAfterFormOpen,
-  setEditingBeforeAfterId,
   setBeforeAfterTitle,
   setBeforeAfterDescription,
   setBeforeAfterCategory,

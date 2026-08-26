@@ -1,10 +1,15 @@
 import React from 'react';
 import { ArrowRight, MapPin, SlidersHorizontal } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useSettings } from '../../context/SettingsContext';
 import { DEFAULT_QUICK_QUOTE_MESSAGE, getWhatsAppLink } from '../../utils/whatsapp';
 
-const uniformHeroImg = '/brand/referencias/camisa-uniforme-mg-v2.png';
+const uniformHeroImg = '/brand/referencias/camisa-uniforme-mg-v2.webp';
+const uniformHeroSrcSet = [
+  '/brand/referencias/camisa-uniforme-mg-480.webp 480w',
+  '/brand/referencias/camisa-uniforme-mg-768.webp 768w',
+  `${uniformHeroImg} 1200w`,
+].join(', ');
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -34,35 +39,35 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-gutter sm:px-gutter-lg lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-14">
-          <motion.div
+          <m.div
             className="lg:col-span-7"
             initial="hidden"
             animate="visible"
             transition={{ staggerChildren: 0.1, delayChildren: 0.05 }}
           >
-            <motion.div
+            <m.div
               variants={itemVariants}
               className="mb-5 flex items-center gap-3 text-sm font-semibold text-brand-cyan-400"
             >
               <span className="h-px w-8 bg-brand-cyan-400" aria-hidden="true" />
               <span>Climatização em Blumenau e região</span>
-            </motion.div>
+            </m.div>
 
-            <motion.h1
+            <m.h1
               variants={itemVariants}
               className="max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             >
               Conforto em cada detalhe.
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               variants={itemVariants}
               className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg"
             >
               Instalação, manutenção e higienização de ar-condicionado para ambientes residenciais e empresariais.
-            </motion.p>
+            </m.p>
 
-            <motion.div
+            <m.div
               variants={itemVariants}
               className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
@@ -86,27 +91,26 @@ export default function Hero() {
                 <SlidersHorizontal className="h-5 w-5 text-brand-cyan-400" aria-hidden="true" />
                 Montar solicitação
               </a>
-            </motion.div>
+            </m.div>
 
-            <motion.div
+            <m.div
               variants={itemVariants}
               className="mt-7 flex max-w-xl items-start gap-2.5 border-t border-white/10 pt-5 text-sm leading-relaxed text-slate-300"
             >
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-cyan-400" aria-hidden="true" />
               <p>Atendemos Blumenau e região, com garantia de 90 dias nos serviços e emissão de Nota Fiscal.</p>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
 
-          <motion.figure
-            className="mx-auto w-full max-w-xl lg:col-span-5"
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-          >
+          <figure className="mx-auto w-full max-w-xl lg:col-span-5">
             <div className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
               <img
                 src={uniformHeroImg}
+                srcSet={uniformHeroSrcSet}
+                sizes="(max-width: 1023px) calc(100vw - 2rem), 36rem"
                 alt="Uniforme oficial da MG Climatização, exibido de frente e de costas"
+                width="1200"
+                height="960"
                 decoding="async"
                 fetchPriority="high"
                 referrerPolicy="no-referrer"
@@ -117,7 +121,7 @@ export default function Hero() {
                 <span className="hidden font-semibold text-brand-cyan-400 sm:inline">MG Climatização</span>
               </figcaption>
             </div>
-          </motion.figure>
+          </figure>
         </div>
       </div>
     </section>

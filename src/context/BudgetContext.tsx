@@ -61,7 +61,7 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       } else {
         setConfig(defaultPublicSimulatorConfig);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn("Erro ao carregar configuracoes do simulador:", err);
       setConfigError("Erro ao carregar os dados.");
     } finally {

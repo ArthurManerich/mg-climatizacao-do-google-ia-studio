@@ -5,7 +5,7 @@ global.IntersectionObserver = class IntersectionObserver {
   readonly root: Element | Document | null = null;
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];
-  constructor(private callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
+  constructor(private callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
   observe() {}
   unobserve() {}
   disconnect() {}

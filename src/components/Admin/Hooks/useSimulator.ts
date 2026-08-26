@@ -26,7 +26,7 @@ export function useSimulator() {
       } else {
         setConfig(defaultAdminSimulatorConfig);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro ao carregar configuracoes do simulador:", err);
       setError("Erro ao carregar dados do simulador.");
     } finally {
@@ -47,7 +47,7 @@ export function useSimulator() {
       setConfig(newConfig);
       setSuccess("Configurações do simulador salvas com sucesso!");
       setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro ao salvar configuracoes do simulador:", err);
       setError("Erro ao salvar as alterações no banco de dados.");
     } finally {

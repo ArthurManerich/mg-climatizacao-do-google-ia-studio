@@ -13,7 +13,7 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useSettings } from '../../context/SettingsContext';
 import { getWhatsAppLink } from '../../utils/whatsapp';
 
@@ -52,7 +52,7 @@ const ServiceCard = memo(function ServiceCard({
   const serviceMsg = `Olá! Gostaria de solicitar um orçamento para: ${title}`;
 
   return (
-    <motion.article
+    <m.article
       id={id}
       variants={{
         hidden: { opacity: 0, y: 16 },
@@ -90,7 +90,7 @@ const ServiceCard = memo(function ServiceCard({
         Solicitar orçamento
         <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
       </a>
-    </motion.article>
+    </m.article>
   );
 });
 

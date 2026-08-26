@@ -106,9 +106,8 @@ export function usePortfolio() {
           text: `${files.length} fotos enviadas com sucesso! Preencha o título e clique em salvar.` 
         });
       }
-    } catch (err: any) {
-      console.error(err);
-      setPortfolioMessage({ type: 'error', text: err.message || 'Erro ao enviar fotos.' });
+    } catch (err: unknown) {
+      setPortfolioMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erro ao enviar fotos.' });
     } finally {
       e.target.value = '';
     }
@@ -219,13 +218,13 @@ export function usePortfolio() {
         setPortfolioImg('');
         setPortfolioImages([]);
       }
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
       const cleanupResult = await cleanupPendingUrls(pendingUploadedUrls);
       const cleanupWarning = cleanupResult.errors.length > 0
         ? ` As imagens novas podem ter permanecido órfãs no Storage: ${cleanupResult.errors.join('; ')}`
         : '';
-      setPortfolioMessage({ type: 'error', text: 'Erro ao salvar serviço: ' + (err.message || err) + cleanupWarning });
+      const message = err instanceof Error ? err.message : String(err);
+      setPortfolioMessage({ type: 'error', text: 'Erro ao salvar serviço: ' + message + cleanupWarning });
     } finally {
       setPortfolioSaving(false);
     }
@@ -250,8 +249,8 @@ export function usePortfolio() {
           text: `Serviço removido do banco de dados, mas a imagem pode ter permanecido órfã no Storage: ${result.cleanupErrors.join('; ')}`,
         });
       }
-    } catch (err: any) {
-      setPortfolioMessage({ type: 'error', text: 'Erro ao deletar serviço: ' + (err.message || err) });
+    } catch (err: unknown) {
+      setPortfolioMessage({ type: 'error', text: 'Erro ao deletar serviço: ' + (err instanceof Error ? err.message : String(err)) });
     } finally {
       deletingPortfolioRef.current = null;
       setDeletingPortfolioId(null);

@@ -11,7 +11,7 @@ export default function FloatingWhatsApp() {
       target="whatsapp"
       rel="noopener noreferrer"
       aria-label="Solicitar orçamento no WhatsApp"
-      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-40 flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-emerald-600 text-white shadow-floating transition-colors hover:bg-emerald-700 active:bg-emerald-800 sm:h-13 sm:w-auto sm:min-w-13 sm:gap-2 sm:px-4"
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-40 flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-emerald-700 text-white shadow-floating transition-colors hover:bg-emerald-800 active:bg-emerald-900 sm:h-13 sm:w-auto sm:min-w-13 sm:gap-2 sm:px-4"
       id="floating-whatsapp-btn"
     >
       <MessageCircle aria-hidden="true" className="h-5 w-5 shrink-0" />

@@ -30,7 +30,7 @@ describe('fechamento público da landing page', () => {
 
   it('usa logo oficial, domínio correto e nomenclatura sem preço no Footer', () => {
     render(<Footer />);
-    expect(screen.getByAltText('Logo oficial da MG Climatização')).toHaveAttribute('src', '/brand/logo-principal.jpg');
+    expect(screen.getByAltText('Logo oficial da MG Climatização')).toHaveAttribute('src', '/brand/logo-principal-160.webp');
     expect(screen.getByRole('link', { name: 'mgclimabnu.com.br' })).toHaveAttribute('href', 'https://mgclimabnu.com.br/');
     expect(screen.getByRole('link', { name: 'Montar solicitação' })).toHaveAttribute('href', '#orcamento-online');
     expect(screen.queryByText(/Simular Preço/i)).not.toBeInTheDocument();

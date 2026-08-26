@@ -13,6 +13,8 @@ import { useBeforeAfter } from './useBeforeAfter';
 import { useServices } from './useServices';
 import { useFAQ } from './useFAQ';
 import { useSettings } from './useSettings';
+import type { Testimonial } from '../../../types';
+import type { WhatsappContact } from '../../../types/settings.types';
 
 export type TabType = 'dashboard' | 'portfolio' | 'before_after' | 'services' | 'faq' | 'simulator' | 'settings' | 'whatsapp';
 
@@ -35,9 +37,9 @@ export function useAdminData() {
   const settingsHook = useSettings();
 
   // Additional data
-  const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [whatsappConfig, setWhatsappConfig] = useState<any>(null);
-  const [budgetPrices, setBudgetPrices] = useState<any>(null);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [whatsappConfig, setWhatsappConfig] = useState<WhatsappContact | null>(null);
+  const [budgetPrices, setBudgetPrices] = useState<unknown>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -142,6 +144,8 @@ export function useAdminData() {
     return () => {
       loadRequestIdRef.current += 1;
     };
+    // Initial dashboard hydration is intentionally run once; reloads use reloadAllData.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogout = async () => {

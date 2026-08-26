@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { LazyMotion } from 'motion/react';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
 import Services from './components/Services/Services';
@@ -21,6 +22,7 @@ const FAQ = lazy(() => import('./components/FAQ/FAQ'));
 const Login = lazy(() => import('./components/Login/Login'));
 const ProtectedRoute = lazy(() => import('./components/Admin/ProtectedRoute'));
 const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
+const loadMotionFeatures = () => import('./motionFeatures').then((module) => module.default);
 
 const LoadingFallback = () => (
   <div className="py-20 flex justify-center items-center bg-white">
@@ -78,25 +80,27 @@ function LandingPage() {
 
 export default function App() {
   return (
-    <SettingsProvider>
-      <BudgetProvider>
-        <BrowserRouter>
-          <Suspense fallback={<FullPageLoading />}>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/admin" 
-                element={
-                  <ProtectedRoute>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </BudgetProvider>
-    </SettingsProvider>
+    <LazyMotion features={loadMotionFeatures} strict>
+      <SettingsProvider>
+        <BudgetProvider>
+          <BrowserRouter>
+            <Suspense fallback={<FullPageLoading />}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </BudgetProvider>
+      </SettingsProvider>
+    </LazyMotion>
   );
 }

@@ -48,7 +48,7 @@ export interface BeforeAfter {
 
 export interface Setting {
   key: string;
-  value: any;
+  value: unknown;
   updated_at?: string;
 }
 

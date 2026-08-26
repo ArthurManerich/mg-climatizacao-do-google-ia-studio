@@ -1,9 +1,8 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { BeforeAfter } from '../types';
-import { uploadService } from './uploadService';
 import { DeleteResult } from './deleteResult';
 import { MutationResult } from './mutationResult';
 import { createReadError } from './readError';
+import { waitForCriticalRender, waitForSectionProximity } from '../utils/criticalRender';
 
 async function cleanupReplacedImages(
   previousImages: Pick<BeforeAfter, 'before_img' | 'after_img'> | undefined,
@@ -12,6 +11,7 @@ async function cleanupReplacedImages(
   if (!previousImages) return [];
 
   const cleanupErrors: string[] = [];
+  const { uploadService } = await import('./uploadService');
   const replacements = [
     { label: 'Antes', previous: previousImages.before_img, current: updated.before_img },
     { label: 'Depois', previous: previousImages.after_img, current: updated.after_img },
@@ -34,6 +34,9 @@ export const beforeAfterService = {
    * Busca todos os registros de antes e depois
    */
   async getAll(): Promise<BeforeAfter[]> {
+    await waitForSectionProximity('antes-depois');
+    await waitForCriticalRender();
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return [];
     }
@@ -54,6 +57,7 @@ export const beforeAfterService = {
    * Cria um novo registro de antes e depois
    */
   async create(item: Omit<BeforeAfter, 'id'>): Promise<BeforeAfter> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -66,7 +70,7 @@ export const beforeAfterService = {
 
     if (error) {
       if (error.code === '42703' || error.message?.includes('category')) {
-        const { category, ...cleanItem } = item as any;
+        const { category, ...cleanItem } = item;
         const retry = await supabase
           .from('before_after')
           .insert([cleanItem])
@@ -91,6 +95,7 @@ export const beforeAfterService = {
     item: Partial<BeforeAfter>,
     previousImages?: Pick<BeforeAfter, 'before_img' | 'after_img'>
   ): Promise<MutationResult<BeforeAfter>> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível atualizar: Conexão com o Supabase não está configurada.');
     }
@@ -104,7 +109,7 @@ export const beforeAfterService = {
 
     if (error) {
       if (error.code === '42703' || error.message?.includes('category')) {
-        const { category, ...cleanItem } = item as any;
+        const { category, ...cleanItem } = item;
         const retry = await supabase
           .from('before_after')
           .update(cleanItem)
@@ -129,6 +134,7 @@ export const beforeAfterService = {
    * Remove um registro e, depois, limpa suas fotos do storage
    */
   async delete(id: number): Promise<DeleteResult> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }
@@ -162,6 +168,7 @@ export const beforeAfterService = {
     }
 
     const cleanupErrors: string[] = [];
+    const { uploadService } = await import('./uploadService');
     const images = [
       { label: 'Antes', url: targetItem.before_img },
       { label: 'Depois', url: targetItem.after_img },

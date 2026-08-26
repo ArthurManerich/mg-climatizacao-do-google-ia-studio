@@ -76,10 +76,10 @@ export function useUploads(options?: UploadOptions) {
       }, 400);
 
       return url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       setIsUploading(false);
       setProgress(0);
-      const friendlyMsg = err?.message || 'Erro ao fazer upload da imagem. Tente novamente.';
+      const friendlyMsg = err instanceof Error ? err.message : 'Erro ao fazer upload da imagem. Tente novamente.';
       setError(friendlyMsg);
       throw new Error(friendlyMsg);
     }

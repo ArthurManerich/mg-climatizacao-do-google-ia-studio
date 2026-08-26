@@ -14,7 +14,7 @@ export function usePortfolio() {
       setError(null);
       const data = await portfolioService.getAll();
       setUserPhotos(data);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.warn("Erro ao carregar fotos do portfólio:", e);
       setError("Erro ao carregar os dados.");
     } finally {

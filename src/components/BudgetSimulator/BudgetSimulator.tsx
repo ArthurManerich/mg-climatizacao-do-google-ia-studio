@@ -20,7 +20,7 @@ import {
   Wind,
   Wrench,
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useBudget } from '../../context/BudgetContext';
 
 const steps = [
@@ -167,7 +167,7 @@ export default function BudgetSimulator() {
             </div>
             <ol className="mt-4 hidden grid-cols-5 gap-3 text-xs sm:grid" aria-label="Etapas da solicitação">
               {steps.map((item) => (
-                <li key={item.number} className={step >= item.number ? 'text-white' : 'text-slate-500'}>
+                <li key={item.number} className={step >= item.number ? 'text-white' : 'text-slate-400'}>
                   <span className="font-bold">{item.number}.</span> {item.label}
                 </li>
               ))}
@@ -176,7 +176,7 @@ export default function BudgetSimulator() {
 
           <div className="p-4 sm:p-7 lg:p-9">
             {error && (
-              <motion.div
+              <m.div
                 role="alert"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -184,10 +184,10 @@ export default function BudgetSimulator() {
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                 {error}
-              </motion.div>
+              </m.div>
             )}
 
-            <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+            <m.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
               {step === 1 && (
                 <fieldset>
                   <legend className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Qual serviço você precisa?</legend>
@@ -393,7 +393,7 @@ export default function BudgetSimulator() {
                   </div>
                 </div>
               )}
-            </motion.div>
+            </m.div>
 
             <div className="mt-7 flex items-center justify-between gap-3 border-t border-line pt-5">
               {step > 1 && step < 5 ? (

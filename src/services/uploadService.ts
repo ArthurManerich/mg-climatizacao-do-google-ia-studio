@@ -71,13 +71,10 @@ async function compressImageToWebP(
 /**
  * Converte um arquivo File/Blob para uma string Data URL (base64)
  */
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (err) => reject(err);
-    reader.readAsDataURL(file);
-  });
+type StorageErrorDetails = { statusCode?: string; code?: string };
+
+function storageErrorDetails(error: unknown): StorageErrorDetails {
+  return typeof error === 'object' && error !== null ? error as StorageErrorDetails : {};
 }
 
 export const uploadService = {
@@ -102,9 +99,7 @@ export const uploadService = {
     }
 
     const fileName = `${folder}/${Math.random().toString(36).substring(2)}_${Date.now()}.webp`;
-    console.log("UPLOAD INICIADO no Supabase Storage:", fileName, compressedFile);
-
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('images')
       .upload(fileName, compressedFile, {
         cacheControl: '3600',
@@ -113,11 +108,11 @@ export const uploadService = {
       });
 
     if (error) {
-      console.error("UPLOAD ERROR Supabase Storage:", error);
-      if (error.message?.includes('Bucket not found') || (error as any).statusCode === '404' || (error as any).code === 'NoSuchBucket') {
+      const details = storageErrorDetails(error);
+      if (error.message?.includes('Bucket not found') || details.statusCode === '404' || details.code === 'NoSuchBucket') {
         throw new Error('O bucket "images" não foi encontrado no Supabase Storage. Execute a seção STORAGE BUCKET do arquivo supabase_schema.sql no SQL Editor do Supabase para criar o bucket "images".');
       }
-      if (error.message?.includes('row-level security') || error.message?.includes('RLS') || (error as any).statusCode === '403') {
+      if (error.message?.includes('row-level security') || error.message?.includes('RLS') || details.statusCode === '403') {
         throw new Error('Bloqueado por RLS do Supabase Storage: Execute o conteúdo do arquivo supabase_schema.sql no SQL Editor do Supabase para aplicar a função is_admin() e as políticas do bucket "images".');
       }
       throw new Error(`Falha no upload da imagem para o Supabase Storage: ${error.message}`);
@@ -126,8 +121,6 @@ export const uploadService = {
     const { data: { publicUrl } } = supabase.storage
       .from('images')
       .getPublicUrl(fileName);
-
-    console.log("PUBLIC URL GERADA:", publicUrl);
 
     if (!publicUrl || publicUrl.startsWith('data:')) {
       throw new Error('Não foi possível obter a URL pública válida da imagem no Supabase Storage.');

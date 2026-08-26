@@ -1,16 +1,14 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { Testimonial } from '../types';
 import { createReadError } from './readError';
-
-const LOCAL_STORAGE_KEY = 'mgclimatizacao_testimonials';
-
-const initialItems: Testimonial[] = [];
+import { waitForCriticalRender } from '../utils/criticalRender';
 
 export const testimonialsService = {
   /**
    * Busca todos os depoimentos
    */
   async getAll(): Promise<Testimonial[]> {
+    await waitForCriticalRender();
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return [];
     }
@@ -31,6 +29,7 @@ export const testimonialsService = {
    * Cria um novo depoimento
    */
   async create(item: Omit<Testimonial, 'id'>): Promise<Testimonial> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível salvar: Conexão com o Supabase não está configurada.');
     }
@@ -52,6 +51,7 @@ export const testimonialsService = {
    * Atualiza um depoimento existente
    */
   async update(id: number, item: Partial<Testimonial>): Promise<Testimonial> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível atualizar: Conexão com o Supabase não está configurada.');
     }
@@ -74,6 +74,7 @@ export const testimonialsService = {
    * Remove um depoimento
    */
   async delete(id: number): Promise<void> {
+    const { supabase, hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }

@@ -90,8 +90,8 @@ export function useBeforeAfter() {
       setBeforeAfterMessage(cleanupResult && cleanupResult.errors.length > 0
         ? { type: 'error', text: `Foto ANTES substituída, mas a pendente anterior pode ter permanecido órfã: ${cleanupResult.errors.join('; ')}` }
         : { type: 'success', text: 'Foto ANTES enviada com sucesso!' });
-    } catch (err: any) {
-      setBeforeAfterMessage({ type: 'error', text: err.message || 'Erro ao enviar foto ANTES.' });
+    } catch (err: unknown) {
+      setBeforeAfterMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erro ao enviar foto ANTES.' });
     }
   };
 
@@ -109,8 +109,8 @@ export function useBeforeAfter() {
       setBeforeAfterMessage(cleanupResult && cleanupResult.errors.length > 0
         ? { type: 'error', text: `Foto DEPOIS substituída, mas a pendente anterior pode ter permanecido órfã: ${cleanupResult.errors.join('; ')}` }
         : { type: 'success', text: 'Foto DEPOIS enviada com sucesso!' });
-    } catch (err: any) {
-      setBeforeAfterMessage({ type: 'error', text: err.message || 'Erro ao enviar foto DEPOIS.' });
+    } catch (err: unknown) {
+      setBeforeAfterMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erro ao enviar foto DEPOIS.' });
     }
   };
 
@@ -162,12 +162,13 @@ export function useBeforeAfter() {
         setIsBeforeAfterFormOpen(false);
         setEditingBeforeAfterId(null);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       const cleanupResult = await cleanupPendingUrls(pendingUploadedUrls);
       const cleanupWarning = cleanupResult.errors.length > 0
         ? ` As imagens novas podem ter permanecido órfãs no Storage: ${cleanupResult.errors.join('; ')}`
         : '';
-      setBeforeAfterMessage({ type: 'error', text: 'Erro ao salvar comparativo: ' + (err.message || err) + cleanupWarning });
+      const message = err instanceof Error ? err.message : String(err);
+      setBeforeAfterMessage({ type: 'error', text: 'Erro ao salvar comparativo: ' + message + cleanupWarning });
     } finally {
       setBeforeAfterSaving(false);
     }
@@ -204,8 +205,8 @@ export function useBeforeAfter() {
           text: `Comparativo removido do banco de dados, mas uma ou mais imagens podem ter permanecido órfãs no Storage: ${result.cleanupErrors.join('; ')}`,
         });
       }
-    } catch (err: any) {
-      setBeforeAfterMessage({ type: 'error', text: 'Erro ao excluir comparativo: ' + (err.message || err) });
+    } catch (err: unknown) {
+      setBeforeAfterMessage({ type: 'error', text: 'Erro ao excluir comparativo: ' + (err instanceof Error ? err.message : String(err)) });
     } finally {
       deletingBeforeAfterRef.current = null;
       setDeletingBeforeAfterId(null);

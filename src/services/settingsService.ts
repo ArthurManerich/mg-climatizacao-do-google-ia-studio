@@ -1,6 +1,6 @@
-import { supabase, hasSupabaseConfig } from '../lib/supabase';
 import { defaultPublicSimulatorConfig } from '../config/simulator';
 import type { PublicSimulatorConfig } from '../types';
+import { waitForCriticalRender } from '../utils/criticalRender';
 import {
   DEFAULT_COMPANY_SETTINGS,
   type CompanySettings,
@@ -37,6 +37,7 @@ function sanitizePublicSimulatorConfig(value: unknown): PublicSimulatorConfig | 
 }
 
 async function readSetting<T>(key: string): Promise<T | undefined> {
+  const { supabase } = await import('../lib/supabase');
   const { data, error } = await supabase
     .from('settings')
     .select('value')
@@ -52,6 +53,8 @@ async function readSetting<T>(key: string): Promise<T | undefined> {
 
 export const settingsService = {
   async getPublicSimulatorConfig(): Promise<PublicSimulatorConfig> {
+    await waitForCriticalRender();
+    const { hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return defaultPublicSimulatorConfig;
     }
@@ -61,6 +64,8 @@ export const settingsService = {
   },
 
   async getCompanySettings(): Promise<SettingsWithFallback> {
+    await waitForCriticalRender();
+    const { hasSupabaseConfig } = await import('../lib/supabase');
     if (!hasSupabaseConfig()) {
       return { settings: DEFAULT_COMPANY_SETTINGS, source: 'defaults' };
     }
