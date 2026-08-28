@@ -222,15 +222,13 @@ CREATE POLICY "Apenas administradores gerenciam admin_users"
 INSERT INTO public.services (id, icon, title, description, bullet_points, order_index) VALUES
 ('servico-instalacao', 'Snowflake', 'Instalação de Ar-Condicionado', 'Instalação técnica completa seguindo as normas dos fabricantes, garantindo eficiência energética e durabilidade.', ARRAY['Infraestrutura e tubulação em cobre', 'Testes de estanqueidade e vácuo', 'Garantia de serviço e suporte'], 1),
 ('servico-higienizacao', 'Sparkles', 'Higienização e Limpeza Técnica', 'Limpeza profunda com bactericida e higienização de filtros, turbinas e bandejas de condensado.', ARRAY['Eliminação de fungos e bactérias', 'Melhora da qualidade do ar', 'Redução do consumo de energia'], 2),
-('servico-manutencao', 'Wrench', 'Manutenção Preventiva e Corretiva', 'Diagnóstico preciso e reparo de vazamentos, substituição de peças e carga de gás refrigerante.', ARRAY['Carga de gás refrigerante R-410A / R-32', 'Troca de capacitores e placas', 'Diagnóstico e correção de ruídos'], 3),
-('servico-pmoc', 'ShieldCheck', 'PMOC e Contrato Empresarial', 'Plano de Manutenção, Operação e Controle conforme exigência legal da ANVISA para empresas e comércios.', ARRAY['Laudo técnico e ART se necessário', 'Visitas periódicas programadas', 'Conformidade com normas sanitárias'], 4)
+('servico-manutencao', 'Wrench', 'Manutenção Preventiva e Corretiva', 'Diagnóstico preciso e reparo de vazamentos, substituição de peças e carga de gás refrigerante.', ARRAY['Carga de gás refrigerante R-410A / R-32', 'Troca de capacitores e placas', 'Diagnóstico e correção de ruídos'], 3)
 ON CONFLICT (id) DO NOTHING;
 
 WITH faq_seed(q, a, order_index) AS (
   VALUES
     ('Quanto tempo demora uma instalação de ar-condicionado?', 'Em média, uma instalação residencial padrão leva de 2 a 4 horas, dependendo da complexidade da infraestrutura e do local de fixação das unidades.', 1),
     ('Com que frequência devo fazer a higienização do aparelho?', 'Para ambientes residenciais, recomendamos a higienização completa a cada 6 meses. Em escritórios ou comércios com uso intenso, o ideal é realizar a manutenção a cada 3 a 4 meses.', 2),
-    ('Vocês atendem empresas e emitem nota fiscal?', 'Sim! Atendemos residências e empresas de todos os portes em Blumenau e região, com emissão de nota fiscal e contratos de manutenção PMOC.', 3),
     ('Como funciona a garantia do serviço de instalação?', 'Oferecemos garantia de 1 ano em nossos serviços de instalação, além de manter a garantia original do fabricante por seguir todos os padrões técnicos.', 4)
 )
 INSERT INTO public.faq (q, a, order_index)
