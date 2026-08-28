@@ -26,7 +26,7 @@ export const ADMIN_DESTINATIONS: AdminDestination[] = [
   { id: 'before_after', label: 'Antes & Depois', shortLabel: 'Antes & Depois', bottomLabel: 'Antes', icon: Layers, mobilePrimary: true },
   { id: 'services', label: 'Especialidades', shortLabel: 'Serviços', bottomLabel: 'Serviços', icon: Shield, mobilePrimary: false },
   { id: 'faq', label: 'Dúvidas / FAQ', shortLabel: 'FAQ', bottomLabel: 'FAQ', icon: HelpCircle, mobilePrimary: true },
-  { id: 'simulator', label: 'Simulador / Preços', shortLabel: 'Simulador', bottomLabel: 'Simulador', icon: Calculator, mobilePrimary: false },
+  { id: 'simulator', label: 'Opções do simulador', shortLabel: 'Simulador', bottomLabel: 'Simulador', icon: Calculator, mobilePrimary: false },
   { id: 'settings', label: 'Configurações', shortLabel: 'Configurações', bottomLabel: 'Configurações', icon: Settings, mobilePrimary: false },
   { id: 'whatsapp', label: 'WhatsApp / Contato', shortLabel: 'WhatsApp', bottomLabel: 'WhatsApp', icon: Phone, mobilePrimary: false },
 ];

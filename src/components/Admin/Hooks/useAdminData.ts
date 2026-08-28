@@ -7,7 +7,6 @@ import { servicesService } from '../../../services/servicesService';
 import { faqService } from '../../../services/faqService';
 import { testimonialsService } from '../../../services/testimonialsService';
 import { settingsService } from '../../../services/settingsService';
-import { adminSettingsService } from '../../../services/adminSettingsService';
 import { usePortfolio } from './usePortfolio';
 import { useBeforeAfter } from './useBeforeAfter';
 import { useServices } from './useServices';
@@ -15,6 +14,7 @@ import { useFAQ } from './useFAQ';
 import { useSettings } from './useSettings';
 import type { Testimonial } from '../../../types';
 import type { WhatsappContact } from '../../../types/settings.types';
+import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_WHATSAPP } from '../../../utils/companySettings';
 
 export type TabType = 'dashboard' | 'portfolio' | 'before_after' | 'services' | 'faq' | 'simulator' | 'settings' | 'whatsapp';
 
@@ -39,7 +39,6 @@ export function useAdminData() {
   // Additional data
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [whatsappConfig, setWhatsappConfig] = useState<WhatsappContact | null>(null);
-  const [budgetPrices, setBudgetPrices] = useState<unknown>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -61,13 +60,12 @@ export function useAdminData() {
       servicesService.getAll(),
       faqService.getAll(),
       testimonialsService.getAll(),
-      adminSettingsService.getBudgetPrices(),
       settingsService.getCompanySettings()
     ] as const);
 
     if (requestId !== loadRequestIdRef.current) return;
 
-    const [portfolioResult, beforeAfterResult, servicesResult, faqResult, testimonialsResult, budgetResult, companyResult] = results;
+    const [portfolioResult, beforeAfterResult, servicesResult, faqResult, testimonialsResult, companyResult] = results;
     const failedSections: string[] = [];
 
     if (portfolioResult.status === 'fulfilled') {
@@ -100,12 +98,6 @@ export function useAdminData() {
       failedSections.push('Depoimentos');
     }
 
-    if (budgetResult.status === 'fulfilled') {
-      setBudgetPrices(budgetResult.value);
-    } else {
-      failedSections.push('Simulador');
-    }
-
     if (companyResult.status === 'fulfilled') {
       const compSettings = companyResult.value.settings;
       const waData = {
@@ -115,12 +107,12 @@ export function useAdminData() {
 
       setWhatsappConfig(waData);
       settingsHook.setCompanyName(compSettings.company_name || 'mgclimatizacao');
-      settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || waData.number || '5547997464218');
+      settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || waData.number || OFFICIAL_WHATSAPP);
       settingsHook.setCompanyWhatsappMessage(compSettings.whatsapp_message || waData.message || 'Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
       settingsHook.setCompanyAddress(compSettings.address || 'Blumenau - SC');
       settingsHook.setCompanyPhone(compSettings.phone || '(47) 99746-4218');
-      settingsHook.setCompanyEmail(compSettings.email || 'contato@mgclimatizacao.com.br');
-      settingsHook.setCompanyInstagram(compSettings.instagram || 'https://instagram.com/mgclimatizacao');
+      settingsHook.setCompanyEmail(compSettings.email || OFFICIAL_EMAIL);
+      settingsHook.setCompanyInstagram(compSettings.instagram || OFFICIAL_INSTAGRAM);
       settingsHook.setCompanyFacebook(compSettings.facebook || '');
       settingsHook.initializeCompanyLogo(compSettings.logo_url || '');
     } else {
@@ -149,8 +141,12 @@ export function useAdminData() {
   }, []);
 
   const handleLogout = async () => {
-    await authService.signOut();
-    navigate('/login');
+    try {
+      await authService.signOut();
+    } finally {
+      authService.invalidateAdminAuthorization();
+      navigate('/login', { replace: true });
+    }
   };
 
   return {
@@ -166,7 +162,6 @@ export function useAdminData() {
     reloadAllData: loadAllData,
     testimonials,
     whatsappConfig,
-    budgetPrices,
     handleLogout,
 
     // Portfolio

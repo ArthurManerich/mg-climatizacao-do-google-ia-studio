@@ -5,8 +5,7 @@ import {
   SimulatorConfig, 
   SimulatorServiceOption, 
   SimulatorBtuOption, 
-  SimulatorPropertyOption, 
-  SimulatorBasePrice 
+  SimulatorPropertyOption
 } from '../../../types';
 
 export function useSimulator() {
@@ -55,22 +54,6 @@ export function useSimulator() {
     }
   };
 
-  // Helper setters
-  const updateBasePrice = (serviceId: string, capacityId: string, field: keyof SimulatorBasePrice, value: string | number) => {
-    setConfig(prev => {
-      const nextPrices = { ...prev.basePrices };
-      if (!nextPrices[serviceId]) {
-        nextPrices[serviceId] = {};
-      }
-      const current = nextPrices[serviceId][capacityId] || { min: 0, max: 0, time: '' };
-      nextPrices[serviceId][capacityId] = {
-        ...current,
-        [field]: value
-      };
-      return { ...prev, basePrices: nextPrices };
-    });
-  };
-
   const addService = (service: SimulatorServiceOption) => {
     setConfig(prev => ({
       ...prev,
@@ -113,10 +96,6 @@ export function useSimulator() {
     }));
   };
 
-  const resetToDefault = () => {
-    setConfig(defaultAdminSimulatorConfig);
-  };
-
   return {
     config,
     setConfig,
@@ -126,13 +105,11 @@ export function useSimulator() {
     success,
     reloadConfig: loadConfig,
     saveConfig,
-    updateBasePrice,
     addService,
     removeService,
     addCapacity,
     removeCapacity,
     addPropertyType,
-    removePropertyType,
-    resetToDefault
+    removePropertyType
   };
 }

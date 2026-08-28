@@ -8,6 +8,23 @@
   src: url("/fonts/plus-jakarta-sans-latin.woff2") format("woff2");
 }
 
+.admin-input {
+  min-height: 2.75rem;
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 0.5rem 0.75rem;
+  color: #0f172a;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.admin-input:focus-visible {
+  border-color: #0096d6;
+  box-shadow: 0 0 0 3px rgb(0 150 214 / 20%);
+}
+
 @font-face {
   font-family: "Space Grotesk";
   font-style: normal;

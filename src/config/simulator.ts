@@ -1,6 +1,6 @@
 import type { PublicSimulatorConfig } from '../types';
 
-export const defaultPublicSimulatorConfig: PublicSimulatorConfig = {
+export const defaultPublicSimulatorConfig = {
   services: [
     { 
       id: 'instalacao', 
@@ -52,4 +52,4 @@ export const defaultPublicSimulatorConfig: PublicSimulatorConfig = {
     { id: 'empresa', label: 'Empresa' },
     { id: 'comercio', label: 'Comércio' }
   ]
-};
+} satisfies PublicSimulatorConfig;

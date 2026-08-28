@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../lib/supabase', () => ({
   hasSupabaseConfig: mocks.hasConfig,
+  getSupabasePublicUrl: () => 'https://projeto.supabase.co',
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -62,6 +63,27 @@ describe('settingsService.getCompanySettings', () => {
     expect(mocks.maybeSingle).not.toHaveBeenCalled();
   });
 
+  it('substitui contatos legados ou inseguros pelos fallbacks oficiais sem alterar o registro remoto', async () => {
+    mocks.maybeSingle.mockResolvedValueOnce({
+      data: {
+        value: {
+          ...DEFAULT_COMPANY_SETTINGS,
+          email: 'contato@mgclimatizacao.com.br',
+          instagram: 'https://instagram.com/mgclimatizacao',
+          facebook: 'https://facebook.com.evil.example/mg',
+          whatsapp_number: '123',
+          logo_url: 'https://evil.example/logo.png',
+        },
+      },
+      error: null,
+    });
+
+    const result = await settingsService.getCompanySettings();
+
+    expect(result.settings).toEqual(DEFAULT_COMPANY_SETTINGS);
+    expect(result.source).toBe('company_settings');
+  });
+
   it('propaga erro real sem tratá-lo como ausência', async () => {
     mocks.maybeSingle.mockResolvedValueOnce({ data: null, error: { message: 'RLS details' } });
     await expect(settingsService.getCompanySettings()).rejects.toThrow('Não foi possível carregar');
@@ -69,6 +91,21 @@ describe('settingsService.getCompanySettings', () => {
 });
 
 describe('settingsService.getPublicSimulatorConfig', () => {
+  it('aceita capacidades remotas somente com id e label sem acionar o fallback', async () => {
+    const remoteConfig = {
+      services: [{ id: 'remoto', label: 'Serviço remoto', icon: 'Wind' }],
+      capacities: [{ id: 'remota', label: 'Capacidade remota' }],
+      propertyTypes: [{ id: 'remoto', label: 'Imóvel remoto' }],
+    };
+    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: remoteConfig }, error: null });
+
+    const result = await settingsService.getPublicSimulatorConfig();
+
+    expect(result).toEqual(remoteConfig);
+    expect(result.services[0].id).toBe('remoto');
+    expect(result.capacities[0]).toEqual({ id: 'remota', label: 'Capacidade remota' });
+  });
+
   it('consulta somente a chave pública e remove campos comerciais da resposta', async () => {
     mocks.maybeSingle.mockResolvedValueOnce({
       data: {
@@ -93,6 +130,23 @@ describe('settingsService.getPublicSimulatorConfig', () => {
       propertyTypes: [{ id: 'casa', label: 'Casa' }],
     });
     expect(JSON.stringify(result)).not.toMatch(/budget_prices|basePrices|minPrice|duration|multiplier/);
+  });
+
+  it('preserva desc opcional quando ela está presente', async () => {
+    mocks.maybeSingle.mockResolvedValueOnce({
+      data: {
+        value: {
+          services: [{ id: 'instalacao', label: 'Instalação', icon: 'Wind' }],
+          capacities: [{ id: '12000', label: '12.000 BTUs', desc: 'Sala média' }],
+          propertyTypes: [{ id: 'casa', label: 'Casa' }],
+        },
+      },
+      error: null,
+    });
+
+    const result = await settingsService.getPublicSimulatorConfig();
+
+    expect(result.capacities[0]).toEqual({ id: '12000', label: '12.000 BTUs', desc: 'Sala média' });
   });
 
   it('usa a configuração pública local sem Supabase', async () => {

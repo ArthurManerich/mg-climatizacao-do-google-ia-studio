@@ -3,73 +3,192 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MG Climatização | Instalação e Manutenção de Ar-Condicionado em Blumenau/SC</title>
+    <title>Ar-Condicionado em Blumenau | MG Climatização</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="MG Climatização - Instalação, manutenção, higienização e carga de gás para ar-condicionado. Atendimento residencial e empresarial em Blumenau e região." />
-    <meta name="keywords" content="ar condicionado blumenau, instalação ar condicionado sc, manutenção ar condicionado blumenau, higienização ar condicionado, carga de gás, mg climatização, climatização blumenau" />
+    <meta name="description" content="MG Climatização: instalação, manutenção e higienização de ar-condicionado em Blumenau, carga de fluido refrigerante e atendimento na região." />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#00152b" />
     <link rel="canonical" href="https://mgclimabnu.com.br/" />
-    <link
-      rel="preload"
-      as="image"
-      href="/brand/referencias/camisa-uniforme-mg-480.webp"
-      imagesrcset="/brand/referencias/camisa-uniforme-mg-480.webp 480w, /brand/referencias/camisa-uniforme-mg-768.webp 768w, /brand/referencias/camisa-uniforme-mg-v2.webp 1200w"
-      imagesizes="(max-width: 1023px) calc(100vw - 2rem), 36rem"
-      fetchpriority="high"
-    />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:site_name" content="MG Climatização" />
     <meta property="og:url" content="https://mgclimabnu.com.br/" />
-    <meta property="og:title" content="MG Climatização | Instalação e Manutenção de Ar-Condicionado em Blumenau/SC" />
-    <meta property="og:description" content="Instalação, manutenção preventiva e corretiva, higienização e carga de gás em Blumenau e região. Solicite seu orçamento pelo WhatsApp." />
+    <meta property="og:title" content="Ar-Condicionado em Blumenau | MG Climatização" />
+    <meta property="og:description" content="Instalação, manutenção, higienização e carga de fluido refrigerante para residências e empresas em Blumenau e região." />
     <meta property="og:image" content="https://mgclimabnu.com.br/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="Logo oficial da MG Climatização" />
+    <meta property="og:image:alt" content="MG Climatização — serviços de climatização em Blumenau e região" />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://mgclimabnu.com.br/" />
-    <meta property="twitter:title" content="MG Climatização | Instalação e Manutenção de Ar-Condicionado em Blumenau/SC" />
-    <meta property="twitter:description" content="Instalação, manutenção preventiva e corretiva, higienização e carga de gás em Blumenau e região. Solicite seu orçamento pelo WhatsApp." />
-    <meta property="twitter:image" content="https://mgclimabnu.com.br/og-image.png" />
-    <meta property="twitter:image:alt" content="Logo oficial da MG Climatização" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ar-Condicionado em Blumenau | MG Climatização" />
+    <meta name="twitter:description" content="Instalação, manutenção, higienização e carga de fluido refrigerante para residências e empresas em Blumenau e região." />
+    <meta name="twitter:image" content="https://mgclimabnu.com.br/og-image.png" />
+    <meta name="twitter:image:alt" content="MG Climatização — serviços de climatização em Blumenau e região" />
 
     <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/plus-jakarta-sans-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/space-grotesk-latin.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      media="(max-width: 1023px)"
+      href="/brand/fotos/atendimento-real-hero-480.webp"
+      imagesrcset="/brand/fotos/atendimento-real-hero-480.webp 480w, /brand/fotos/atendimento-real-hero-768.webp 768w"
+      imagesizes="(min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      media="(min-width: 1024px)"
+      href="/brand/fotos/atendimento-real-hero-768.webp"
+      imagesrcset="/brand/fotos/atendimento-real-hero-768.webp 768w, /brand/fotos/atendimento-real-hero-1200.webp 1200w"
+      imagesizes="40vw"
+      fetchpriority="high"
+    />
 
     <!-- Schema.org JSON-LD (Informações estruturadas reais) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "HVACBusiness",
+        "@id": "https://mgclimabnu.com.br/#empresa",
         "name": "MG Climatização",
         "url": "https://mgclimabnu.com.br/",
+        "logo": "https://mgclimabnu.com.br/brand/logo-principal.jpg",
+        "image": "https://mgclimabnu.com.br/brand/referencias/identidade-visual-principal.jpg",
         "telephone": "+5547997464218",
-        "description": "Especializada em instalação, manutenção, higienização e carga de gás para sistemas de ar-condicionado em Blumenau e região.",
+        "description": "Serviços de instalação, manutenção, higienização e carga de fluido refrigerante para ar-condicionado em Blumenau e região.",
+        "sameAs": [
+          "https://instagram.com/mgclimabnu"
+        ],
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Blumenau",
           "addressRegion": "SC",
           "addressCountry": "BR"
         },
-        "areaServed": "Blumenau - SC e Região",
-        "knowsAbout": [
-          "Instalação de Ar-Condicionado",
-          "Manutenção Preventiva e Corretiva",
-          "Higienização de Ar-Condicionado",
-          "Carga de Gás",
-          "Trabalho em Altura",
-          "Venda de Equipamentos de Ar-Condicionado"
-        ]
+        "areaServed": [
+          {
+            "@type": "City",
+            "name": "Blumenau",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Gaspar",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Brusque",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Indaial",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Timbó",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Pomerode",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Penha",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Navegantes",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          },
+          {
+            "@type": "City",
+            "name": "Balneário Camboriú",
+            "containedInPlace": {
+              "@type": "State",
+              "name": "Santa Catarina",
+              "containedInPlace": { "@type": "Country", "name": "Brasil" }
+            }
+          }
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Serviços de climatização e refrigeração",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Instalação de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Manutenção preventiva de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Manutenção corretiva de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Higienização de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Diagnóstico e correção de vazamentos" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Carga de fluido refrigerante" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Desinstalação de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Venda de equipamentos de ar-condicionado" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Serviços de climatização com trabalho em altura" } }
+          ]
+        }
       }
     </script>
 

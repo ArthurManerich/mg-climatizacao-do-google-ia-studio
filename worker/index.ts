@@ -12,22 +12,27 @@ const CONTENT_SECURITY_POLICY = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'sha256-cF5fJ1WvrI/08WCfmjDB2cq932o460ToK86wFJ75Oac='",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com data:",
-  "img-src 'self' data: blob: https:",
+  "script-src 'self' 'sha256-6NSMXHWX/XazqzdHUMkhVYLQ3PkwPfZsyHhVx3tnMok='",
+  "script-src-attr 'none'",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "img-src 'self' data: blob: https://*.supabase.co",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
+  "frame-src 'none'",
+  "media-src 'none'",
   "upgrade-insecure-requests",
 ].join('; ');
 
 const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   'Content-Security-Policy': CONTENT_SECURITY_POLICY,
-  'Permissions-Policy': 'camera=(), geolocation=(), microphone=(), payment=(), usb=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'Permissions-Policy': 'accelerometer=(), camera=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
+  'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
 };
 
 export function withSecurityHeaders(request: Request, response: Response): Response {
@@ -39,6 +44,12 @@ export function withSecurityHeaders(request: Request, response: Response): Respo
   const pathname = new URL(request.url).pathname;
   if (pathname.startsWith('/assets/')) {
     headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (headers.get('Content-Type')?.toLowerCase().includes('text/html')) {
+    headers.set('Cache-Control', 'no-cache');
+  }
+
+  if (pathname === '/login' || pathname === '/admin' || pathname.startsWith('/admin/')) {
+    headers.set('X-Robots-Tag', 'noindex, nofollow');
   }
 
   return new Response(response.body, {

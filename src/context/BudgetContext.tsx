@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
-import { getWhatsAppLink } from '../utils/whatsapp';
-import { useSettings } from './SettingsContext';
+import { useWhatsAppContact } from './WhatsAppContactContext';
 import { settingsService } from '../services/settingsService';
 import { defaultPublicSimulatorConfig } from '../config/simulator';
 import type { PublicSimulatorConfig } from '../types';
 
 export interface SimulatorState {
   serviceType: string;
+  equipment: string;
   capacity: string;
   quantity: number;
   propertyType: string;
@@ -34,6 +34,7 @@ const BudgetContext = createContext<BudgetContextType | undefined>(undefined);
 
 const initialSimulatorState: SimulatorState = {
   serviceType: '',
+  equipment: '',
   capacity: '',
   quantity: 1,
   propertyType: '',
@@ -44,7 +45,7 @@ const initialSimulatorState: SimulatorState = {
 };
 
 export function BudgetProvider({ children }: { children: ReactNode }) {
-  const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
   const [config, setConfig] = useState<PublicSimulatorConfig>(defaultPublicSimulatorConfig);
   const [loadingConfig, setLoadingConfig] = useState<boolean>(true);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -90,6 +91,9 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
 
   const handleSendSimulation = useCallback(() => {
     const serviceName = getServiceLabel(simulator.serviceType);
+    const equipmentName = simulator.equipment === 'nao-sei'
+      ? 'Não sei informar'
+      : simulator.equipment.trim();
     const capacityName = simulator.capacity === 'nao-sei'
       ? 'Não sei informar'
       : getCapacityLabel(simulator.capacity);
@@ -101,14 +105,15 @@ export function BudgetProvider({ children }: { children: ReactNode }) {
       `Cidade: ${simulator.city.trim()}\n` +
       `Endereço do serviço: ${simulator.serviceAddress.trim()}\n` +
       `Serviço: ${serviceName}\n` +
-      `Equipamento: ${capacityName}\n` +
+      `Aparelho: ${equipmentName}\n` +
+      `BTUs: ${capacityName}\n` +
       `Quantidade: ${simulator.quantity}\n` +
       `Tipo de imóvel: ${propertyName}\n` +
       `Necessidade: ${simulator.necessity.trim()}\n\n` +
       `Gostaria de conversar sobre o atendimento e o valor do serviço.`;
 
-    window.open(getWhatsAppLink(message, settings.whatsapp_number), 'whatsapp', 'noopener,noreferrer');
-  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, simulator, settings.whatsapp_number]);
+    openWhatsAppSelector(message);
+  }, [getServiceLabel, getCapacityLabel, getPropertyLabel, openWhatsAppSelector, simulator]);
 
   const resetSimulator = useCallback(() => {
     setSimulator(initialSimulatorState);

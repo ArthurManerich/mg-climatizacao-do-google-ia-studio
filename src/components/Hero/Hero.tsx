@@ -2,14 +2,19 @@ import React from 'react';
 import { ArrowRight, MapPin, SlidersHorizontal } from 'lucide-react';
 import * as m from 'motion/react-m';
 import { useSettings } from '../../context/SettingsContext';
-import { DEFAULT_QUICK_QUOTE_MESSAGE, getWhatsAppLink } from '../../utils/whatsapp';
+import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
+import { DEFAULT_QUICK_QUOTE_MESSAGE } from '../../utils/whatsapp';
 
-const uniformHeroImg = '/brand/referencias/camisa-uniforme-mg-v2.webp';
-const uniformHeroSrcSet = [
-  '/brand/referencias/camisa-uniforme-mg-480.webp 480w',
-  '/brand/referencias/camisa-uniforme-mg-768.webp 768w',
-  `${uniformHeroImg} 1200w`,
+const heroServiceImg = '/brand/fotos/atendimento-real-hero.jpeg';
+const heroServiceMobileWebPSrcSet = [
+  '/brand/fotos/atendimento-real-hero-480.webp 480w',
+  '/brand/fotos/atendimento-real-hero-768.webp 768w',
 ].join(', ');
+const heroServiceDesktopWebPSrcSet = [
+  '/brand/fotos/atendimento-real-hero-768.webp 768w',
+  '/brand/fotos/atendimento-real-hero-1200.webp 1200w',
+].join(', ');
+const heroServiceSizes = '(min-width: 1024px) 40vw, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
@@ -22,6 +27,7 @@ const itemVariants = {
 
 export default function Hero() {
   const { settings } = useSettings();
+  const { openWhatsAppSelector } = useWhatsAppContact();
 
   return (
     <section
@@ -57,33 +63,31 @@ export default function Hero() {
               variants={itemVariants}
               className="max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             >
-              Conforto em cada detalhe.
+              MG Climatização — soluções em ar-condicionado para Blumenau e região.
             </m.h1>
 
             <m.p
               variants={itemVariants}
               className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg"
             >
-              Instalação, manutenção e higienização de ar-condicionado para ambientes residenciais e empresariais.
+              Instalação, manutenção, higienização e carga de fluido refrigerante para ambientes residenciais e empresariais.
             </m.p>
 
             <m.div
               variants={itemVariants}
               className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
-              <a
-                href={getWhatsAppLink(
+              <button
+                type="button"
+                onClick={() => openWhatsAppSelector(
                   settings.whatsapp_message || DEFAULT_QUICK_QUOTE_MESSAGE,
-                  settings.whatsapp_number,
                 )}
-                target="whatsapp"
-                rel="noopener noreferrer"
                 id="btn-whatsapp-hero"
                 className="inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2 rounded-control bg-brand-orange-500 px-6 text-base font-bold text-brand-navy-950 shadow-card transition-colors hover:bg-brand-orange-600 sm:w-auto"
               >
                 Solicitar orçamento
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </a>
+              </button>
               <a
                 href="#orcamento-online"
                 className="inline-flex min-h-[3.25rem] w-full items-center justify-center gap-2 rounded-control border border-brand-cyan-600/60 bg-brand-navy-900/60 px-6 text-base font-bold text-white transition-colors hover:bg-brand-cyan-600/15 sm:w-auto"
@@ -104,18 +108,30 @@ export default function Hero() {
 
           <figure className="mx-auto w-full max-w-xl lg:col-span-5">
             <div className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">
-              <img
-                src={uniformHeroImg}
-                srcSet={uniformHeroSrcSet}
-                sizes="(max-width: 1023px) calc(100vw - 2rem), 36rem"
-                alt="Uniforme oficial da MG Climatização, exibido de frente e de costas"
-                width="1200"
-                height="960"
-                decoding="async"
-                fetchPriority="high"
-                referrerPolicy="no-referrer"
-                className="aspect-[4/3] w-full object-cover object-center"
-              />
+              <picture>
+                <source
+                  media="(max-width: 1023px)"
+                  type="image/webp"
+                  srcSet={heroServiceMobileWebPSrcSet}
+                  sizes={heroServiceSizes}
+                />
+                <source
+                  type="image/webp"
+                  srcSet={heroServiceDesktopWebPSrcSet}
+                  sizes={heroServiceSizes}
+                />
+                <img
+                  src={heroServiceImg}
+                  alt="Profissional da MG Climatização trabalhando em um aparelho de ar-condicionado"
+                  width="1200"
+                  height="1600"
+                  sizes={heroServiceSizes}
+                  decoding="async"
+                  fetchPriority="high"
+                  referrerPolicy="no-referrer"
+                  className="aspect-[3/4] w-full object-cover object-center lg:aspect-[4/3] lg:object-[50%_35%]"
+                />
+              </picture>
               <figcaption className="flex items-center justify-between gap-4 border-t border-white/10 px-4 py-3 text-sm text-slate-300 sm:px-5">
                 <span>Atendimento residencial e empresarial</span>
                 <span className="hidden font-semibold text-brand-cyan-400 sm:inline">MG Climatização</span>

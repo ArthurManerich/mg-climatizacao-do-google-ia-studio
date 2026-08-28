@@ -4,12 +4,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import BudgetSimulator from '../BudgetSimulator';
 import { BudgetProvider } from '../../../context/BudgetContext';
 import { SettingsProvider } from '../../../context/SettingsContext';
+import { WhatsAppContactProvider } from '../../../context/WhatsAppContactContext';
 
 const renderWithProvider = () => render(
   <SettingsProvider>
-    <BudgetProvider>
-      <BudgetSimulator />
-    </BudgetProvider>
+    <WhatsAppContactProvider>
+      <BudgetProvider>
+        <BudgetSimulator />
+      </BudgetProvider>
+    </WhatsAppContactProvider>
   </SettingsProvider>,
 );
 
@@ -22,7 +25,8 @@ const completeRequest = async () => {
   selectServiceAndContinue();
 
   await screen.findByRole('heading', { name: /Equipamento e necessidade/i });
-  fireEvent.change(screen.getByLabelText(/Tipo ou capacidade do equipamento/i), { target: { value: 'nao-sei' } });
+  fireEvent.change(screen.getByLabelText(/Qual é o aparelho/i), { target: { value: 'Split Samsung' } });
+  fireEvent.change(screen.getByLabelText(/Capacidade do equipamento/i), { target: { value: 'nao-sei' } });
   fireEvent.change(screen.getByLabelText(/Problema ou necessidade/i), { target: { value: 'O aparelho não está resfriando.' } });
   fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
 
@@ -84,13 +88,18 @@ describe('BudgetSimulator Component', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Enviar pelo WhatsApp/i }));
 
+    expect(screen.getByRole('dialog', { name: /Com quem você deseja falar/i })).toBeInTheDocument();
+    expect(openMock).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /Marcos Manerich/i }));
+
     expect(openMock).toHaveBeenCalledOnce();
     const whatsappUrl = String(openMock.mock.calls[0][0]);
     const decodedUrl = decodeURIComponent(whatsappUrl);
     expect(decodedUrl).toContain('Nome: Maria da Silva');
     expect(decodedUrl).toContain('Cidade: Blumenau');
     expect(decodedUrl).toContain('Endereço do serviço: Rua das Flores, 100');
-    expect(decodedUrl).toContain('Equipamento: Não sei informar');
+    expect(decodedUrl).toContain('Aparelho: Split Samsung');
+    expect(decodedUrl).toContain('BTUs: Não sei informar');
     expect(decodedUrl).toContain('Necessidade: O aparelho não está resfriando.');
     expect(decodedUrl).not.toMatch(/R\$|preço|estimad|desconto/i);
     expect(openMock.mock.calls[0][1]).toBe('whatsapp');
@@ -98,6 +107,19 @@ describe('BudgetSimulator Component', () => {
     fireEvent.click(screen.getByRole('button', { name: /Nova solicitação/i }));
     expect(await screen.findByText(/Qual serviço você precisa/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Instalação$/i })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('explica onde encontrar os BTUs e aceita aparelho não identificado', async () => {
+    renderWithProvider();
+    selectServiceAndContinue();
+
+    await screen.findByRole('heading', { name: /Equipamento e necessidade/i });
+    expect(screen.getByText(/Não sabe onde encontrar os BTUs do aparelho/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Não sabe onde encontrar os BTUs do aparelho/i));
+    expect(screen.getByText(/etiqueta da condensadora, no manual ou na nota do equipamento/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /Não sei informar/i }));
+    expect(screen.getByLabelText(/Qual é o aparelho/i)).toBeDisabled();
   });
 
   it('permite editar o resumo sem perder os dados em memória', async () => {

@@ -22,8 +22,24 @@ test('loads the public page, manifest and primary brand asset', async ({ page, r
 
   const manifest = await request.get('/manifest.json');
   expect(manifest.ok()).toBeTruthy();
-  const icon = await request.get('/icons/icon-192.png');
-  expect(icon.ok()).toBeTruthy();
+  expect(await manifest.json()).toMatchObject({
+    icons: [
+      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  });
+  for (const assetPath of [
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
+    '/icons/icon-maskable-512.png',
+    '/icons/apple-touch-icon.png',
+    '/og-image.png',
+  ]) {
+    const asset = await request.get(assetPath);
+    expect(asset.ok(), `${assetPath} deve estar presente no build`).toBeTruthy();
+    expect(asset.headers()['content-type']).toContain('image/png');
+  }
   const logo = await request.get('/brand/logo-principal.jpg');
   expect(logo.ok()).toBeTruthy();
 });
@@ -49,7 +65,8 @@ test('completes the simulator and creates a WhatsApp URL without opening externa
   await page.goto('/#orcamento-online');
   await page.locator('#orcamento-online').getByRole('button', { name: /Instalação/ }).click();
   await page.locator('#orcamento-online').getByRole('button', { name: 'Continuar' }).click();
-  await page.getByLabel('Tipo ou capacidade do equipamento').selectOption('nao-sei');
+  await page.getByLabel('Qual é o aparelho?').fill('Split');
+  await page.getByLabel('Capacidade do equipamento (BTUs)').selectOption('nao-sei');
   await page.getByLabel('Problema ou necessidade').fill('Preciso avaliar uma instalação.');
   await page.locator('#orcamento-online').getByRole('button', { name: 'Continuar' }).click();
   await page.getByLabel('Tipo de imóvel').selectOption('casa');
@@ -59,6 +76,7 @@ test('completes the simulator and creates a WhatsApp URL without opening externa
   await page.getByLabel('Nome completo').fill('Cliente Teste');
   await page.locator('#orcamento-online').getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('button', { name: 'Enviar pelo WhatsApp' }).click();
+  await page.getByRole('button', { name: /Gabriel Klaumann Marcos/ }).click();
 
   const openedUrl = await page.locator('html').getAttribute('data-opened-url');
   expect(openedUrl).toContain('https://wa.me/5547997464218');

@@ -4,6 +4,8 @@ import { adminSettingsService } from '../../../services/adminSettingsService';
 import { uploadService } from '../../../services/uploadService';
 import type { CleanupResult } from '../../../services/mutationResult';
 import { useUploads } from './useUploads';
+import { getSupabasePublicUrl } from '../../../lib/supabase';
+import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_WHATSAPP, validateCompanySettings } from '../../../utils/companySettings';
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -11,12 +13,12 @@ function errorMessage(error: unknown): string {
 
 export function useSettings() {
   const [companyName, setCompanyName] = useState('mgclimatizacao');
-  const [companyWhatsapp, setCompanyWhatsapp] = useState('5547997464218');
+  const [companyWhatsapp, setCompanyWhatsapp] = useState(OFFICIAL_WHATSAPP);
   const [companyWhatsappMessage, setCompanyWhatsappMessage] = useState('Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
   const [companyAddress, setCompanyAddress] = useState('Blumenau - SC');
   const [companyPhone, setCompanyPhone] = useState('(47) 99746-4218');
-  const [companyEmail, setCompanyEmail] = useState('contato@mgclimatizacao.com.br');
-  const [companyInstagram, setCompanyInstagram] = useState('https://instagram.com/mgclimatizacao');
+  const [companyEmail, setCompanyEmail] = useState(OFFICIAL_EMAIL);
+  const [companyInstagram, setCompanyInstagram] = useState(OFFICIAL_INSTAGRAM);
   const [companyFacebook, setCompanyFacebook] = useState('');
   const [companyLogo, setCompanyLogo] = useState('');
   const [confirmedLogoUrl, setConfirmedLogoUrl] = useState('');
@@ -112,7 +114,7 @@ export function useSettings() {
       setSettingsSaving(true);
       setSettingsMessage(null);
 
-      const compSettings = {
+      const candidateSettings = {
         company_name: companyName,
         whatsapp_number: companyWhatsapp,
         whatsapp_message: companyWhatsappMessage,
@@ -124,16 +126,28 @@ export function useSettings() {
         logo_url: companyLogo,
       };
 
+      const validation = validateCompanySettings(candidateSettings, getSupabasePublicUrl());
+      if (!validation.settings) {
+        setSettingsMessage({ type: 'error', text: validation.error || 'Revise as configurações informadas.' });
+        return;
+      }
+      const compSettings = validation.settings;
+
       await adminSettingsService.set('company_settings', compSettings);
-      confirmedLogoRef.current = companyLogo;
-      setConfirmedLogoUrl(companyLogo);
-      updatePendingUrls(pendingLogoUrlsRef.current.filter(url => url !== companyLogo));
+      confirmedLogoRef.current = compSettings.logo_url;
+      setConfirmedLogoUrl(compSettings.logo_url);
+      setCompanyWhatsapp(compSettings.whatsapp_number);
+      setCompanyEmail(compSettings.email);
+      setCompanyInstagram(compSettings.instagram);
+      setCompanyFacebook(compSettings.facebook);
+      setCompanyLogo(compSettings.logo_url);
+      updatePendingUrls(pendingLogoUrlsRef.current.filter(url => url !== compSettings.logo_url));
 
       const urlsToClean = [
         ...pendingLogoUrlsRef.current,
         ...(oldConfirmedLogo && oldConfirmedLogo !== companyLogo ? [oldConfirmedLogo] : []),
       ];
-      const cleanupResult = await cleanupUrls(urlsToClean, [companyLogo]);
+      const cleanupResult = await cleanupUrls(urlsToClean, [compSettings.logo_url]);
 
       if (cleanupResult.errors.length > 0) {
         setSettingsMessage({

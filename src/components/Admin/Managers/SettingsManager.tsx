@@ -113,7 +113,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
                   value={companyEmail}
                   onChange={(e) => setCompanyEmail(e.target.value)}
                   className="w-full bg-slate-50/50 border border-slate-200 focus:border-[#0096D6] focus:bg-white rounded-xl px-4 py-3 text-xs font-semibold text-slate-700 transition-all focus:outline-none"
-                  placeholder="contato@mgclimatizacao.com.br"
+                  placeholder="mgclimatizacao401@gmail.com"
                 />
               </div>
             </div>

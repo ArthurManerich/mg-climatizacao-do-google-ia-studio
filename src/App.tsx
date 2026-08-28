@@ -9,14 +9,18 @@ import BudgetSimulator from './components/BudgetSimulator/BudgetSimulator';
 import Contact from './components/Contact/Contact';
 import Footer from './components/Footer/Footer';
 import FloatingWhatsApp from './components/WhatsAppButton/FloatingWhatsApp';
-import AccessModeModal from './components/AccessSelector/AccessModeModal';
+import FloatingGoogleReview from './components/GoogleReviewButton/FloatingGoogleReview';
+import DeferredSection from './components/DeferredSection/DeferredSection';
+import RouteRobotsMeta from './components/Seo/RouteRobotsMeta';
 import { BudgetProvider } from './context/BudgetContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { WhatsAppContactProvider } from './context/WhatsAppContactContext';
 
 // Lazy loading core landing sections
 const BeforeAfter = lazy(() => import('./components/BeforeAfter/BeforeAfter'));
 const Portfolio = lazy(() => import('./components/Portfolio/Portfolio'));
 const FAQ = lazy(() => import('./components/FAQ/FAQ'));
+const AccessModeModal = lazy(() => import('./components/AccessSelector/AccessModeModal'));
 
 // Lazy loading admin and auth screens
 const Login = lazy(() => import('./components/Login/Login'));
@@ -53,27 +57,35 @@ function LandingPage() {
 
         <BudgetSimulator />
 
-        <Suspense fallback={<LoadingFallback />}>
-          <BeforeAfter />
-        </Suspense>
+        <DeferredSection anchorId="antes-depois" placeholderClassName="min-h-[44rem]">
+          <Suspense fallback={<LoadingFallback />}>
+            <BeforeAfter />
+          </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<LoadingFallback />}>
-          <Portfolio />
-        </Suspense>
+        <DeferredSection anchorId="portfolio" placeholderClassName="min-h-[48rem]">
+          <Suspense fallback={<LoadingFallback />}>
+            <Portfolio />
+          </Suspense>
+        </DeferredSection>
 
-        <Suspense fallback={<LoadingFallback />}>
-          <FAQ />
-        </Suspense>
+        <DeferredSection anchorId="faq" placeholderClassName="min-h-[40rem]">
+          <Suspense fallback={<LoadingFallback />}>
+            <FAQ />
+          </Suspense>
+        </DeferredSection>
 
         <Contact />
       </main>
       <Footer />
+      <FloatingGoogleReview />
       <FloatingWhatsApp />
 
-      <AccessModeModal 
-        isOpen={isAccessModalOpen} 
-        onClose={() => setIsAccessModalOpen(false)} 
-      />
+      {isAccessModalOpen && (
+        <Suspense fallback={null}>
+          <AccessModeModal isOpen onClose={() => setIsAccessModalOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }
@@ -82,24 +94,27 @@ export default function App() {
   return (
     <LazyMotion features={loadMotionFeatures} strict>
       <SettingsProvider>
-        <BudgetProvider>
-          <BrowserRouter>
-            <Suspense fallback={<FullPageLoading />}>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute>
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
-            </Suspense>
-          </BrowserRouter>
-        </BudgetProvider>
+        <WhatsAppContactProvider>
+          <BudgetProvider>
+            <BrowserRouter>
+              <RouteRobotsMeta />
+              <Suspense fallback={<FullPageLoading />}>
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute>
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </BudgetProvider>
+        </WhatsAppContactProvider>
       </SettingsProvider>
     </LazyMotion>
   );

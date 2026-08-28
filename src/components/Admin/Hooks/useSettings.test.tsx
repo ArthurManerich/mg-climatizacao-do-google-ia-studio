@@ -13,6 +13,9 @@ vi.mock('./useUploads', () => ({
 }));
 vi.mock('../../../services/uploadService', () => ({ uploadService: { deleteImage: mocks.deleteImage } }));
 vi.mock('../../../services/adminSettingsService', () => ({ adminSettingsService: { set: mocks.settingsSet } }));
+vi.mock('../../../lib/supabase', () => ({
+  getSupabasePublicUrl: () => 'https://projeto.supabase.co',
+}));
 
 import { useSettings } from './useSettings';
 
@@ -20,6 +23,7 @@ const logoEvent = () => ({
   target: { files: [new File(['logo'], 'logo.png', { type: 'image/png' })], value: 'logo.png' },
 }) as unknown as ChangeEvent<HTMLInputElement>;
 const formEvent = { preventDefault: vi.fn() } as unknown as FormEvent;
+const storageLogo = (name: string) => `https://projeto.supabase.co/storage/v1/object/public/images/company-logo/${name}.png`;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -40,6 +44,35 @@ describe('integridade do logotipo', () => {
     expect(mocks.settingsSet).not.toHaveBeenCalledWith('whatsapp_contact', expect.anything());
   });
 
+  it.each([
+    ['e-mail', (result: ReturnType<typeof useSettings>) => result.setCompanyEmail('contato@mgclimabnu.com.br'), /e-mail/],
+    ['Instagram', (result: ReturnType<typeof useSettings>) => result.setCompanyInstagram('https://instagram.com.evil.example/perfil'), /Instagram/],
+    ['Facebook', (result: ReturnType<typeof useSettings>) => result.setCompanyFacebook('javascript:alert(1)'), /Facebook/],
+    ['WhatsApp', (result: ReturnType<typeof useSettings>) => result.setCompanyWhatsapp('123'), /WhatsApp/],
+    ['logotipo', (result: ReturnType<typeof useSettings>) => result.setCompanyLogo('/brand/../segredo.png'), /logotipo/],
+  ])('bloqueia o salvamento quando %s é inválido', async (_field, change, message) => {
+    const { result } = renderHook(() => useSettings());
+    act(() => change(result.current));
+    await act(() => result.current.handleSaveSettings(formEvent));
+
+    expect(mocks.settingsSet).not.toHaveBeenCalled();
+    expect(result.current.settingsMessage?.text).toMatch(message);
+  });
+
+  it('permite Facebook vazio e normaliza o WhatsApp antes de salvar', async () => {
+    const { result } = renderHook(() => useSettings());
+    act(() => {
+      result.current.setCompanyFacebook('');
+      result.current.setCompanyWhatsapp('(47) 99746-4218');
+    });
+    await act(() => result.current.handleSaveSettings(formEvent));
+
+    expect(mocks.settingsSet).toHaveBeenCalledWith('company_settings', expect.objectContaining({
+      facebook: '',
+      whatsapp_number: '5547997464218',
+    }));
+  });
+
   it('dois cliques rápidos geram somente uma gravação', async () => {
     let resolveWrite!: () => void;
     mocks.settingsSet.mockReturnValue(new Promise<void>(resolve => { resolveWrite = resolve; }));
@@ -55,42 +88,42 @@ describe('integridade do logotipo', () => {
   });
 
   it('cancelamento remove somente o upload novo e preserva o confirmado', async () => {
-    mocks.uploadImage.mockResolvedValue('logo-novo');
+    mocks.uploadImage.mockResolvedValue(storageLogo('logo-novo'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
     await act(() => result.current.handleLogoUpload(logoEvent()));
     await act(() => result.current.handleCancelLogoChange());
 
-    expect(mocks.deleteImage).toHaveBeenCalledWith('logo-novo');
+    expect(mocks.deleteImage).toHaveBeenCalledWith(storageLogo('logo-novo'));
     expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-antigo');
     expect(result.current.companyLogo).toBe('logo-antigo');
   });
 
   it('nova seleção limpa a pendência anterior', async () => {
-    mocks.uploadImage.mockResolvedValueOnce('logo-1').mockResolvedValueOnce('logo-2');
+    mocks.uploadImage.mockResolvedValueOnce(storageLogo('logo-1')).mockResolvedValueOnce(storageLogo('logo-2'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
     await act(() => result.current.handleLogoUpload(logoEvent()));
     await act(() => result.current.handleLogoUpload(logoEvent()));
 
-    expect(mocks.deleteImage).toHaveBeenCalledWith('logo-1');
+    expect(mocks.deleteImage).toHaveBeenCalledWith(storageLogo('logo-1'));
     expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-antigo');
-    expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-2');
+    expect(mocks.deleteImage).not.toHaveBeenCalledWith(storageLogo('logo-2'));
   });
 
   it('falha na limpeza mantém a URL pendente e mostra aviso', async () => {
-    mocks.uploadImage.mockResolvedValueOnce('logo-1').mockResolvedValueOnce('logo-2');
+    mocks.uploadImage.mockResolvedValueOnce(storageLogo('logo-1')).mockResolvedValueOnce(storageLogo('logo-2'));
     mocks.deleteImage.mockRejectedValue(new Error('storage indisponível'));
     const { result } = renderHook(() => useSettings());
     await act(() => result.current.handleLogoUpload(logoEvent()));
     await act(() => result.current.handleLogoUpload(logoEvent()));
 
-    expect(result.current.pendingLogoUrls).toContain('logo-1');
-    expect(result.current.settingsMessage?.text).toContain('logo-1');
+    expect(result.current.pendingLogoUrls).toContain(storageLogo('logo-1'));
+    expect(result.current.settingsMessage?.text).toContain(storageLogo('logo-1'));
   });
 
   it('falha no banco preserva o antigo e limpa somente o novo', async () => {
-    mocks.uploadImage.mockResolvedValue('logo-novo');
+    mocks.uploadImage.mockResolvedValue(storageLogo('logo-novo'));
     mocks.settingsSet.mockRejectedValueOnce(new Error('banco falhou'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
@@ -98,12 +131,12 @@ describe('integridade do logotipo', () => {
     await act(() => result.current.handleSaveSettings(formEvent));
 
     expect(result.current.companyLogo).toBe('logo-antigo');
-    expect(mocks.deleteImage).toHaveBeenCalledWith('logo-novo');
+    expect(mocks.deleteImage).toHaveBeenCalledWith(storageLogo('logo-novo'));
     expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-antigo');
   });
 
   it('remove o antigo somente depois da confirmação do banco', async () => {
-    mocks.uploadImage.mockResolvedValue('logo-novo');
+    mocks.uploadImage.mockResolvedValue(storageLogo('logo-novo'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
     await act(() => result.current.handleLogoUpload(logoEvent()));
@@ -111,18 +144,18 @@ describe('integridade do logotipo', () => {
 
     expect(mocks.deleteImage).toHaveBeenCalledWith('logo-antigo');
     expect(mocks.settingsSet.mock.invocationCallOrder[0]).toBeLessThan(mocks.deleteImage.mock.invocationCallOrder[0]);
-    expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-novo');
+    expect(mocks.deleteImage).not.toHaveBeenCalledWith(storageLogo('logo-novo'));
   });
 
   it('falha ao remover o antigo mantém o novo salvo e produz aviso parcial', async () => {
-    mocks.uploadImage.mockResolvedValue('logo-novo');
+    mocks.uploadImage.mockResolvedValue(storageLogo('logo-novo'));
     mocks.deleteImage.mockRejectedValue(new Error('cleanup falhou'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
     await act(() => result.current.handleLogoUpload(logoEvent()));
     await act(() => result.current.handleSaveSettings(formEvent));
 
-    expect(result.current.companyLogo).toBe('logo-novo');
+    expect(result.current.companyLogo).toBe(storageLogo('logo-novo'));
     expect(result.current.settingsMessage?.text).toMatch(/salvas.*órfãs.*cleanup falhou/);
   });
 
@@ -135,12 +168,12 @@ describe('integridade do logotipo', () => {
   });
 
   it('URL confirmada pelo banco nunca é apagada', async () => {
-    mocks.uploadImage.mockResolvedValue('logo-novo');
+    mocks.uploadImage.mockResolvedValue(storageLogo('logo-novo'));
     const { result } = renderHook(() => useSettings());
     act(() => result.current.initializeCompanyLogo('logo-antigo'));
     await act(() => result.current.handleLogoUpload(logoEvent()));
     await act(() => result.current.handleSaveSettings(formEvent));
 
-    expect(mocks.deleteImage).not.toHaveBeenCalledWith('logo-novo');
+    expect(mocks.deleteImage).not.toHaveBeenCalledWith(storageLogo('logo-novo'));
   });
 });

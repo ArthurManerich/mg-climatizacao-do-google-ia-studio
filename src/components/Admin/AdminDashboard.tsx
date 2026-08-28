@@ -134,7 +134,7 @@ export default function AdminDashboard() {
               {admin.activeTab === 'before_after' && 'Antes & Depois'}
               {admin.activeTab === 'services' && 'Especialidades'}
               {admin.activeTab === 'faq' && 'Dúvidas / FAQ'}
-              {admin.activeTab === 'simulator' && 'Simulador / Preços'}
+              {admin.activeTab === 'simulator' && 'Opções do simulador'}
               {admin.activeTab === 'settings' && 'Configurações do Sistema'}
               {admin.activeTab === 'whatsapp' && 'Atendimento / WhatsApp'}
             </span>
@@ -144,6 +144,7 @@ export default function AdminDashboard() {
             <a 
               href="/" 
               target="_blank" 
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#002E5C] hover:text-[#0096D6] bg-slate-100 hover:bg-[#E6F5FC] px-3.5 py-2 rounded-xl transition-all border border-slate-200/60"
             >
               <span>Ver Site</span>

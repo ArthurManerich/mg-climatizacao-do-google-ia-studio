@@ -1,4 +1,5 @@
 import { BRAND } from '../config';
+import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_LOGO, OFFICIAL_WHATSAPP } from '../utils/companySettings';
 
 export interface CompanySettings {
   company_name: string;
@@ -24,12 +25,12 @@ export interface SettingsWithFallback {
 
 export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
   company_name: BRAND.name,
-  whatsapp_number: '5547997464218',
+  whatsapp_number: OFFICIAL_WHATSAPP,
   whatsapp_message: `Olá, ${BRAND.name}! Gostaria de solicitar um orçamento para climatização.`,
   address: 'Blumenau - SC',
   phone: '(47) 99746-4218',
-  email: `contato@${BRAND.domain}`,
-  instagram: `https://instagram.com/${BRAND.slug}`,
+  email: OFFICIAL_EMAIL,
+  instagram: OFFICIAL_INSTAGRAM,
   facebook: '',
-  logo_url: '',
+  logo_url: OFFICIAL_LOGO,
 };

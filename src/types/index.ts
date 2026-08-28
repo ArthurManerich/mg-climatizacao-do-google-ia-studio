@@ -80,10 +80,22 @@ export interface SimulatorBtuOption {
   desc: string;
 }
 
+export interface PublicSimulatorServiceOption {
+  id: string;
+  label: string;
+  icon: string;
+  description?: string;
+}
+
+export interface PublicSimulatorBtuOption {
+  id: string;
+  label: string;
+  desc?: string;
+}
+
 export interface SimulatorPropertyOption {
   id: string;
   label: string;
-  multiplier: number;
 }
 
 export interface PublicSimulatorPropertyOption {
@@ -91,21 +103,14 @@ export interface PublicSimulatorPropertyOption {
   label: string;
 }
 
-export interface SimulatorBasePrice {
-  min: number;
-  max: number;
-  time: string;
-}
-
 export interface SimulatorConfig {
   services: SimulatorServiceOption[];
   capacities: SimulatorBtuOption[];
   propertyTypes: SimulatorPropertyOption[];
-  basePrices: Record<string, Record<string, SimulatorBasePrice>>;
 }
 
 export interface PublicSimulatorConfig {
-  services: SimulatorServiceOption[];
-  capacities: SimulatorBtuOption[];
+  services: PublicSimulatorServiceOption[];
+  capacities: PublicSimulatorBtuOption[];
   propertyTypes: PublicSimulatorPropertyOption[];
 }

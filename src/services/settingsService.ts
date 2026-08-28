@@ -1,6 +1,7 @@
 import { defaultPublicSimulatorConfig } from '../config/simulator';
 import type { PublicSimulatorConfig } from '../types';
 import { waitForCriticalRender } from '../utils/criticalRender';
+import { sanitizeCompanySettings } from '../utils/companySettings';
 import {
   DEFAULT_COMPANY_SETTINGS,
   type CompanySettings,
@@ -19,12 +20,21 @@ function sanitizePublicSimulatorConfig(value: unknown): PublicSimulatorConfig | 
   }
 
   const services = value.services.flatMap(item => {
-    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label) || !nonEmpty(item.icon) || !nonEmpty(item.description)) return [];
-    return [{ id: item.id, label: item.label, icon: item.icon, description: item.description }];
+    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label) || !nonEmpty(item.icon)) return [];
+    return [{
+      id: item.id,
+      label: item.label,
+      icon: item.icon,
+      ...(nonEmpty(item.description) ? { description: item.description } : {}),
+    }];
   });
   const capacities = value.capacities.flatMap(item => {
-    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label) || !nonEmpty(item.desc)) return [];
-    return [{ id: item.id, label: item.label, desc: item.desc }];
+    if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label)) return [];
+    return [{
+      id: item.id,
+      label: item.label,
+      ...(nonEmpty(item.desc) ? { desc: item.desc } : {}),
+    }];
   });
   const propertyTypes = value.propertyTypes.flatMap(item => {
     if (!isRecord(item) || !nonEmpty(item.id) || !nonEmpty(item.label)) return [];
@@ -76,21 +86,12 @@ export const settingsService = {
       ? await readSetting<Partial<WhatsappContact>>('whatsapp_contact')
       : undefined;
 
-    const settings: CompanySettings = {
-      company_name: nonEmpty(company?.company_name) ? company.company_name : DEFAULT_COMPANY_SETTINGS.company_name,
-      whatsapp_number: nonEmpty(company?.whatsapp_number)
-        ? company.whatsapp_number
-        : nonEmpty(legacy?.number) ? legacy.number : DEFAULT_COMPANY_SETTINGS.whatsapp_number,
-      whatsapp_message: nonEmpty(company?.whatsapp_message)
-        ? company.whatsapp_message
-        : nonEmpty(legacy?.message) ? legacy.message : DEFAULT_COMPANY_SETTINGS.whatsapp_message,
-      address: nonEmpty(company?.address) ? company.address : DEFAULT_COMPANY_SETTINGS.address,
-      phone: nonEmpty(company?.phone) ? company.phone : DEFAULT_COMPANY_SETTINGS.phone,
-      email: nonEmpty(company?.email) ? company.email : DEFAULT_COMPANY_SETTINGS.email,
-      instagram: nonEmpty(company?.instagram) ? company.instagram : DEFAULT_COMPANY_SETTINGS.instagram,
-      facebook: nonEmpty(company?.facebook) ? company.facebook : DEFAULT_COMPANY_SETTINGS.facebook,
-      logo_url: nonEmpty(company?.logo_url) ? company.logo_url : DEFAULT_COMPANY_SETTINGS.logo_url,
-    };
+    const { getSupabasePublicUrl } = await import('../lib/supabase');
+    const settings = sanitizeCompanySettings({
+      ...company,
+      whatsapp_number: nonEmpty(company?.whatsapp_number) ? company.whatsapp_number : legacy?.number,
+      whatsapp_message: nonEmpty(company?.whatsapp_message) ? company.whatsapp_message : legacy?.message,
+    } satisfies Partial<CompanySettings>, DEFAULT_COMPANY_SETTINGS, getSupabasePublicUrl());
 
     return {
       settings,

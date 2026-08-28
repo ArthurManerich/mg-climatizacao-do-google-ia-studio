@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { useSettings } from '../../context/SettingsContext';
+import { TEAM_CONTACTS } from '../../config';
 
 const OFFICIAL_LOGO = '/brand/logo-principal-160.webp';
 const OFFICIAL_DOMAIN = 'https://mgclimabnu.com.br/';
@@ -23,8 +24,8 @@ export default function Footer() {
             <p className="mt-3 text-sm leading-relaxed text-slate-400">Climatização e refrigeração para residências e empresas em Blumenau e região.</p>
             <a href={OFFICIAL_DOMAIN} className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-brand-cyan-400 hover:text-white">mgclimabnu.com.br</a>
             <div className="mt-2 flex gap-2">
-              {settings.instagram && <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Instagram aria-hidden="true" className="h-5 w-5" /></a>}
-              {settings.facebook && <a href={settings.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Facebook aria-hidden="true" className="h-5 w-5" /></a>}
+              {settings.instagram && <a href={settings.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Instagram aria-hidden="true" className="h-5 w-5" /></a>}
+              {settings.facebook && <a href={settings.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-control border border-white/10 text-slate-300 transition-colors hover:border-brand-cyan-600 hover:text-white"><Facebook aria-hidden="true" className="h-5 w-5" /></a>}
             </div>
           </div>
 
@@ -38,7 +39,7 @@ export default function Footer() {
           <div>
             <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-white">Contato</h2>
             <div className="mt-3 space-y-1 text-sm">
-              {settings.phone && <a href={`tel:${settings.phone.replace(/\D/g, '')}`} className="flex min-h-11 items-center gap-3 text-slate-300 hover:text-white"><Phone aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.phone}</a>}
+              {Object.values(TEAM_CONTACTS).map((contact) => <p key={contact.number} className="flex min-h-11 items-center gap-3 text-slate-300"><Phone aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" /><span><span className="block font-semibold text-slate-200">{contact.name}</span><span className="block">{contact.displayNumber}</span></span></p>)}
               {settings.email && <a href={`mailto:${settings.email}`} className="flex min-h-11 items-center gap-3 break-all text-slate-300 hover:text-white"><Mail aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.email}</a>}
               <p className="flex min-h-11 items-center gap-3 text-slate-300"><MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-brand-cyan-400" />{settings.address || 'Blumenau e região'}</p>
             </div>

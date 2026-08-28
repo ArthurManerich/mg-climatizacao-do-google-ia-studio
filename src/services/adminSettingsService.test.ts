@@ -27,25 +27,36 @@ beforeEach(() => {
 
 describe('adminSettingsService', () => {
   it('mantém simulator_config disponível somente pela API administrativa', async () => {
-    const config = { services: [], capacities: [], propertyTypes: [], basePrices: { instalacao: {} } };
-    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: config }, error: null });
-    await expect(adminSettingsService.getAdminSimulatorConfig()).resolves.toEqual(config);
+    const legacyConfig = {
+      services: [{ id: 'instalacao', label: 'Instalação', icon: 'Wind', description: 'Instalação' }],
+      capacities: [{ id: '12000', label: '12.000 BTUs', desc: 'Capacidade' }],
+      propertyTypes: [{ id: 'casa', label: 'Casa', multiplier: 1.5 }],
+      basePrices: { instalacao: { 12000: { min: 100, max: 200, time: '2 horas' } } },
+    };
+    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: legacyConfig }, error: null });
+    await expect(adminSettingsService.getAdminSimulatorConfig()).resolves.toEqual({
+      services: legacyConfig.services,
+      capacities: legacyConfig.capacities,
+      propertyTypes: [{ id: 'casa', label: 'Casa' }],
+    });
     expect(mocks.eq).toHaveBeenCalledWith('key', 'simulator_config');
   });
 
-  it('mantém budget_prices disponível somente pela API administrativa', async () => {
-    const prices = { categories: { instalacao: 100 } };
-    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: prices }, error: null });
-    await expect(adminSettingsService.getBudgetPrices()).resolves.toEqual(prices);
-    expect(mocks.eq).toHaveBeenCalledWith('key', 'budget_prices');
-  });
-
-  it('preserva a gravação das configurações administrativas', async () => {
+  it('salva apenas as opções necessárias, ignorando campos legados', async () => {
     mocks.upsert.mockResolvedValueOnce({ error: null });
-    await adminSettingsService.set('simulator_config', { basePrices: {} });
+    await adminSettingsService.set('simulator_config', {
+      services: [{ id: 'instalacao', label: 'Instalação', icon: 'Wind', description: '' }],
+      capacities: [{ id: '12000', label: '12.000 BTUs', desc: '' }],
+      propertyTypes: [{ id: 'casa', label: 'Casa', multiplier: 2 }],
+      basePrices: { instalacao: {} },
+    });
     expect(mocks.upsert).toHaveBeenCalledWith(expect.objectContaining({
       key: 'simulator_config',
-      value: { basePrices: {} },
+      value: {
+        services: [{ id: 'instalacao', label: 'Instalação', icon: 'Wind', description: '' }],
+        capacities: [{ id: '12000', label: '12.000 BTUs', desc: '' }],
+        propertyTypes: [{ id: 'casa', label: 'Casa' }],
+      },
     }));
   });
 });

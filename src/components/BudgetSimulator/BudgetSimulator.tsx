@@ -20,7 +20,6 @@ import {
   Wind,
   Wrench,
 } from 'lucide-react';
-import * as m from 'motion/react-m';
 import { useBudget } from '../../context/BudgetContext';
 
 const steps = [
@@ -77,6 +76,9 @@ export default function BudgetSimulator() {
     if (currentStep === 2 && !simulator.capacity) {
       return 'Informe a capacidade do equipamento ou selecione “Não sei informar”.';
     }
+    if (currentStep === 2 && !simulator.equipment.trim()) {
+      return 'Informe qual é o aparelho ou selecione “Não sei informar”.';
+    }
     if (currentStep === 2 && !simulator.necessity.trim()) {
       return 'Descreva brevemente o problema ou a necessidade.';
     }
@@ -124,6 +126,9 @@ export default function BudgetSimulator() {
   const equipmentLabel = simulator.capacity === 'nao-sei'
     ? 'Não sei informar'
     : getCapacityLabel(simulator.capacity);
+  const equipmentName = simulator.equipment === 'nao-sei'
+    ? 'Não sei informar'
+    : simulator.equipment;
 
   return (
     <section id="orcamento-online" className="border-t border-line bg-surface-subtle py-section sm:py-section-lg">
@@ -176,18 +181,16 @@ export default function BudgetSimulator() {
 
           <div className="p-4 sm:p-7 lg:p-9">
             {error && (
-              <m.div
+              <div
                 role="alert"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-5 flex items-start gap-2 rounded-control border border-rose-200 bg-rose-50 px-3 py-3 text-sm font-semibold text-rose-800"
+                className="simulator-alert-reveal mb-5 flex items-start gap-2 rounded-control border border-rose-200 bg-rose-50 px-3 py-3 text-sm font-semibold text-rose-800"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                 {error}
-              </m.div>
+              </div>
             )}
 
-            <m.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+            <div key={step} className="simulator-step-reveal">
               {step === 1 && (
                 <fieldset>
                   <legend className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Qual serviço você precisa?</legend>
@@ -223,8 +226,30 @@ export default function BudgetSimulator() {
                   <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Equipamento e necessidade</h3>
                   <p className="mt-2 text-sm text-ink-muted">Informe apenas o que souber sobre o equipamento.</p>
                   <div className="mt-5 grid gap-5 md:grid-cols-2">
+                    <div className="md:col-span-2">
+                      <label htmlFor="equipment-name" className="text-sm font-bold text-brand-navy-800">Qual é o aparelho?</label>
+                      <input
+                        id="equipment-name"
+                        type="text"
+                        value={simulator.equipment === 'nao-sei' ? '' : simulator.equipment}
+                        onChange={(event) => updateField('equipment', event.target.value)}
+                        disabled={simulator.equipment === 'nao-sei'}
+                        placeholder="Ex.: Split Samsung, LG Dual Inverter, Consul Janela..."
+                        className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400 disabled:bg-surface-subtle disabled:text-slate-400"
+                      />
+                      <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold text-ink-muted">
+                        <input
+                          type="checkbox"
+                          checked={simulator.equipment === 'nao-sei'}
+                          onChange={(event) => updateField('equipment', event.target.checked ? 'nao-sei' : '')}
+                          className="h-5 w-5 accent-brand-cyan-600"
+                        />
+                        Não sei informar
+                      </label>
+                    </div>
+
                     <div>
-                      <label htmlFor="equipment-capacity" className="text-sm font-bold text-brand-navy-800">Tipo ou capacidade do equipamento</label>
+                      <label htmlFor="equipment-capacity" className="text-sm font-bold text-brand-navy-800">Capacidade do equipamento (BTUs)</label>
                       <select
                         id="equipment-capacity"
                         value={simulator.capacity}
@@ -235,6 +260,14 @@ export default function BudgetSimulator() {
                         <option value="nao-sei">Não sei informar</option>
                         {config.capacities.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
                       </select>
+                      <details className="mt-2 rounded-control border border-line bg-surface-subtle px-3 py-2 text-sm text-ink-muted">
+                        <summary className="min-h-11 cursor-pointer content-center font-semibold text-brand-cyan-700">
+                          Não sabe onde encontrar os BTUs do aparelho?
+                        </summary>
+                        <p className="pb-2 leading-relaxed">
+                          Você pode encontrar a capacidade em BTUs na etiqueta do aparelho, normalmente na lateral ou parte interna da unidade. Procure informações como 9.000 BTU/h, 12.000 BTU/h, 18.000 BTU/h etc. Em alguns modelos, essa informação também aparece na etiqueta da condensadora, no manual ou na nota do equipamento.
+                        </p>
+                      </details>
                     </div>
 
                     <div>
@@ -360,7 +393,8 @@ export default function BudgetSimulator() {
                       <SummaryLine label="Serviço" value={getServiceLabel(simulator.serviceType)} />
                     </SummaryGroup>
                     <SummaryGroup title="Equipamento" onEdit={() => editStep(2)}>
-                      <SummaryLine label="Equipamento" value={equipmentLabel} />
+                      <SummaryLine label="Aparelho" value={equipmentName} />
+                      <SummaryLine label="BTUs" value={equipmentLabel} />
                       <SummaryLine label="Quantidade" value={String(simulator.quantity)} />
                       <SummaryLine label="Necessidade" value={simulator.necessity} />
                     </SummaryGroup>
@@ -393,7 +427,7 @@ export default function BudgetSimulator() {
                   </div>
                 </div>
               )}
-            </m.div>
+            </div>
 
             <div className="mt-7 flex items-center justify-between gap-3 border-t border-line pt-5">
               {step > 1 && step < 5 ? (
