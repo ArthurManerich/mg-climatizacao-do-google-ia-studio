@@ -218,29 +218,10 @@ CREATE POLICY "Apenas administradores gerenciam admin_users"
   USING ((SELECT public.is_admin()))
   WITH CHECK ((SELECT public.is_admin()));
 
--- 6. SEEDS IDEMPOTENTES
-INSERT INTO public.services (id, icon, title, description, bullet_points, order_index) VALUES
-('servico-instalacao', 'Snowflake', 'Instalação de Ar-Condicionado', 'Instalação técnica completa seguindo as normas dos fabricantes, garantindo eficiência energética e durabilidade.', ARRAY['Infraestrutura e tubulação em cobre', 'Testes de estanqueidade e vácuo', 'Garantia de serviço e suporte'], 1),
-('servico-higienizacao', 'Sparkles', 'Higienização e Limpeza Técnica', 'Limpeza profunda com bactericida e higienização de filtros, turbinas e bandejas de condensado.', ARRAY['Eliminação de fungos e bactérias', 'Melhora da qualidade do ar', 'Redução do consumo de energia'], 2),
-('servico-manutencao', 'Wrench', 'Manutenção Preventiva e Corretiva', 'Diagnóstico preciso e reparo de vazamentos, substituição de peças e carga de gás refrigerante.', ARRAY['Carga de gás refrigerante R-410A / R-32', 'Troca de capacitores e placas', 'Diagnóstico e correção de ruídos'], 3)
-ON CONFLICT (id) DO NOTHING;
-
-WITH faq_seed(q, a, order_index) AS (
-  VALUES
-    ('Quanto tempo demora uma instalação de ar-condicionado?', 'Em média, uma instalação residencial padrão leva de 2 a 4 horas, dependendo da complexidade da infraestrutura e do local de fixação das unidades.', 1),
-    ('Com que frequência devo fazer a higienização do aparelho?', 'Para ambientes residenciais, recomendamos a higienização completa a cada 6 meses. Em escritórios ou comércios com uso intenso, o ideal é realizar a manutenção a cada 3 a 4 meses.', 2),
-    ('Como funciona a garantia do serviço de instalação?', 'Oferecemos garantia de 1 ano em nossos serviços de instalação, além de manter a garantia original do fabricante por seguir todos os padrões técnicos.', 4)
-)
-INSERT INTO public.faq (q, a, order_index)
-SELECT seed.q, seed.a, seed.order_index
-FROM faq_seed AS seed
-WHERE NOT EXISTS (
-  SELECT 1 FROM public.faq AS existing WHERE existing.q = seed.q
-);
-
+-- 6. CONFIGURAÇÃO INICIAL CONFIRMADA
+-- Serviços e FAQ são administrados pelo Supabase e iniciam vazios.
 INSERT INTO public.settings (key, value) VALUES
-('whatsapp_contact', '{"number": "5547997464218", "message": "Olá, MG Climatização! Gostaria de solicitar um orçamento para ar-condicionado."}'),
-('budget_prices', '{"categories": {"instalacao": 350, "higienizacao": 180, "manutencao": 200, "recarga-gas": 220}}')
+('whatsapp_contact', '{"number": "5547997464218", "message": "Olá, MG Climatização! Gostaria de solicitar um orçamento para ar-condicionado."}')
 ON CONFLICT (key) DO NOTHING;
 
 -- 7. BUCKET PÚBLICO DE IMAGENS

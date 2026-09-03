@@ -11,7 +11,7 @@ describe('seletor central de WhatsApp', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it.each([
-    ['Marcos Manerich', '5547988353004'],
+    ['Marcos Manerich', '5547997464218'],
     ['Gabriel Klaumann Marcos', '5547997464218'],
   ])('abre %s com o destino correto e preserva a mensagem', (name, number) => {
     const openMock = vi.fn();

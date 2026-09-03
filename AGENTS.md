@@ -558,11 +558,33 @@ Sinalize a ocorrência e, quando a tarefa permitir, substitua por linguagem gera
 
 
 
-Existe informação de curso de Refrigeração e Climatização concluído em 2026, com carga horária informada de 40 horas e certificado.
+Marcos Manerich e Gabriel Klaumann Marcos possuem, conforme confirmação do proprietário:
 
 
 
-Existe informação de capacitação NR-35 válida e certificado.
+\- curso profissionalizante de instalação de ar-condicionado residencial, com 40 horas;
+
+\- NR-10, com 40 horas;
+
+\- treinamento de EPI/NR-06;
+
+\- NR-12;
+
+\- NR-18;
+
+\- NR-35;
+
+\- capacitação para trabalho em altura;
+
+\- capacitação relacionada aos equipamentos Philco.
+
+
+
+Essas capacitações permitem apresentar ambos como profissionais capacitados, mas não comprovam registro em conselho, responsabilidade técnica, representação oficial da Philco ou vínculo como assistência técnica autorizada.
+
+
+
+Nunca publicar os documentos originais, datas exatas, números de certificados, CNPJ presente nos certificados, CPF, assinaturas, informações do ASO, dados médicos ou QR Codes.
 
 
 
@@ -581,6 +603,10 @@ Não use expressões como:
 \- técnico registrado no conselho;
 
 \- especialista certificado por órgão X;
+
+\- representante oficial da Philco;
+
+\- assistência técnica autorizada da Philco;
 
 
 
@@ -2037,4 +2063,3 @@ tipografia, componentes visuais ou redesign:
 
 
 Não invente uma identidade visual diferente da marca.
-

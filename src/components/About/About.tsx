@@ -40,7 +40,9 @@ export default function About() {
               <p className="mt-1 text-sm font-semibold text-white">{person.role}</p>
               <div className="mt-2 text-sm leading-relaxed text-slate-300">
                 <p className="font-semibold text-slate-200">Formação</p>
-                <p>Curso de Refrigeração e Climatização</p>
+                <p>
+                  Formação profissionalizante de 40 horas em instalação de ar-condicionado residencial, com capacitações em NR-10, NR-12, NR-18, NR-35 e uso de EPI.
+                </p>
               </div>
               <a
                 href={getWhatsAppLink(person.message, person.number)}

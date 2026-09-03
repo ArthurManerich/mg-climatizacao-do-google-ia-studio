@@ -276,7 +276,7 @@ export default function AdminDashboard() {
 
                 {/* 4. SERVIÇOS VIEW */}
                 {admin.activeTab === 'services' && (
-                  <ServicesManager services={admin.services} />
+                  <ServicesManager services={admin.services} onServicesChange={admin.setServices} />
                 )}
 
                 {/* 5. FAQ VIEW */}

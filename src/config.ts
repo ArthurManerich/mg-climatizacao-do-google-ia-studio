@@ -16,8 +16,8 @@ export const TEAM_CONTACTS = {
   marcos: {
     name: "Marcos Manerich",
     role: "Proprietário",
-    number: "5547988353004",
-    displayNumber: "(47) 98835-3004",
+    number: "5547997464218",
+    displayNumber: "(47) 99746-4218",
     message: "Olá, Marcos! Vim pelo site da MG Climatização e gostaria de solicitar um atendimento.",
   },
   gabriel: {

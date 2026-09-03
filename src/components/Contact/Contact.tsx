@@ -19,7 +19,7 @@ export default function Contact() {
           <h2 className="mt-3 text-3xl font-bold leading-tight text-white sm:text-5xl">Precisa de atendimento em climatização?</h2>
           <p className="mt-5 max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">Atendemos Blumenau e região. Dependendo da localização, pode haver taxa adicional de deslocamento.</p>
           <div className="mt-6 flex flex-col gap-2 text-sm text-slate-200 sm:flex-row sm:flex-wrap sm:gap-x-8">
-            {Object.values(TEAM_CONTACTS).map((contact) => <p key={contact.number} className="inline-flex min-h-11 items-center gap-2"><Phone aria-hidden="true" className="h-4 w-4 text-brand-cyan-400" /><span><span className="block font-semibold">{contact.name}</span><span className="block">{contact.displayNumber}</span></span></p>)}
+            {Object.values(TEAM_CONTACTS).map((contact) => <p key={contact.name} className="inline-flex min-h-11 items-center gap-2"><Phone aria-hidden="true" className="h-4 w-4 text-brand-cyan-400" /><span><span className="block font-semibold">{contact.name}</span><span className="block">{contact.displayNumber}</span></span></p>)}
             <p className="inline-flex min-h-11 items-center gap-2"><MapPin aria-hidden="true" className="h-4 w-4 text-brand-cyan-400" /><span>{region}</span></p>
           </div>
         </div>

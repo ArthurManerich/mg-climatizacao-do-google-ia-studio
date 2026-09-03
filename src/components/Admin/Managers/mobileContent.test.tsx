@@ -89,7 +89,7 @@ describe('conteúdo essencial dos Managers', () => {
   });
 
   it('diferencia lista vazia de Serviços com uma mensagem explícita', () => {
-    render(<ServicesManager services={[]} />);
+    render(<ServicesManager services={[]} onServicesChange={vi.fn()} />);
 
     expect(screen.getByRole('heading', { name: 'Especialidades de Serviço' })).toBeInTheDocument();
     expect(screen.getByText('Nenhum serviço cadastrado')).toBeInTheDocument();

@@ -35,6 +35,16 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
 };
 
+const VERSIONED_ASSET_PATH = /^\/assets\/[^/]+-[a-z0-9_-]{8,}\.(?:css|js|mjs|png|jpe?g|webp|gif|svg|ico|woff2?|ttf|otf)$/i;
+const ASSET_CONTENT_TYPE = /^(?:application\/(?:javascript|wasm)|text\/(?:css|javascript)|image\/(?:png|jpeg|webp|gif|svg\+xml|x-icon)|font\/(?:woff2?|ttf|otf))(?:;|$)/i;
+
+function isVersionedBuildAsset(pathname: string, response: Response, contentType: string): boolean {
+  return response.ok
+    && VERSIONED_ASSET_PATH.test(pathname)
+    && !contentType.includes('text/html')
+    && ASSET_CONTENT_TYPE.test(contentType);
+}
+
 export function withSecurityHeaders(request: Request, response: Response): Response {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
@@ -42,9 +52,10 @@ export function withSecurityHeaders(request: Request, response: Response): Respo
   }
 
   const pathname = new URL(request.url).pathname;
-  if (pathname.startsWith('/assets/')) {
+  const contentType = headers.get('Content-Type')?.toLowerCase() ?? '';
+  if (isVersionedBuildAsset(pathname, response, contentType)) {
     headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-  } else if (headers.get('Content-Type')?.toLowerCase().includes('text/html')) {
+  } else if (contentType.includes('text/html')) {
     headers.set('Cache-Control', 'no-cache');
   }
 

@@ -6,10 +6,17 @@ import worker, { withSecurityHeaders, type Env } from './index';
 
 const html = readFileSync(resolve(__dirname, '../index.html'), 'utf8');
 
-function responseFor(pathname: string, contentType = 'text/html; charset=utf-8') {
+function responseFor(
+  pathname: string,
+  contentType = 'text/html; charset=utf-8',
+  status = 200,
+) {
   return withSecurityHeaders(
     new Request(`https://mgclimabnu.com.br${pathname}`),
-    new Response('<!doctype html>', { headers: { 'Content-Type': contentType } }),
+    new Response(contentType.includes('text/html') ? '<!doctype html>' : 'asset', {
+      status,
+      headers: { 'Content-Type': contentType },
+    }),
   );
 }
 
@@ -44,15 +51,40 @@ describe('Cloudflare Worker', () => {
     expect(csp).toContain('wss://*.supabase.co');
   });
 
-  it('delegates routing and SPA fallback to the configured asset binding', async () => {
+  it('preserves the SPA fallback for a public route', async () => {
+    const request = new Request('https://mgclimabnu.com.br/servico-inexistente');
+    const env: Env = {
+      ASSETS: {
+        fetch: async () => new Response('<!doctype html>', {
+          status: 200,
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        }),
+      },
+    };
+
+    const response = await worker.fetch(request, env);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe('<!doctype html>');
+    expect(response.headers.get('Cache-Control')).toBe('no-cache');
+    expect(response.headers.get('X-Robots-Tag')).toBeNull();
+  });
+
+  it('preserves the SPA fallback and noindex for a private route', async () => {
     const request = new Request('https://mgclimabnu.com.br/admin');
     const env: Env = {
-      ASSETS: { fetch: async () => new Response('SPA shell', { status: 200 }) },
+      ASSETS: {
+        fetch: async () => new Response('SPA shell', {
+          status: 200,
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        }),
+      },
     };
 
     const response = await worker.fetch(request, env);
     expect(response.status).toBe(200);
     expect(await response.text()).toBe('SPA shell');
+    expect(response.headers.get('Cache-Control')).toBe('no-cache');
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow');
   });
 
   it.each(['/login', '/admin', '/admin/portfolio'])('prevents indexing of private route %s', (pathname) => {
@@ -63,11 +95,28 @@ describe('Cloudflare Worker', () => {
     expect(responseFor('/').headers.get('X-Robots-Tag')).toBeNull();
   });
 
-  it('sets immutable caching only for versioned build assets', () => {
-    const asset = responseFor('/assets/index-abc123.js', 'application/javascript');
-    const document = responseFor('/');
+  it('sets immutable caching for a successful versioned build asset', () => {
+    const asset = responseFor('/assets/index-abc12345.js', 'text/javascript; charset=utf-8');
 
     expect(asset.headers.get('Cache-Control')).toBe('public, max-age=31536000, immutable');
+  });
+
+  it('does not cache an asset-like missing path when the SPA fallback returns HTML', () => {
+    const fallback = responseFor('/assets/arquivo-inexistente.js');
+
+    expect(fallback.headers.get('Content-Type')).toContain('text/html');
+    expect(fallback.headers.get('Cache-Control')).toBe('no-cache');
+  });
+
+  it('does not cache a failed response even when its path and MIME resemble an asset', () => {
+    const missingAsset = responseFor('/assets/index-abc12345.js', 'application/javascript', 404);
+
+    expect(missingAsset.headers.get('Cache-Control')).toBeNull();
+  });
+
+  it('uses no-cache for a normal HTML document', () => {
+    const document = responseFor('/');
+
     expect(document.headers.get('Cache-Control')).toBe('no-cache');
   });
 });

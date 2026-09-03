@@ -44,7 +44,7 @@ export function useAdminData() {
     const fetchUser = async () => {
       const { data } = await authService.getCurrentUser();
       if (data.user) {
-        setEmail(data.user.email || 'administrador@mgclimatizacao.com.br');
+        setEmail(data.user.email || 'Administrador');
       }
     };
     fetchUser();
@@ -234,6 +234,7 @@ export function useAdminData() {
 
     // Services
     services: servicesHook.services,
+    setServices: servicesHook.setServices,
 
     // FAQ
     faqs: faqHook.faqs,

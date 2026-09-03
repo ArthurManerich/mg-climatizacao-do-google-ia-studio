@@ -7,12 +7,15 @@ Vite e Supabase.
 
 Pré-requisito: Node.js 22.
 
-1. Copie `.env.example` para `.env`.
-2. Preencha as variáveis públicas do projeto Supabase no arquivo local.
+1. Copie `.env.example` para `.env.local`.
+2. Preencha em `.env.local` somente as variáveis públicas de compilação:
+   - `VITE_SUPABASE_URL`;
+   - `VITE_SUPABASE_ANON_KEY`.
 3. Execute `npm ci`.
 4. Execute `npm run dev`.
 
-Nunca use uma chave `service_role` no frontend.
+Não inclua valores reais na documentação ou no Git. Nunca use uma chave
+`service_role` no frontend.
 
 ## Validação
 

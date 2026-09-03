@@ -8,16 +8,15 @@ vi.mock('../../context/SettingsContext', () => ({
 }));
 
 describe('equipe da MG Climatização', () => {
-  it('gera contatos individuais sem cruzar os números', () => {
+  it('usa o número central nos dois contatos e preserva as mensagens individuais', () => {
     render(<About />);
 
     const marcosLink = screen.getByRole('link', { name: /Falar com Marcos/i });
     const gabrielLink = screen.getByRole('link', { name: /Falar com Gabriel/i });
 
     expect(marcosLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${TEAM_CONTACTS.marcos.number}`));
-    expect(marcosLink).not.toHaveAttribute('href', expect.stringContaining(`wa.me/${WHATSAPP.number}`));
+    expect(marcosLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${WHATSAPP.number}`));
     expect(gabrielLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${WHATSAPP.number}`));
-    expect(gabrielLink).not.toHaveAttribute('href', expect.stringContaining(`wa.me/${TEAM_CONTACTS.marcos.number}`));
     expect(decodeURIComponent(marcosLink.getAttribute('href') || '')).toContain(TEAM_CONTACTS.marcos.message);
     expect(decodeURIComponent(gabrielLink.getAttribute('href') || '')).toContain(TEAM_CONTACTS.gabriel.message);
   });
@@ -28,8 +27,9 @@ describe('equipe da MG Climatização', () => {
     expect(screen.getByRole('heading', { name: 'Quem está por trás da MG Climatização' })).toBeInTheDocument();
     expect(screen.getByText('Proprietário')).toBeInTheDocument();
     expect(screen.getByText('Atendimento técnico')).toBeInTheDocument();
-    expect(screen.getAllByText(/Curso de Refrigeração e Climatização/)).toHaveLength(2);
+    expect(screen.getAllByText(/Formação profissionalizante de 40 horas em instalação de ar-condicionado residencial/)).toHaveLength(2);
+    expect(screen.getAllByText(/NR-10, NR-12, NR-18, NR-35 e uso de EPI/)).toHaveLength(2);
     expect(screen.getAllByText('Formação')).toHaveLength(2);
-    expect(screen.queryByText(/Carga horária|40 horas/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/CREA|ART|TRT|CFT|CRT|RRT|ASO|assistência autorizada|representante oficial/i)).not.toBeInTheDocument();
   });
 });

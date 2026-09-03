@@ -6,13 +6,13 @@ export const defaultPublicSimulatorConfig = {
       id: 'instalacao', 
       label: 'Instalação', 
       icon: 'Wind', 
-      description: 'Instalação completa com fixação segura, drenagem e testes de estanqueidade.' 
+      description: 'Instalação conforme as condições do equipamento e do local.'
     },
     { 
       id: 'manutencao-preventiva', 
       label: 'Manutenção Preventiva', 
       icon: 'ShieldCheck', 
-      description: 'Revisão periódica preventiva para evitar quebras e otimizar o consumo.' 
+      description: 'Revisão e manutenção preventiva do equipamento.'
     },
     { 
       id: 'manutencao-corretiva', 
@@ -30,13 +30,13 @@ export const defaultPublicSimulatorConfig = {
       id: 'carga-gas', 
       label: 'Carga de Gás', 
       icon: 'Gauge', 
-      description: 'Teste de estanqueidade e recarga precisa do gás refrigerante.' 
+      description: 'Avaliação e carga de fluido refrigerante quando necessária.'
     },
     { 
       id: 'desinstalacao', 
       label: 'Desinstalação', 
       icon: 'Unplug', 
-      description: 'Retirada técnica segura recolhendo o gás e preservando o equipamento.' 
+      description: 'Retirada cuidadosa do equipamento.'
     },
   ],
   capacities: [
