@@ -32,7 +32,7 @@ const SECURITY_HEADERS: Readonly<Record<string, string>> = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
-  'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+  'Cross-Origin-Opener-Policy': 'same-origin',
 };
 
 const VERSIONED_ASSET_PATH = /^\/assets\/[^/]+-[a-z0-9_-]{8,}\.(?:css|js|mjs|png|jpe?g|webp|gif|svg|ico|woff2?|ttf|otf)$/i;

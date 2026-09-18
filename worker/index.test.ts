@@ -31,7 +31,7 @@ describe('Cloudflare Worker', () => {
     expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin');
     expect(response.headers.get('Permissions-Policy')).toBe('accelerometer=(), camera=(), fullscreen=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()');
     expect(response.headers.get('X-Frame-Options')).toBe('DENY');
-    expect(response.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin-allow-popups');
+    expect(response.headers.get('Cross-Origin-Opener-Policy')).toBe('same-origin');
   });
 
   it('authorizes exactly the current JSON-LD and rejects unsafe script directives', () => {
