@@ -83,7 +83,7 @@ describe('conteúdo essencial dos Managers', () => {
     expect(screen.getByRole('heading', { name: 'Configurações do Sistema' })).toBeInTheDocument();
     expect(screen.getByText('Nome da Empresa')).toBeInTheDocument();
     expect(screen.getByText('Email de Contato')).toBeInTheDocument();
-    expect(screen.getByText(/Número do WhatsApp/i)).toBeInTheDocument();
+    expect(screen.getByText('Número do WhatsApp (Código do País + DDD + Número)')).toBeInTheDocument();
     expect(screen.getByText('Endereço Comercial')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Salvar Configurações/i })).toBeInTheDocument();
   });

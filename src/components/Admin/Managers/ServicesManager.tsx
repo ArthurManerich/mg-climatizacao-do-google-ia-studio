@@ -2,12 +2,14 @@ import React, { useRef, useState } from 'react';
 import { Edit, Plus, Trash2, X } from 'lucide-react';
 import { servicesService } from '../../../services/servicesService';
 import type { ServiceItem } from '../../../types';
+import { findRestrictedServiceContent } from '../../../utils/serviceContent';
 
 const TITLE_MAX = 100;
 const DESCRIPTION_MAX = 500;
 const ICON_MAX = 50;
 const TOPIC_MAX = 120;
 const TOPICS_MAX = 8;
+const SERVICE_ICONS = ['Wind', 'ShieldCheck', 'Sparkles', 'Gauge', 'Wrench', 'Building2', 'Settings', 'Flame', 'Zap', 'Fan'] as const;
 
 interface ServicesManagerProps {
   services: ServiceItem[];
@@ -96,6 +98,15 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ services, onSe
     }
     if (cleanTopics.some(topic => topic.length > TOPIC_MAX)) {
       setMessage({ type: 'error', text: `Cada tópico deve ter no máximo ${TOPIC_MAX} caracteres.` });
+      return;
+    }
+    const restricted = findRestrictedServiceContent({ title: cleanTitle, description: cleanDescription, bullet_points: cleanTopics });
+    if (restricted) {
+      setMessage({ type: 'error', text: `Revise o serviço. ${restricted} não está autorizado no conteúdo público.` });
+      return;
+    }
+    if (!SERVICE_ICONS.includes(cleanIcon as (typeof SERVICE_ICONS)[number])) {
+      setMessage({ type: 'error', text: 'Selecione um ícone válido para o serviço.' });
       return;
     }
 
@@ -188,7 +199,9 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ services, onSe
               </label>
               <label className="space-y-1.5 md:col-span-2">
                 <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Ícone</span>
-                <input aria-label="Ícone" value={icon} onChange={event => setIcon(event.target.value)} maxLength={ICON_MAX} disabled={saving} className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#0096D6] focus:outline-none disabled:opacity-60" />
+                <select aria-label="Ícone" value={icon} onChange={event => setIcon(event.target.value)} disabled={saving} className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#0096D6] focus:outline-none disabled:opacity-60">
+                  {SERVICE_ICONS.map(option => <option key={option} value={option}>{option}</option>)}
+                </select>
               </label>
               <label className="space-y-1.5 md:col-span-1">
                 <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Ordem</span>
@@ -200,7 +213,7 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ services, onSe
               <textarea aria-label="Descrição" value={description} onChange={event => setDescription(event.target.value)} maxLength={DESCRIPTION_MAX} required rows={3} disabled={saving} className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-[#0096D6] focus:outline-none disabled:opacity-60" />
             </label>
             <label className="block space-y-1.5">
-              <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Tópicos — um por linha, até {TOPICS_MAX}</span>
+              <span className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Adicione um tópico por linha, até {TOPICS_MAX}</span>
               <textarea aria-label="Tópicos" value={topics} onChange={event => setTopics(event.target.value)} maxLength={TOPICS_MAX * (TOPIC_MAX + 1)} rows={5} disabled={saving} className="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-[#0096D6] focus:outline-none disabled:opacity-60" />
             </label>
             <div className="flex justify-end">
@@ -222,7 +235,7 @@ export const ServicesManager: React.FC<ServicesManagerProps> = ({ services, onSe
             <article key={item.id} className="flex flex-col justify-between gap-4 p-5 md:flex-row md:items-start">
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded border border-[#0096D6]/30 bg-[#E6F5FC] px-2 py-0.5 text-[9px] font-bold uppercase text-[#002E5C]">Ordem: #{item.order_index ?? 0}</span>
+                  <span className="rounded border border-[#0096D6]/30 bg-[#E6F5FC] px-2 py-0.5 text-[9px] font-bold uppercase text-[#002E5C]">Ordem #{item.order_index ?? 0}</span>
                   <h4 className="break-words text-xs font-black uppercase tracking-wide text-slate-950">{item.title}</h4>
                   <span className="text-[9px] font-mono text-slate-400">{item.icon}</span>
                 </div>

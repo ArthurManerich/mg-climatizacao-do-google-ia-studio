@@ -42,7 +42,7 @@ export default function FAQ() {
         <header className="mb-8 max-w-2xl sm:mb-10">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-cyan-700">Dúvidas frequentes</p>
           <h2 className="mt-3 text-3xl font-bold text-ink sm:text-4xl">Informações para o seu atendimento.</h2>
-          <p className="mt-4 text-sm leading-relaxed text-ink-muted sm:text-base">Consulte as perguntas publicadas pela MG Climatização.</p>
+          <p className="mt-4 text-sm leading-relaxed text-ink-muted sm:text-base">Veja as respostas para as dúvidas mais comuns.</p>
         </header>
 
         {error && (

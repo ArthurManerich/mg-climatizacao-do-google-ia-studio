@@ -60,7 +60,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({
                   {latestPortfolioItem.title}
                 </h4>
                 <p className="text-xs text-[#475569] leading-relaxed line-clamp-3">
-                  {latestPortfolioItem.description || 'Nenhuma descrição detalhada inserida para este serviço no portfólio.'}
+                  {latestPortfolioItem.description || 'Este serviço ainda não tem descrição.'}
                 </p>
               </div>
             </div>
@@ -68,7 +68,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({
             <div className="py-8 text-center flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
               <FileImage className="w-10 h-10 text-slate-300 mb-2" />
               <p className="text-xs font-bold text-slate-500">Nenhum serviço cadastrado ainda</p>
-              <p className="text-[10px] text-slate-400 mt-1">Insira fotos dos seus projetos no gerenciador de portfólio.</p>
+              <p className="text-[10px] text-slate-400 mt-1">Adicione fotos dos serviços ao portfólio.</p>
             </div>
           )}
         </div>
@@ -106,7 +106,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({
 
         {/* Identity Card */}
         <div className="space-y-3 border-t border-slate-100 pt-5">
-          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Identidade de Exibição</h4>
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dados da empresa</h4>
           <div className="space-y-2 text-xs">
             <div className="flex justify-between items-center gap-3 bg-slate-50/50 p-3 md:p-2 rounded border border-slate-100">
               <span className="font-semibold text-slate-500 text-[11px]">Empresa:</span>
@@ -118,7 +118,7 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({
             </div>
             <div className="flex justify-between items-center gap-3 bg-slate-50/50 p-3 md:p-2 rounded border border-slate-100">
               <span className="font-semibold text-slate-500 text-[11px]">Cidade:</span>
-              <span className="font-bold text-slate-800">{companyAddress || 'Blumenau - SC'}</span>
+              <span className="font-bold text-slate-800">{companyAddress || 'Blumenau, SC'}</span>
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
   company_name: BRAND.name,
   whatsapp_number: OFFICIAL_WHATSAPP,
   whatsapp_message: `Olá, ${BRAND.name}! Gostaria de solicitar um orçamento para climatização.`,
-  address: 'Blumenau - SC',
+  address: 'Blumenau, SC',
   phone: '(47) 99746-4218',
   email: OFFICIAL_EMAIL,
   instagram: OFFICIAL_INSTAGRAM,

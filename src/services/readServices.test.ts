@@ -41,6 +41,25 @@ beforeEach(() => {
 });
 
 describe('contrato das leituras em lista', () => {
+  it.each([
+    'Climatização em escritório',
+    'Instalação de ar-condicionado na cozinha',
+    'Manutenção do painel do ar-condicionado',
+    'Desmontagem do ar-condicionado',
+  ])('preserva conteúdo legítimo em serviços e FAQ: %s', async (text) => {
+    const service = { title: text, description: text, bullet_points: [] };
+    mocks.response.data = [service];
+    await expect(servicesService.getAll()).resolves.toEqual([service]);
+    const faq = { q: text, a: text };
+    mocks.response.data = [faq];
+    await expect(faqService.getAll()).resolves.toEqual([faq]);
+  });
+  it.each(['Montagem de móveis', 'Desmontagem de guarda-roupa', 'Montar armários'])('filtra somente a expressão explícita de móveis: %s', async (text) => {
+    mocks.response.data = [{ title: text, description: '' }];
+    await expect(servicesService.getAll()).resolves.toEqual([]);
+    mocks.response.data = [{ q: text, a: '' }];
+    await expect(faqService.getAll()).resolves.toEqual([]);
+  });
   it.each(readers)('%s retorna lista vazia quando a consulta confirma ausência de dados', async (_name, read) => {
     await expect(read()).resolves.toEqual([]);
   });

@@ -15,7 +15,7 @@ export function useSettings() {
   const [companyName, setCompanyName] = useState('mgclimatizacao');
   const [companyWhatsapp, setCompanyWhatsapp] = useState(OFFICIAL_WHATSAPP);
   const [companyWhatsappMessage, setCompanyWhatsappMessage] = useState('Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
-  const [companyAddress, setCompanyAddress] = useState('Blumenau - SC');
+  const [companyAddress, setCompanyAddress] = useState('Blumenau, SC');
   const [companyPhone, setCompanyPhone] = useState('(47) 99746-4218');
   const [companyEmail, setCompanyEmail] = useState(OFFICIAL_EMAIL);
   const [companyInstagram, setCompanyInstagram] = useState(OFFICIAL_INSTAGRAM);

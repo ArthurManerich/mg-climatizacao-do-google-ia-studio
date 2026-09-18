@@ -109,7 +109,7 @@ export function useAdminData() {
       settingsHook.setCompanyName(compSettings.company_name || 'mgclimatizacao');
       settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || waData.number || OFFICIAL_WHATSAPP);
       settingsHook.setCompanyWhatsappMessage(compSettings.whatsapp_message || waData.message || 'Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
-      settingsHook.setCompanyAddress(compSettings.address || 'Blumenau - SC');
+      settingsHook.setCompanyAddress(compSettings.address || 'Blumenau, SC');
       settingsHook.setCompanyPhone(compSettings.phone || '(47) 99746-4218');
       settingsHook.setCompanyEmail(compSettings.email || OFFICIAL_EMAIL);
       settingsHook.setCompanyInstagram(compSettings.instagram || OFFICIAL_INSTAGRAM);

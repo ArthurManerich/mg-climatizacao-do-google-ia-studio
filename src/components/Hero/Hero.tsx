@@ -63,7 +63,7 @@ export default function Hero() {
               variants={itemVariants}
               className="max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
             >
-              MG Climatização — soluções em ar-condicionado para Blumenau e região.
+              MG Climatização, soluções em ar-condicionado para Blumenau e região.
             </m.h1>
 
             <m.p

@@ -125,6 +125,25 @@ describe('gerenciamento administrativo de serviços', () => {
     expect(serviceMocks.create).not.toHaveBeenCalled();
   });
 
+  it('bloqueia alegações comerciais ou técnicas não autorizadas', () => {
+    renderManager([]);
+    openAndFillCreateForm();
+    fireEvent.change(screen.getByLabelText('Descrição'), { target: { value: 'Contrato PMOC conforme ANVISA.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar serviço' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('PMOC não está autorizado');
+    expect(serviceMocks.create).not.toHaveBeenCalled();
+  });
+
+  it('oferece somente ícones suportados pela interface', () => {
+    renderManager([]);
+    fireEvent.click(screen.getByRole('button', { name: /Novo Serviço/i }));
+    expect(screen.getByLabelText('Ícone')).toHaveRole('combobox');
+    expect(screen.getAllByRole('option').map(option => option.getAttribute('value'))).toEqual([
+      'Wind', 'ShieldCheck', 'Sparkles', 'Gauge', 'Wrench', 'Building2', 'Settings', 'Flame', 'Zap', 'Fan',
+    ]);
+  });
+
   it('impede submissões repetidas enquanto o salvamento está em andamento', async () => {
     let resolveCreate!: (service: ServiceItem) => void;
     serviceMocks.create.mockReturnValue(new Promise(resolve => { resolveCreate = resolve; }));

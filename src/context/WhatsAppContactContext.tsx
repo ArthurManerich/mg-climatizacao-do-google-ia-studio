@@ -58,9 +58,10 @@ export function WhatsAppContactProvider({ children }: { children: ReactNode }) {
     };
   }, [close, message]);
 
-  const selectContact = (number: string) => {
+  const selectContact = (contact: (typeof TEAM_CONTACTS)[keyof typeof TEAM_CONTACTS]) => {
     if (message === null) return;
-    window.open(getWhatsAppLink(message, number), 'whatsapp', 'noopener,noreferrer');
+    const personalizedMessage = `${contact.message}\n\n${message}`;
+    window.open(getWhatsAppLink(personalizedMessage, contact.number), 'whatsapp', 'noopener,noreferrer');
     close();
   };
 
@@ -85,7 +86,7 @@ export function WhatsAppContactProvider({ children }: { children: ReactNode }) {
             <p className="mt-2 text-sm leading-relaxed text-slate-300">Escolha um dos contatos da MG Climatização para continuar pelo WhatsApp.</p>
             <div className="mt-6 grid gap-3">
               {Object.values(TEAM_CONTACTS).map((contact) => (
-                <button key={contact.name} type="button" onClick={() => selectContact(contact.number)} className="flex min-h-16 w-full items-center gap-4 rounded-card border border-white/10 bg-brand-navy-950/55 p-4 text-left transition-colors hover:border-brand-cyan-600/60 hover:bg-brand-cyan-600/10">
+                <button key={contact.name} type="button" onClick={() => selectContact(contact)} className="flex min-h-16 w-full items-center gap-4 rounded-card border border-white/10 bg-brand-navy-950/55 p-4 text-left transition-colors hover:border-brand-cyan-600/60 hover:bg-brand-cyan-600/10">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-cyan-600 text-white"><MessageCircle className="h-5 w-5" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1"><span className="block font-bold text-white">{contact.name}</span><span className="mt-0.5 block text-sm text-slate-300">{contact.role}</span><span className="mt-1 block text-sm font-semibold text-brand-cyan-400">{contact.displayNumber}</span><span className="mt-3 inline-flex min-h-11 items-center rounded-control bg-brand-orange-500 px-4 font-bold text-brand-navy-950">Falar com {contact.name.split(' ')[0]}</span></span>
                 </button>

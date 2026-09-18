@@ -46,14 +46,14 @@ export default function AccessModeModal({ isOpen, onClose }: AccessModeModalProp
               <button ref={closeButtonRef} type="button" onClick={onClose} className="absolute right-3 top-3 flex min-h-11 min-w-11 items-center justify-center rounded-full text-slate-200 transition-colors hover:bg-white/10 hover:text-white" aria-label="Fechar janela de seleção de acesso"><X aria-hidden="true" className="h-5 w-5" /></button>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan-400">MG Climatização</p>
               <h2 id="access-modal-title" className="mt-2 text-2xl font-bold text-white sm:text-3xl">Como deseja navegar?</h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-200">Continue no site público ou acesse a área administrativa protegida.</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-200">Continue no site ou entre no painel administrativo.</p>
             </header>
 
             <div className="grid gap-4 bg-surface-subtle p-4 sm:grid-cols-2 sm:p-6">
               <button type="button" onClick={selectClient} className="group flex min-h-52 flex-col items-start rounded-card border border-line bg-surface p-5 text-left transition-[border-color,box-shadow] hover:border-brand-cyan-600 hover:shadow-card">
                 <span className="flex h-11 w-11 items-center justify-center rounded-control bg-brand-cyan-50 text-brand-cyan-700"><User aria-hidden="true" className="h-5 w-5" /></span>
                 <span className="mt-4 text-lg font-bold text-ink">Site público</span>
-                <span className="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">Consulte serviços, trabalhos publicados e monte sua solicitação de atendimento.</span>
+                <span className="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">Conheça os serviços, veja as fotos e solicite atendimento.</span>
                 <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-brand-cyan-700">Continuar no site <ArrowRight aria-hidden="true" className="h-4 w-4" /></span>
               </button>
 

@@ -36,7 +36,7 @@ const completeRequest = async () => {
   fireEvent.change(screen.getByLabelText(/Endereço do serviço/i), { target: { value: 'Rua das Flores, 100' } });
   fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
 
-  await screen.findByRole('heading', { name: /Como podemos identificar você/i });
+  await screen.findByRole('heading', { name: /Qual é o seu nome/i });
   fireEvent.change(screen.getByLabelText(/Nome completo/i), { target: { value: 'Maria da Silva' } });
   fireEvent.click(screen.getByRole('button', { name: /Continuar/i }));
 

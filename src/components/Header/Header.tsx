@@ -50,7 +50,7 @@ export default function Header({ onOpenAccessModal }: HeaderProps) {
           <a
             href="#inicio"
             className="flex min-w-0 items-center gap-2.5 rounded-control focus-visible:outline-offset-4 sm:gap-3"
-            aria-label="MG Climatização — início"
+            aria-label="Ir para o início do site da MG Climatização"
           >
             <img
               src={settings.logo_url || OFFICIAL_HEADER_LOGO}

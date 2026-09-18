@@ -11,9 +11,9 @@ describe('seletor central de WhatsApp', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it.each([
-    ['Marcos Manerich', '5547997464218'],
-    ['Gabriel Klaumann Marcos', '5547997464218'],
-  ])('abre %s com o destino correto e preserva a mensagem', (name, number) => {
+    ['Marcos Manerich', '554788353004', 'Olá, Marcos!'],
+    ['Gabriel Klaumann Marcos', '5547997464218', 'Olá, Gabriel!'],
+  ])('abre %s com o destino correto, saudação individual e solicitação preservada', (name, number, greeting) => {
     const openMock = vi.fn();
     vi.stubGlobal('open', openMock);
     render(<WhatsAppContactProvider><Opener /></WhatsAppContactProvider>);
@@ -24,6 +24,7 @@ describe('seletor central de WhatsApp', () => {
 
     const url = decodeURIComponent(String(openMock.mock.calls[0][0]));
     expect(url).toContain(`wa.me/${number}`);
+    expect(url).toContain(`text=${greeting}`);
     expect(url).toContain('Mensagem original com detalhes');
   });
 

@@ -29,7 +29,8 @@ describe('fechamento público da landing page', () => {
     render(<WhatsAppContactProvider><Contact /></WhatsAppContactProvider>);
     expect(screen.queryByText(/Seg a Sáb|08h às 18h/i)).not.toBeInTheDocument();
     expect(screen.getByText('Marcos Manerich')).toBeInTheDocument();
-    expect(screen.getAllByText('(47) 99746-4218')).toHaveLength(2);
+    expect(screen.getByText('(47) 8835-3004')).toBeInTheDocument();
+    expect(screen.getByText('(47) 99746-4218')).toBeInTheDocument();
     expect(screen.getByText('Gabriel Klaumann Marcos')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Solicitar orçamento' }));
     expect(screen.getByRole('dialog', { name: /Com quem você deseja falar/i })).toBeInTheDocument();

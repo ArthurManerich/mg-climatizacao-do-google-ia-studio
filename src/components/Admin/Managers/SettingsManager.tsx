@@ -86,7 +86,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
             </div>
             <div>
               <h3 className="text-sm font-black text-[#002E5C] uppercase tracking-wider">Identidade & Logotipo</h3>
-              <p className="text-[11px] text-slate-400">Personalize o nome da sua empresa e a identidade visual principal.</p>
+              <p className="text-[11px] text-slate-400">Atualize o nome e a logo da empresa.</p>
             </div>
           </div>
 
@@ -186,7 +186,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
             </div>
             <div>
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Atendimento & WhatsApp</h3>
-              <p className="text-[11px] text-slate-400">Configure o número de celular e a mensagem pré-definida de contato.</p>
+              <p className="text-[11px] text-slate-400">Defina o número do WhatsApp e a mensagem inicial.</p>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
                 className="w-full bg-slate-50/50 border border-slate-200 focus:border-[#0096D6] focus:bg-white rounded-xl px-4 py-3 text-xs font-mono font-bold text-slate-800 transition-all focus:outline-none"
                 placeholder="5547997464218"
               />
-              <p className="text-[9px] text-slate-400 mt-1">Exemplo: 55 (Brasil) + 47 (Gaspar/Blumenau) + 997464218.</p>
+              <p className="text-[9px] text-slate-400 mt-1">Use 55 para Brasil, 47 para a região e depois o número 997464218.</p>
             </div>
 
             <div>
@@ -231,9 +231,9 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
           <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-100 flex items-start gap-3">
             <MessageCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Geração de Leads</h4>
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Contato pelo WhatsApp</h4>
               <p className="text-[11px] text-emerald-900/80 mt-1 leading-relaxed">
-                Todos os botões de contato, simulações de orçamento final e solicitações rápidas na página principal geram automaticamente um link dinâmico codificado para o número configurado acima. Isso garante conversão imediata de visitas para mensagens em seu celular!
+                Os botões de contato abrem o WhatsApp com uma mensagem pronta. No simulador, a mensagem inclui os dados da solicitação.
               </p>
             </div>
           </div>
@@ -247,7 +247,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
             </div>
             <div>
               <h3 className="text-sm font-black text-[#002E5C] uppercase tracking-wider">Localização & Presença Digital</h3>
-              <p className="text-[11px] text-slate-400">Configure o endereço físico e links para redes sociais para aumentar sua credibilidade.</p>
+              <p className="text-[11px] text-slate-400">Atualize o endereço da empresa e os links das redes sociais.</p>
             </div>
           </div>
 
@@ -258,7 +258,7 @@ export const SettingsManager: React.FC<SettingsManagerProps> = ({
               value={companyAddress}
               onChange={(e) => setCompanyAddress(e.target.value)}
               className="w-full bg-slate-50/50 border border-slate-200 focus:border-[#0096D6] focus:bg-white rounded-xl px-4 py-3 text-xs font-semibold text-slate-800 transition-all focus:outline-none"
-              placeholder="Blumenau, SC - Atendemos toda a região"
+              placeholder="Blumenau, SC. Atendemos a região."
             />
           </div>
 

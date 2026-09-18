@@ -123,7 +123,7 @@ export const BeforeAfterManager: React.FC<BeforeAfterManagerProps> = ({
                 <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Título do Comparativo</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: Higienização Completa de Ar-Condicionado ou Instalação Split"
+                  placeholder="Por exemplo, higienização completa de ar-condicionado ou instalação split"
                   value={beforeAfterTitle}
                   onChange={(e) => setBeforeAfterTitle(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0096D6]"
@@ -151,7 +151,7 @@ export const BeforeAfterManager: React.FC<BeforeAfterManagerProps> = ({
             <div>
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Descrição / Detalhes</label>
               <textarea 
-                placeholder="Ex: Aparelho com mofo e sujeira acumulada limpo e sanificado com turbina higienizada."
+                placeholder="Por exemplo, equipamento antes e depois da higienização."
                 value={beforeAfterDescription}
                 onChange={(e) => setBeforeAfterDescription(e.target.value)}
                 rows={3}

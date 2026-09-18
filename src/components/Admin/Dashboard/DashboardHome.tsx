@@ -78,10 +78,10 @@ export const DashboardHome: React.FC<DashboardHomeProps> = ({
             Olá, Administrador
           </h1>
           <p className="text-[#E0E0E0] text-sm md:text-xs leading-relaxed mb-4">
-            Gerencie as fotos do portfólio, casos de antes/depois, especialidades de serviços, dúvidas frequentes e informações globais de contato a partir deste centro de controle.
+            Atualize as fotos, os serviços, as perguntas frequentes e os contatos do site.
           </p>
           <div className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/8 bg-[#242424] px-3.5 py-2 text-xs font-bold text-[#E0E0E0] shadow-sm md:min-h-0 md:border-[#0096D6] md:bg-[#0096D6] md:py-1.5 md:text-white">
-            <Smartphone className="w-3.5 h-3.5" /> Totalmente Otimizado para Celular
+            <Smartphone className="w-3.5 h-3.5" /> Acesso pelo celular
           </div>
         </div>
       </div>

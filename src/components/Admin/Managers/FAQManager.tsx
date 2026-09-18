@@ -110,7 +110,7 @@ export const FAQManager: React.FC<FAQManagerProps> = ({
                 <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Pergunta</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: Qual o prazo de garantia do serviço?"
+                  placeholder="Por exemplo, qual é o prazo de garantia do serviço?"
                   value={faqQuestion}
                   onChange={(e) => setFaqQuestion(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0096D6]"
@@ -134,7 +134,7 @@ export const FAQManager: React.FC<FAQManagerProps> = ({
             <div>
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Resposta Completa</label>
               <textarea 
-                placeholder="Ex: Oferecemos garantia completa de 90 dias para todos os serviços de instalação e higienização."
+                placeholder="Por exemplo, os serviços possuem garantia de 90 dias."
                 value={faqAnswer}
                 onChange={(e) => setFaqAnswer(e.target.value)}
                 rows={4}
@@ -188,7 +188,7 @@ export const FAQManager: React.FC<FAQManagerProps> = ({
                   <div className="space-y-2 min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-[9px] font-bold uppercase tracking-wider text-[#002E5C] bg-[#E6F5FC] border border-[#0096D6]/30 px-2 py-0.5 rounded">
-                        Ordem: #{item.order_index ?? 0}
+                        Ordem #{item.order_index ?? 0}
                       </span>
                       <h4 className="text-xs font-black text-slate-950 uppercase tracking-wide">{item.q}</h4>
                     </div>

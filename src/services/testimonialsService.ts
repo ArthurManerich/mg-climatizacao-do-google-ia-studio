@@ -79,13 +79,17 @@ export const testimonialsService = {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('testimonials')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
 
     if (error) {
       throw new Error(`Não foi possível excluir depoimento do banco de dados: ${error.message}`);
+    }
+    if (!Array.isArray(data) || data.length !== 1 || data[0]?.id !== id) {
+      throw new Error('Não foi possível confirmar a exclusão. Atualize a lista e tente novamente.');
     }
   }
 };

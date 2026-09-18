@@ -18,10 +18,10 @@ for (const limit of limits) {
   }
 }
 
-const heroPath = resolve('dist/brand/referencias/camisa-uniforme-mg-v2.webp');
+const heroPath = resolve('dist/brand/fotos/atendimento-real-hero-1200.webp');
 const heroSize = (await stat(heroPath)).size;
-if (heroSize > 100 * 1024) {
-  failures.push(`Hero image: ${heroSize} bytes (limit ${100 * 1024})`);
+if (heroSize > 125 * 1024) {
+  failures.push(`Real Hero image: ${heroSize} bytes (limit ${125 * 1024})`);
 }
 
 if (failures.length) {

@@ -139,7 +139,7 @@ export default function BudgetSimulator() {
             Conte o que você precisa.
           </h2>
           <p className="mt-4 text-base leading-relaxed text-ink-muted sm:text-lg">
-            Organize as informações do atendimento e envie sua solicitação para conversarmos pelo WhatsApp.
+            Informe o que precisa e envie sua solicitação pelo WhatsApp.
           </p>
         </div>
 
@@ -234,7 +234,7 @@ export default function BudgetSimulator() {
                         value={simulator.equipment === 'nao-sei' ? '' : simulator.equipment}
                         onChange={(event) => updateField('equipment', event.target.value)}
                         disabled={simulator.equipment === 'nao-sei'}
-                        placeholder="Ex.: Split Samsung, LG Dual Inverter, Consul Janela..."
+                        placeholder="Por exemplo, split Samsung, LG Dual Inverter ou Consul de janela."
                         className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400 disabled:bg-surface-subtle disabled:text-slate-400"
                       />
                       <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold text-ink-muted">
@@ -305,7 +305,7 @@ export default function BudgetSimulator() {
                         onChange={(event) => updateField('necessity', event.target.value)}
                         rows={4}
                         maxLength={500}
-                        placeholder="Ex.: aparelho não está resfriando ou preciso instalar um equipamento."
+                        placeholder="Por exemplo, o aparelho não está resfriando ou preciso instalar um equipamento."
                         className="mt-2 w-full resize-y rounded-control border border-line bg-surface px-3 py-3 text-base text-ink-muted placeholder:text-slate-400"
                       />
                     </div>
@@ -339,7 +339,7 @@ export default function BudgetSimulator() {
                         enterKeyHint="next"
                         value={simulator.city}
                         onChange={(event) => updateField('city', event.target.value)}
-                        placeholder="Ex.: Blumenau"
+                        placeholder="Por exemplo, Blumenau"
                         className="mt-2 min-h-12 w-full rounded-control border border-line px-3 text-base text-ink-muted placeholder:text-slate-400"
                       />
                     </div>
@@ -362,8 +362,8 @@ export default function BudgetSimulator() {
 
               {step === 4 && (
                 <div className="max-w-xl">
-                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Como podemos identificar você?</h3>
-                  <p className="mt-2 text-sm text-ink-muted">Informe somente seu nome para compor a solicitação.</p>
+                  <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Qual é o seu nome?</h3>
+                  <p className="mt-2 text-sm text-ink-muted">Seu nome será incluído na solicitação.</p>
                   <div className="mt-5">
                     <label htmlFor="customer-name" className="text-sm font-bold text-brand-navy-800">Nome completo</label>
                     <input
@@ -387,7 +387,7 @@ export default function BudgetSimulator() {
               {step === 5 && (
                 <div>
                   <h3 className="font-display text-xl font-bold text-brand-navy-800 sm:text-2xl">Revise sua solicitação</h3>
-                  <p className="mt-2 text-sm text-ink-muted">Você pode editar qualquer grupo antes de abrir o WhatsApp.</p>
+                  <p className="mt-2 text-sm text-ink-muted">Confira os dados. Você pode corrigi-los antes de abrir o WhatsApp.</p>
                   <div className="mt-5 grid gap-4 md:grid-cols-2">
                     <SummaryGroup title="Serviço" onEdit={() => editStep(1)}>
                       <SummaryLine label="Serviço" value={getServiceLabel(simulator.serviceType)} />

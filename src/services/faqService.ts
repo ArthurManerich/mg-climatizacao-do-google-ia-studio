@@ -2,22 +2,7 @@ import { Faq } from '../types';
 import { createReadError } from './readError';
 import { waitForCriticalRender, waitForSectionProximity } from '../utils/criticalRender';
 
-function isFurnitureText(text: string): boolean {
-  if (!text) return false;
-  const normalized = text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-  
-  const furnitureKeywords = [
-    'movel', 'moveis', 'montagem', 'montar', 'desmontagem', 'desmontar',
-    'guarda-roupa', 'guardaroupa', 'cozinha', 'painel', 'paineis', 'tv',
-    'rack', 'estante', 'armario', 'armarios', 'cama', 'mesa', 'sofa',
-    'cabeceira', 'escritorio', 'prateleira'
-  ];
-
-  return furnitureKeywords.some(keyword => normalized.includes(keyword));
-}
+import { isFurnitureText } from '../utils/legacyFurniture';
 
 export const faqService = {
   /**
@@ -106,13 +91,17 @@ export const faqService = {
       throw new Error('Não foi possível excluir: Conexão com o Supabase não está configurada.');
     }
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('faq')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
 
     if (error) {
       throw new Error(`Não foi possível excluir pergunta do banco de dados: ${error.message}`);
+    }
+    if (!Array.isArray(data) || data.length !== 1 || data[0]?.id !== id) {
+      throw new Error('Não foi possível confirmar a exclusão. Atualize a lista e tente novamente.');
     }
   }
 };

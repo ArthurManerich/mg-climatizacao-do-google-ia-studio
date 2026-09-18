@@ -83,7 +83,7 @@ export default function Login() {
             MG Climatização
           </h2>
           <p className="mt-2 text-xs text-[#475569] max-w-xs mx-auto">
-            Acesse para gerenciar seu portfólio, serviços, antes & depois e depoimentos.
+            Entre para atualizar as fotos, os serviços e as informações do site.
           </p>
         </div>
       </div>

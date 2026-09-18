@@ -780,6 +780,18 @@ Número central atualmente definido para o projeto:
 
 
 
+Contato individual confirmado de Marcos Manerich:
+
+
+
+554788353004
+
+
+
+O contato de Gabriel Klaumann Marcos permanece no número central.
+
+
+
 Não espalhe números duplicados hardcoded se já existir utilitário/configuração central.
 
 

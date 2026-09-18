@@ -8,14 +8,14 @@ vi.mock('../../context/SettingsContext', () => ({
 }));
 
 describe('equipe da MG Climatização', () => {
-  it('usa o número central nos dois contatos e preserva as mensagens individuais', () => {
+  it('usa o contato individual do Marcos, o contato central do Gabriel e preserva as mensagens', () => {
     render(<About />);
 
     const marcosLink = screen.getByRole('link', { name: /Falar com Marcos/i });
     const gabrielLink = screen.getByRole('link', { name: /Falar com Gabriel/i });
 
     expect(marcosLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${TEAM_CONTACTS.marcos.number}`));
-    expect(marcosLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${WHATSAPP.number}`));
+    expect(marcosLink).toHaveAttribute('href', expect.stringContaining('wa.me/554788353004'));
     expect(gabrielLink).toHaveAttribute('href', expect.stringContaining(`wa.me/${WHATSAPP.number}`));
     expect(decodeURIComponent(marcosLink.getAttribute('href') || '')).toContain(TEAM_CONTACTS.marcos.message);
     expect(decodeURIComponent(gabrielLink.getAttribute('href') || '')).toContain(TEAM_CONTACTS.gabriel.message);

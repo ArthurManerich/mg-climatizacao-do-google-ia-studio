@@ -17,7 +17,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-gutter py-9 sm:px-gutter-lg sm:py-11">
         <div className="grid gap-8 border-b border-white/10 pb-8 md:grid-cols-[1.1fr_0.9fr_1fr]">
           <div className="max-w-sm">
-            <a href="#inicio" className="inline-flex min-h-11 items-center gap-3" aria-label="MG Climatização — voltar ao início">
+            <a href="#inicio" className="inline-flex min-h-11 items-center gap-3" aria-label="Voltar ao início do site da MG Climatização">
               <span className="h-14 w-14 overflow-hidden rounded-card border border-white/10 bg-brand-navy-900"><img src={settings.logo_url || OFFICIAL_LOGO} onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = OFFICIAL_LOGO; }} alt="Logo oficial da MG Climatização" loading="lazy" decoding="async" referrerPolicy="no-referrer" className="h-full w-full object-contain" /></span>
               <span className="text-lg font-bold text-white">{settings.company_name}</span>
             </a>

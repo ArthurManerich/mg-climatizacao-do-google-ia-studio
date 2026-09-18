@@ -124,7 +124,7 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({
                 <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Título do Serviço</label>
                 <input 
                   type="text" 
-                  placeholder="Ex: Instalação Split 12000 BTUs no Centro"
+                  placeholder="Por exemplo, instalação de split de 12.000 BTUs no Centro"
                   value={portfolioTitle}
                   onChange={(e) => setPortfolioTitle(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#0096D6]"
@@ -152,7 +152,7 @@ export const PortfolioManager: React.FC<PortfolioManagerProps> = ({
             <div>
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">Descrição / Detalhes</label>
               <textarea 
-                placeholder="Ex: Instalação completa com furação, dreno embutido e teste de estanqueidade de gás."
+                placeholder="Por exemplo, instalação de ar-condicionado em uma residência."
                 value={portfolioDescription}
                 onChange={(e) => setPortfolioDescription(e.target.value)}
                 rows={3}
