@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowRight, MapPin, SlidersHorizontal } from 'lucide-react';
-import * as m from 'motion/react-m';
 import { useSettings } from '../../context/SettingsContext';
 import { useWhatsAppContact } from '../../context/WhatsAppContactContext';
 import { DEFAULT_QUICK_QUOTE_MESSAGE } from '../../utils/whatsapp';
@@ -15,15 +14,6 @@ const heroServiceDesktopWebPSrcSet = [
   '/brand/fotos/atendimento-real-hero-1200.webp 1200w',
 ].join(', ');
 const heroServiceSizes = '(min-width: 1024px) 40vw, (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)';
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45, ease: 'easeOut' as const },
-  },
-};
 
 export default function Hero() {
   const { settings } = useSettings();
@@ -45,38 +35,21 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-gutter sm:px-gutter-lg lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-14">
-          <m.div
-            className="lg:col-span-7"
-            initial="hidden"
-            animate="visible"
-            transition={{ staggerChildren: 0.1, delayChildren: 0.05 }}
-          >
-            <m.div
-              variants={itemVariants}
-              className="mb-5 flex items-center gap-3 text-sm font-semibold text-brand-cyan-400"
-            >
+          <div className="lg:col-span-7">
+            <div className="hero-reveal mb-5 flex items-center gap-3 text-sm font-semibold text-brand-cyan-400">
               <span className="h-px w-8 bg-brand-cyan-400" aria-hidden="true" />
               <span>Climatização em Blumenau e região</span>
-            </m.div>
+            </div>
 
-            <m.h1
-              variants={itemVariants}
-              className="max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl"
-            >
+            <h1 className="hero-reveal hero-reveal-delay-1 max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
               MG Climatização, soluções em ar-condicionado para Blumenau e região.
-            </m.h1>
+            </h1>
 
-            <m.p
-              variants={itemVariants}
-              className="mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg"
-            >
+            <p className="hero-reveal hero-reveal-delay-2 mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg">
               Instalação, manutenção, higienização e carga de fluido refrigerante para ambientes residenciais e empresariais.
-            </m.p>
+            </p>
 
-            <m.div
-              variants={itemVariants}
-              className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
-            >
+            <div className="hero-reveal hero-reveal-delay-3 mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <button
                 type="button"
                 onClick={() => openWhatsAppSelector(
@@ -95,16 +68,13 @@ export default function Hero() {
                 <SlidersHorizontal className="h-5 w-5 text-brand-cyan-400" aria-hidden="true" />
                 Montar solicitação
               </a>
-            </m.div>
+            </div>
 
-            <m.div
-              variants={itemVariants}
-              className="mt-7 flex max-w-xl items-start gap-2.5 border-t border-white/10 pt-5 text-sm leading-relaxed text-slate-300"
-            >
+            <div className="hero-reveal hero-reveal-delay-4 mt-7 flex max-w-xl items-start gap-2.5 border-t border-white/10 pt-5 text-sm leading-relaxed text-slate-300">
               <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand-cyan-400" aria-hidden="true" />
               <p>Atendemos Blumenau e região, com garantia de 90 dias nos serviços e emissão de Nota Fiscal.</p>
-            </m.div>
-          </m.div>
+            </div>
+          </div>
 
           <figure className="mx-auto w-full max-w-xl lg:col-span-5">
             <div className="overflow-hidden rounded-feature border border-white/10 bg-brand-navy-900 shadow-floating">

@@ -1,18 +1,15 @@
 import React, { lazy, Suspense, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { LazyMotion } from 'motion/react';
 import Header from './components/Header/Header';
 import Hero from './components/Hero/Hero';
 import Services from './components/Services/Services';
 import About from './components/About/About';
-import BudgetSimulator from './components/BudgetSimulator/BudgetSimulator';
 import Contact from './components/Contact/Contact';
 import Footer from './components/Footer/Footer';
 import FloatingWhatsApp from './components/WhatsAppButton/FloatingWhatsApp';
 import FloatingGoogleReview from './components/GoogleReviewButton/FloatingGoogleReview';
 import DeferredSection from './components/DeferredSection/DeferredSection';
 import RouteRobotsMeta from './components/Seo/RouteRobotsMeta';
-import { BudgetProvider } from './context/BudgetContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { WhatsAppContactProvider } from './context/WhatsAppContactContext';
 
@@ -20,13 +17,13 @@ import { WhatsAppContactProvider } from './context/WhatsAppContactContext';
 const BeforeAfter = lazy(() => import('./components/BeforeAfter/BeforeAfter'));
 const Portfolio = lazy(() => import('./components/Portfolio/Portfolio'));
 const FAQ = lazy(() => import('./components/FAQ/FAQ'));
+const BudgetRequestSection = lazy(() => import('./components/BudgetSimulator/BudgetRequestSection'));
 const AccessModeModal = lazy(() => import('./components/AccessSelector/AccessModeModal'));
 
 // Lazy loading admin and auth screens
 const Login = lazy(() => import('./components/Login/Login'));
 const ProtectedRoute = lazy(() => import('./components/Admin/ProtectedRoute'));
 const AdminDashboard = lazy(() => import('./components/Admin/AdminDashboard'));
-const loadMotionFeatures = () => import('./motionFeatures').then((module) => module.default);
 
 const LoadingFallback = () => (
   <div className="py-20 flex justify-center items-center bg-white">
@@ -55,7 +52,11 @@ function LandingPage() {
         <Services />
         <About />
 
-        <BudgetSimulator />
+        <DeferredSection anchorId="orcamento-online" placeholderClassName="min-h-[52rem]">
+          <Suspense fallback={<LoadingFallback />}>
+            <BudgetRequestSection />
+          </Suspense>
+        </DeferredSection>
 
         <DeferredSection anchorId="antes-depois" placeholderClassName="min-h-[44rem]">
           <Suspense fallback={<LoadingFallback />}>
@@ -92,30 +93,26 @@ function LandingPage() {
 
 export default function App() {
   return (
-    <LazyMotion features={loadMotionFeatures} strict>
-      <SettingsProvider>
-        <WhatsAppContactProvider>
-          <BudgetProvider>
-            <BrowserRouter>
-              <RouteRobotsMeta />
-              <Suspense fallback={<FullPageLoading />}>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute>
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          </BudgetProvider>
-        </WhatsAppContactProvider>
-      </SettingsProvider>
-    </LazyMotion>
+    <SettingsProvider>
+      <WhatsAppContactProvider>
+        <BrowserRouter>
+          <RouteRobotsMeta />
+          <Suspense fallback={<FullPageLoading />}>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </WhatsAppContactProvider>
+    </SettingsProvider>
   );
 }

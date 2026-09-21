@@ -5,15 +5,12 @@ import { portfolioService } from '../../../services/portfolioService';
 import { beforeAfterService } from '../../../services/beforeAfterService';
 import { servicesService } from '../../../services/servicesService';
 import { faqService } from '../../../services/faqService';
-import { testimonialsService } from '../../../services/testimonialsService';
 import { settingsService } from '../../../services/settingsService';
 import { usePortfolio } from './usePortfolio';
 import { useBeforeAfter } from './useBeforeAfter';
 import { useServices } from './useServices';
 import { useFAQ } from './useFAQ';
 import { useSettings } from './useSettings';
-import type { Testimonial } from '../../../types';
-import type { WhatsappContact } from '../../../types/settings.types';
 import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_WHATSAPP } from '../../../utils/companySettings';
 
 export type TabType = 'dashboard' | 'portfolio' | 'before_after' | 'services' | 'faq' | 'simulator' | 'settings' | 'whatsapp';
@@ -36,10 +33,6 @@ export function useAdminData() {
   const faqHook = useFAQ();
   const settingsHook = useSettings();
 
-  // Additional data
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [whatsappConfig, setWhatsappConfig] = useState<WhatsappContact | null>(null);
-
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await authService.getCurrentUser();
@@ -59,13 +52,12 @@ export function useAdminData() {
       beforeAfterService.getAll(),
       servicesService.getAll(),
       faqService.getAll(),
-      testimonialsService.getAll(),
       settingsService.getCompanySettings()
     ] as const);
 
     if (requestId !== loadRequestIdRef.current) return;
 
-    const [portfolioResult, beforeAfterResult, servicesResult, faqResult, testimonialsResult, companyResult] = results;
+    const [portfolioResult, beforeAfterResult, servicesResult, faqResult, companyResult] = results;
     const failedSections: string[] = [];
 
     if (portfolioResult.status === 'fulfilled') {
@@ -92,23 +84,11 @@ export function useAdminData() {
       failedSections.push('FAQ');
     }
 
-    if (testimonialsResult.status === 'fulfilled') {
-      setTestimonials(testimonialsResult.value);
-    } else {
-      failedSections.push('Depoimentos');
-    }
-
     if (companyResult.status === 'fulfilled') {
       const compSettings = companyResult.value.settings;
-      const waData = {
-        number: compSettings.whatsapp_number,
-        message: compSettings.whatsapp_message,
-      };
-
-      setWhatsappConfig(waData);
       settingsHook.setCompanyName(compSettings.company_name || 'mgclimatizacao');
-      settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || waData.number || OFFICIAL_WHATSAPP);
-      settingsHook.setCompanyWhatsappMessage(compSettings.whatsapp_message || waData.message || 'Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
+      settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || OFFICIAL_WHATSAPP);
+      settingsHook.setCompanyWhatsappMessage(compSettings.whatsapp_message || 'Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
       settingsHook.setCompanyAddress(compSettings.address || 'Blumenau, SC');
       settingsHook.setCompanyPhone(compSettings.phone || '(47) 99746-4218');
       settingsHook.setCompanyEmail(compSettings.email || OFFICIAL_EMAIL);
@@ -160,8 +140,6 @@ export function useAdminData() {
     hasError,
     errorMessage,
     reloadAllData: loadAllData,
-    testimonials,
-    whatsappConfig,
     handleLogout,
 
     // Portfolio

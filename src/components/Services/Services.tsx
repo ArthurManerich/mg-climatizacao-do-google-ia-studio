@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshCw, Snowflake } from 'lucide-react';
-import * as m from 'motion/react-m';
 import { pillarsData } from '../../data/services';
 import { servicesService } from '../../services/servicesService';
 import { Service } from '../../types';
@@ -42,11 +41,6 @@ export default function Services() {
       window.removeEventListener('online', loadServices);
     };
   }, [loadServices]);
-
-  const listVariants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.08 } },
-  };
 
   return (
     <>
@@ -117,13 +111,7 @@ export default function Services() {
               <p className="mt-1 text-sm text-ink-muted">Novos serviços serão apresentados aqui quando estiverem disponíveis.</p>
             </div>
           ) : (
-            <m.div
-              className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-              variants={listVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-50px' }}
-            >
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {servicesList.map((service, index) => (
                 <ServiceCard
                   key={service.id || index}
@@ -134,7 +122,7 @@ export default function Services() {
                   bulletPoints={service.bullet_points || []}
                 />
               ))}
-            </m.div>
+            </div>
           )}
         </div>
       </section>

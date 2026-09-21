@@ -5,6 +5,7 @@ import DeferredSection from './DeferredSection';
 describe('DeferredSection', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    window.history.replaceState(null, '', '/');
   });
 
   it('preserva a ancora sem renderizar o conteudo distante', () => {
@@ -72,5 +73,18 @@ describe('DeferredSection', () => {
     );
 
     expect(screen.getByText('Antes e depois carregado')).toBeInTheDocument();
+  });
+
+  it('carrega imediatamente quando a ancora esta na URL', () => {
+    window.history.replaceState(null, '', '/#orcamento-online');
+
+    render(
+      <DeferredSection anchorId="orcamento-online" placeholderClassName="min-h-[52rem]">
+        <section id="orcamento-online">Simulador carregado</section>
+      </DeferredSection>,
+    );
+
+    expect(screen.getByText('Simulador carregado')).toBeInTheDocument();
+    expect(document.querySelectorAll('#orcamento-online')).toHaveLength(1);
   });
 });

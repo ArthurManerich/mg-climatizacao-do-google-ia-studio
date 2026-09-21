@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { hasSupabaseConfig } from '../../lib/supabase';
 import { Lock, Mail, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
-import * as m from 'motion/react-m';
+import { motion } from 'motion/react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -89,7 +89,7 @@ export default function Login() {
       </div>
 
       <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <m.div
+        <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
@@ -183,7 +183,7 @@ export default function Login() {
               </p>
             </div>
           )}
-        </m.div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, ChevronDown, HelpCircle, MessageCircle, RefreshCw } from 'lucide-react';
-import { AnimatePresence } from 'motion/react';
-import * as m from 'motion/react-m';
+import { AnimatePresence, motion } from 'motion/react';
 import { useSettings } from '../../context/SettingsContext';
 import { faqService } from '../../services/faqService';
 import { Faq } from '../../types';
@@ -68,7 +67,7 @@ export default function FAQ() {
                     </button>
                   </h3>
                   <AnimatePresence initial={false}>
-                    {isOpen && <m.div id={`faq-answer-${index}`} role="region" aria-labelledby={`faq-button-${index}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden"><p className="max-w-3xl pb-5 pr-8 text-sm leading-7 text-ink-muted sm:text-base">{faq.a}</p></m.div>}
+                    {isOpen && <motion.div id={`faq-answer-${index}`} role="region" aria-labelledby={`faq-button-${index}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }} className="overflow-hidden"><p className="max-w-3xl pb-5 pr-8 text-sm leading-7 text-ink-muted sm:text-base">{faq.a}</p></motion.div>}
                   </AnimatePresence>
                 </article>
               );

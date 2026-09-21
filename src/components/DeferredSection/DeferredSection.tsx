@@ -11,7 +11,9 @@ export default function DeferredSection({
   children,
   placeholderClassName,
 }: DeferredSectionProps) {
-  const [shouldRender, setShouldRender] = useState(false);
+  const [shouldRender, setShouldRender] = useState(() =>
+    typeof window !== 'undefined' && window.location.hash === `#${anchorId}`,
+  );
   const placeholderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

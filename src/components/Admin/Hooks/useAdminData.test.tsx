@@ -13,7 +13,6 @@ const mocks = vi.hoisted(() => ({
   beforeAfterGetAll: vi.fn(),
   servicesGetAll: vi.fn(),
   faqGetAll: vi.fn(),
-  testimonialsGetAll: vi.fn(),
   getCompanySettings: vi.fn(),
 }));
 
@@ -32,7 +31,6 @@ vi.mock('../../../services/portfolioService', () => ({ portfolioService: { getAl
 vi.mock('../../../services/beforeAfterService', () => ({ beforeAfterService: { getAll: mocks.beforeAfterGetAll } }));
 vi.mock('../../../services/servicesService', () => ({ servicesService: { getAll: mocks.servicesGetAll } }));
 vi.mock('../../../services/faqService', () => ({ faqService: { getAll: mocks.faqGetAll } }));
-vi.mock('../../../services/testimonialsService', () => ({ testimonialsService: { getAll: mocks.testimonialsGetAll } }));
 vi.mock('../../../services/settingsService', () => ({
   settingsService: { getCompanySettings: mocks.getCompanySettings },
 }));
@@ -56,7 +54,6 @@ function setSuccessfulReads() {
   mocks.beforeAfterGetAll.mockResolvedValue([]);
   mocks.servicesGetAll.mockResolvedValue([]);
   mocks.faqGetAll.mockResolvedValue([]);
-  mocks.testimonialsGetAll.mockResolvedValue([]);
   mocks.getCompanySettings.mockResolvedValue({ settings: DEFAULT_COMPANY_SETTINGS, source: 'company_settings' });
 }
 
