@@ -7,6 +7,7 @@ export interface SettingsContextType {
   loading: boolean;
   error: string | null;
   refreshSettings: () => Promise<void>;
+  applyHeroTitle: (title: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -16,6 +17,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
+  const applyHeroTitle = useCallback((title: string) => {
+    setSettings(current => ({ ...current, hero_title: title }));
+  }, []);
 
   const fetchSettings = useCallback(async () => {
     const requestId = ++requestIdRef.current;
@@ -49,8 +53,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     settings,
     loading,
     error,
-    refreshSettings: fetchSettings
-  }), [settings, loading, error, fetchSettings]);
+    refreshSettings: fetchSettings,
+    applyHeroTitle,
+  }), [settings, loading, error, fetchSettings, applyHeroTitle]);
 
   return (
     <SettingsContext.Provider value={value}>

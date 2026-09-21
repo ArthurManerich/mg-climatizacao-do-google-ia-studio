@@ -6,6 +6,7 @@ import {
   OFFICIAL_LOGO,
   OFFICIAL_WHATSAPP,
   sanitizeCompanySettings,
+  validHeroTitle,
   validEmail,
   validLogoUrl,
   validSocialUrl,
@@ -16,6 +17,14 @@ import { getWhatsAppLink } from './whatsapp';
 const supabaseUrl = 'https://projeto.supabase.co';
 
 describe('configurações públicas seguras', () => {
+  it('aceita um título simples e rejeita HTML, quebras e textos longos', () => {
+    expect(validHeroTitle('  Atendimento em Blumenau  ')).toBe('Atendimento em Blumenau');
+    expect(validHeroTitle('<script>alert(1)</script>')).toBeNull();
+    expect(validHeroTitle('Linha 1\nLinha 2')).toBeNull();
+    expect(validHeroTitle('a'.repeat(101))).toBeNull();
+    expect(sanitizeCompanySettings({ hero_title: '<b>Inseguro</b>' }, DEFAULT_COMPANY_SETTINGS).hero_title)
+      .toBe(DEFAULT_COMPANY_SETTINGS.hero_title);
+  });
   it('aceita os contatos oficiais e mantém Facebook vazio', () => {
     expect(validEmail(OFFICIAL_EMAIL)).toBe(OFFICIAL_EMAIL);
     expect(validSocialUrl(OFFICIAL_INSTAGRAM, 'instagram')).toBe(OFFICIAL_INSTAGRAM);

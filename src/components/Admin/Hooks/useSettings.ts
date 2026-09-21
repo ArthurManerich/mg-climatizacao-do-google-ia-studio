@@ -6,6 +6,7 @@ import type { CleanupResult } from '../../../services/mutationResult';
 import { useUploads } from './useUploads';
 import { getSupabasePublicUrl } from '../../../lib/supabase';
 import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_WHATSAPP, validateCompanySettings } from '../../../utils/companySettings';
+import { DEFAULT_COMPANY_SETTINGS } from '../../../types/settings.types';
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -13,6 +14,7 @@ function errorMessage(error: unknown): string {
 
 export function useSettings() {
   const [companyName, setCompanyName] = useState('mgclimatizacao');
+  const [heroTitle, setHeroTitle] = useState(DEFAULT_COMPANY_SETTINGS.hero_title);
   const [companyWhatsapp, setCompanyWhatsapp] = useState(OFFICIAL_WHATSAPP);
   const [companyWhatsappMessage, setCompanyWhatsappMessage] = useState('Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
   const [companyAddress, setCompanyAddress] = useState('Blumenau, SC');
@@ -116,6 +118,7 @@ export function useSettings() {
 
       const candidateSettings = {
         company_name: companyName,
+        hero_title: heroTitle,
         whatsapp_number: companyWhatsapp,
         whatsapp_message: companyWhatsappMessage,
         address: companyAddress,
@@ -175,6 +178,7 @@ export function useSettings() {
 
   return {
     companyName, setCompanyName,
+    heroTitle, setHeroTitle,
     companyWhatsapp, setCompanyWhatsapp,
     companyWhatsappMessage, setCompanyWhatsappMessage,
     companyAddress, setCompanyAddress,

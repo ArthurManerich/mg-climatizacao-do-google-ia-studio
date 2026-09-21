@@ -28,6 +28,12 @@ beforeEach(() => {
 });
 
 describe('settingsService.getCompanySettings', () => {
+  it('carrega o título publicado e usa o título atual quando a configuração não o contém', async () => {
+    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: { ...DEFAULT_COMPANY_SETTINGS, hero_title: 'Título publicado' } }, error: null });
+    expect((await settingsService.getCompanySettings()).settings.hero_title).toBe('Título publicado');
+    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: { company_name: 'MG', whatsapp_number: '5547997464218', whatsapp_message: 'Olá' } }, error: null });
+    expect((await settingsService.getCompanySettings()).settings.hero_title).toBe(DEFAULT_COMPANY_SETTINGS.hero_title);
+  });
   it('usa company_settings como fonte canônica sem consultar o legado quando está completo', async () => {
     const canonical = { ...DEFAULT_COMPANY_SETTINGS, whatsapp_number: '5511999999999' };
     mocks.maybeSingle.mockResolvedValueOnce({ data: { value: canonical }, error: null });

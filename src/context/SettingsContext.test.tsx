@@ -11,13 +11,21 @@ vi.mock('../services/settingsService', () => ({
 import { SettingsProvider, useSettings } from './SettingsContext';
 
 function Consumer() {
-  const { settings, loading, error, refreshSettings } = useSettings();
-  return <><span>{settings.company_name}</span><span role="status">{loading ? 'carregando' : 'pronto'}</span>{error && <span role="alert">{error}</span>}<button onClick={() => void refreshSettings()}>recarregar</button></>;
+  const { settings, loading, error, refreshSettings, applyHeroTitle } = useSettings();
+  return <><span>{settings.company_name}</span><span data-testid="published-title">{settings.hero_title}</span><span role="status">{loading ? 'carregando' : 'pronto'}</span>{error && <span role="alert">{error}</span>}<button onClick={() => void refreshSettings()}>recarregar</button><button onClick={() => applyHeroTitle('Título salvo')}>aplicar título</button></>;
 }
 
 beforeEach(() => vi.clearAllMocks());
 
 describe('SettingsProvider', () => {
+  it('mantém o título padrão sem Supabase e atualiza o título após confirmação de salvamento', async () => {
+    mocks.getCompanySettings.mockRejectedValueOnce(new Error('offline'));
+    render(<SettingsProvider><Consumer /></SettingsProvider>);
+    expect(screen.getByTestId('published-title')).toHaveTextContent(DEFAULT_COMPANY_SETTINGS.hero_title);
+    await screen.findByRole('alert');
+    fireEvent.click(screen.getByRole('button', { name: 'aplicar título' }));
+    expect(screen.getByTestId('published-title')).toHaveTextContent('Título salvo');
+  });
   it('expõe a configuração canônica aos consumidores', async () => {
     mocks.getCompanySettings.mockResolvedValue({
       settings: { ...DEFAULT_COMPANY_SETTINGS, company_name: 'Empresa canônica' },

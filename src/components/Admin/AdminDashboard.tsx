@@ -8,6 +8,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { useAdminData, TabType } from './Hooks/useAdminData';
 import { DashboardHome } from './Dashboard/DashboardHome';
+import { HomepageContentManager } from './Managers/HomepageContentManager';
 import { 
   PortfolioManager, 
   BeforeAfterManager, 
@@ -129,6 +130,7 @@ export default function AdminDashboard() {
             </span>
             <span className="text-xs font-extrabold text-[#002E5C] uppercase tracking-wide bg-[#E6F5FC] px-3 py-1 rounded-lg border border-[#0096D6]/30">
               {admin.activeTab === 'dashboard' && 'Painel Geral'}
+              {admin.activeTab === 'homepage' && 'Conteúdo da página inicial'}
               {admin.activeTab === 'portfolio' && 'Portfólio / Galeria'}
               {admin.activeTab === 'before_after' && 'Antes & Depois'}
               {admin.activeTab === 'services' && 'Especialidades'}
@@ -198,6 +200,10 @@ export default function AdminDashboard() {
                     companyLogo={admin.companyLogo}
                     onNavigateTab={(tab) => admin.setActiveTab(tab as TabType)}
                   />
+                )}
+
+                {admin.activeTab === 'homepage' && (
+                  <HomepageContentManager title={admin.heroTitle} onTitleSaved={admin.setHeroTitle} />
                 )}
 
                 {/* 2. PORTFOLIO VIEW */}

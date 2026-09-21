@@ -38,6 +38,7 @@ describe('integridade do logotipo', () => {
 
     expect(mocks.settingsSet).toHaveBeenCalledTimes(1);
     expect(mocks.settingsSet).toHaveBeenCalledWith('company_settings', expect.objectContaining({
+      hero_title: 'MG Climatização, soluções em ar-condicionado para Blumenau e região.',
       whatsapp_number: expect.any(String),
       whatsapp_message: expect.any(String),
     }));

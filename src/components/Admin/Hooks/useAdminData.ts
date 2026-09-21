@@ -13,7 +13,7 @@ import { useFAQ } from './useFAQ';
 import { useSettings } from './useSettings';
 import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_WHATSAPP } from '../../../utils/companySettings';
 
-export type TabType = 'dashboard' | 'portfolio' | 'before_after' | 'services' | 'faq' | 'simulator' | 'settings' | 'whatsapp';
+export type TabType = 'dashboard' | 'portfolio' | 'before_after' | 'services' | 'faq' | 'simulator' | 'settings' | 'whatsapp' | 'homepage';
 
 export function useAdminData() {
   const [email, setEmail] = useState<string>('');
@@ -87,6 +87,7 @@ export function useAdminData() {
     if (companyResult.status === 'fulfilled') {
       const compSettings = companyResult.value.settings;
       settingsHook.setCompanyName(compSettings.company_name || 'mgclimatizacao');
+      settingsHook.setHeroTitle(compSettings.hero_title);
       settingsHook.setCompanyWhatsapp(compSettings.whatsapp_number || OFFICIAL_WHATSAPP);
       settingsHook.setCompanyWhatsappMessage(compSettings.whatsapp_message || 'Olá, MG Climatização! Gostaria de solicitar um orçamento para climatização.');
       settingsHook.setCompanyAddress(compSettings.address || 'Blumenau, SC');
@@ -240,6 +241,8 @@ export function useAdminData() {
 
     // Settings
     companyName: settingsHook.companyName,
+    heroTitle: settingsHook.heroTitle,
+    setHeroTitle: settingsHook.setHeroTitle,
     setCompanyName: settingsHook.setCompanyName,
     companyWhatsapp: settingsHook.companyWhatsapp,
     setCompanyWhatsapp: settingsHook.setCompanyWhatsapp,

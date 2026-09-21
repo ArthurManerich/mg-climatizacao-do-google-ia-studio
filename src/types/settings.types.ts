@@ -3,6 +3,7 @@ import { OFFICIAL_EMAIL, OFFICIAL_INSTAGRAM, OFFICIAL_LOGO, OFFICIAL_WHATSAPP } 
 
 export interface CompanySettings {
   company_name: string;
+  hero_title: string;
   whatsapp_number: string;
   whatsapp_message: string;
   address: string;
@@ -25,6 +26,7 @@ export interface SettingsWithFallback {
 
 export const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
   company_name: BRAND.name,
+  hero_title: 'MG Climatização, soluções em ar-condicionado para Blumenau e região.',
   whatsapp_number: OFFICIAL_WHATSAPP,
   whatsapp_message: `Olá, ${BRAND.name}! Gostaria de solicitar um orçamento para climatização.`,
   address: 'Blumenau, SC',

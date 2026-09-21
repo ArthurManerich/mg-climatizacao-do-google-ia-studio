@@ -41,8 +41,8 @@ export default function Hero() {
               <span>Climatização em Blumenau e região</span>
             </div>
 
-            <h1 className="hero-reveal hero-reveal-delay-1 max-w-3xl font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-              MG Climatização, soluções em ar-condicionado para Blumenau e região.
+            <h1 className="hero-reveal hero-reveal-delay-1 max-w-3xl break-words font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.035em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
+              {settings.hero_title}
             </h1>
 
             <p className="hero-reveal hero-reveal-delay-2 mt-5 max-w-2xl text-base font-medium leading-relaxed text-slate-200 sm:text-lg">

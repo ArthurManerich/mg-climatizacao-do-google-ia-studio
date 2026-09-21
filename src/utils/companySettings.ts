@@ -12,6 +12,14 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 const text = (value: unknown): string => typeof value === 'string' ? value.trim() : '';
 
+export const HERO_TITLE_MAX_LENGTH = 100;
+
+export function validHeroTitle(value: unknown): string | null {
+  if (typeof value !== 'string' || /[<>]/.test(value) || [...value].some(character => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)) return null;
+  const title = value.trim().replace(/\s+/g, ' ');
+  return title.length > 0 && title.length <= HERO_TITLE_MAX_LENGTH ? title : null;
+}
+
 export function validEmail(value: unknown): string | null {
   const normalized = text(value).toLowerCase();
   return emailPattern.test(normalized) && !LEGACY_EMAILS.has(normalized) ? normalized : null;
@@ -67,6 +75,7 @@ export function sanitizeCompanySettings(value: unknown, defaults: CompanySetting
   const source = isRecord(value) ? value : {};
   return {
     company_name: text(source.company_name) || defaults.company_name,
+    hero_title: validHeroTitle(source.hero_title) ?? defaults.hero_title,
     whatsapp_number: validWhatsApp(source.whatsapp_number) ?? defaults.whatsapp_number,
     whatsapp_message: text(source.whatsapp_message) || defaults.whatsapp_message,
     address: text(source.address) || defaults.address,
@@ -79,6 +88,7 @@ export function sanitizeCompanySettings(value: unknown, defaults: CompanySetting
 }
 
 export function validateCompanySettings(value: CompanySettings, supabaseUrl?: string): { settings?: CompanySettings; error?: string } {
+  if (!validHeroTitle(value.hero_title)) return { error: `O título principal deve ter entre 1 e ${HERO_TITLE_MAX_LENGTH} caracteres, sem HTML ou quebras de linha.` };
   if (!validEmail(value.email)) return { error: 'Informe um e-mail de contato válido.' };
   if (!validSocialUrl(value.instagram, 'instagram')) return { error: 'Informe uma URL HTTPS válida do Instagram.' };
   if (value.facebook.trim() && !validSocialUrl(value.facebook, 'facebook')) return { error: 'Informe uma URL HTTPS válida do Facebook ou deixe o campo vazio.' };

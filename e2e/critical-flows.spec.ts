@@ -19,6 +19,8 @@ test.beforeEach(async ({ page }) => {
 test('loads the public page, manifest and primary brand asset', async ({ page, request }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('MG Climatização, soluções em ar-condicionado para Blumenau e região.');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 
   const manifest = await request.get('/manifest.json');
   expect(manifest.ok()).toBeTruthy();

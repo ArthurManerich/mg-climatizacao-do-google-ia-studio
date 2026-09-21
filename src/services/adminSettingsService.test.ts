@@ -26,6 +26,22 @@ beforeEach(() => {
 });
 
 describe('adminSettingsService', () => {
+  it('altera somente o título no registro existente, preservando os demais campos', async () => {
+    mocks.maybeSingle.mockResolvedValueOnce({ data: { value: { company_name: 'MG', campo_futuro: 'preservado' } }, error: null });
+    mocks.upsert.mockResolvedValueOnce({ error: null });
+    await adminSettingsService.setHeroTitle('Novo título');
+    expect(mocks.eq).toHaveBeenCalledWith('key', 'company_settings');
+    expect(mocks.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      key: 'company_settings',
+      value: { company_name: 'MG', campo_futuro: 'preservado', hero_title: 'Novo título' },
+    }));
+  });
+
+  it('rejeita título com HTML antes de consultar ou salvar', async () => {
+    await expect(adminSettingsService.setHeroTitle('<script>teste</script>')).rejects.toThrow('inválido');
+    expect(mocks.maybeSingle).not.toHaveBeenCalled();
+    expect(mocks.upsert).not.toHaveBeenCalled();
+  });
   it('mantém simulator_config disponível somente pela API administrativa', async () => {
     const legacyConfig = {
       services: [{ id: 'instalacao', label: 'Instalação', icon: 'Wind', description: 'Instalação' }],

@@ -1,6 +1,8 @@
 import { defaultAdminSimulatorConfig } from '../config/adminSimulator';
 import { hasSupabaseConfig, supabase } from '../lib/supabase';
 import type { SimulatorConfig } from '../types';
+import { DEFAULT_COMPANY_SETTINGS } from '../types/settings.types';
+import { validHeroTitle } from '../utils/companySettings';
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
@@ -46,6 +48,14 @@ async function readSetting<T>(key: string): Promise<T | undefined> {
 }
 
 export const adminSettingsService = {
+  async setHeroTitle(title: string): Promise<void> {
+    const validTitle = validHeroTitle(title);
+    if (!validTitle) throw new Error('Título principal inválido.');
+    if (!hasSupabaseConfig()) throw new Error('A conexão com o Supabase não está configurada.');
+    const existing = await readSetting<unknown>('company_settings');
+    const current = isRecord(existing) ? existing : DEFAULT_COMPANY_SETTINGS;
+    await this.set('company_settings', { ...current, hero_title: validTitle });
+  },
   async getAdminSimulatorConfig(): Promise<SimulatorConfig> {
     if (!hasSupabaseConfig()) return defaultAdminSimulatorConfig;
     const value = await readSetting<unknown>('simulator_config');

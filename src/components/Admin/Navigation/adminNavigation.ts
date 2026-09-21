@@ -4,6 +4,7 @@ import {
   HelpCircle,
   Layers,
   LayoutDashboard,
+  House,
   Phone,
   Settings,
   Shield,
@@ -22,6 +23,7 @@ export interface AdminDestination {
 
 export const ADMIN_DESTINATIONS: AdminDestination[] = [
   { id: 'dashboard', label: 'Painel Geral', shortLabel: 'Início', bottomLabel: 'Início', icon: LayoutDashboard, mobilePrimary: true },
+  { id: 'homepage', label: 'Conteúdo da página inicial', shortLabel: 'Página inicial', bottomLabel: 'Página', icon: House, mobilePrimary: false },
   { id: 'portfolio', label: 'Portfólio / Galeria', shortLabel: 'Portfólio', bottomLabel: 'Portfólio', icon: FileImage, mobilePrimary: true },
   { id: 'before_after', label: 'Antes & Depois', shortLabel: 'Antes & Depois', bottomLabel: 'Antes', icon: Layers, mobilePrimary: true },
   { id: 'services', label: 'Especialidades', shortLabel: 'Serviços', bottomLabel: 'Serviços', icon: Shield, mobilePrimary: false },
